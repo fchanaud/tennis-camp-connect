@@ -19,11 +19,32 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Temporary hardcoded users for testing
+      // Hardcoded users with specific passwords
       const testUsers = {
-        'admin': { id: '11111111-1111-1111-1111-111111111111', first_name: 'System', last_name: 'Administrator', username: 'admin', role: 'admin' },
-        'coach': { id: '22222222-2222-2222-2222-222222222222', first_name: 'Rafael', last_name: 'Nadal', username: 'coach', role: 'coach' },
-        'jdoe': { id: '33333333-3333-3333-3333-333333333333', first_name: 'John', last_name: 'Doe', username: 'jdoe', role: 'player' }
+        'admin': { 
+          id: '11111111-1111-1111-1111-111111111111', 
+          first_name: 'System', 
+          last_name: 'Administrator', 
+          username: 'admin', 
+          role: 'admin',
+          password: 'Gardelapeche78&&'
+        },
+        'patrickn': { 
+          id: '22222222-2222-2222-2222-222222222222', 
+          first_name: 'Patrick', 
+          last_name: 'Nadal', 
+          username: 'patrickn', 
+          role: 'coach',
+          password: 'marrakech'
+        },
+        'jdoe': { 
+          id: '33333333-3333-3333-3333-333333333333', 
+          first_name: 'John', 
+          last_name: 'Doe', 
+          username: 'jdoe', 
+          role: 'player',
+          password: null // Accept any password for player
+        }
       };
 
       const user = testUsers[username.toLowerCase() as keyof typeof testUsers];
@@ -34,15 +55,26 @@ export default function LoginPage() {
         return;
       }
 
-      // Accept any password for testing
-      if (password.length < 3) {
-        setError('Password must be at least 3 characters');
-        setLoading(false);
-        return;
+      // Validate password
+      if (user.password) {
+        // Specific password required for admin and coach
+        if (password !== user.password) {
+          setError('Invalid username or password');
+          setLoading(false);
+          return;
+        }
+      } else {
+        // For player, accept any password with 3+ characters
+        if (password.length < 3) {
+          setError('Password must be at least 3 characters');
+          setLoading(false);
+          return;
+        }
       }
 
       // Store user info in sessionStorage for temporary auth
-      sessionStorage.setItem('user', JSON.stringify(user));
+      const { password: _, ...userWithoutPassword } = user;
+      sessionStorage.setItem('user', JSON.stringify(userWithoutPassword));
       
       router.push('/home');
       router.refresh();
