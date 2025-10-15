@@ -17,6 +17,13 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Tennis Camp Connect - Marrakech",
   description: "Manage your tennis camp experience in Marrakech",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: 'cover', // Support for iOS safe areas (notches)
+  },
 };
 
 export default function RootLayout({
