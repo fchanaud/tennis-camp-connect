@@ -99,13 +99,6 @@ export default function LoginPage() {
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
-
-            <div className="mt-6 text-center text-sm text-gray-600">
-              <p><strong>Test credentials:</strong></p>
-              <p><strong>admin</strong> / any password (3+ chars)</p>
-              <p><strong>coach</strong> / any password (3+ chars)</p>
-              <p><strong>jdoe</strong> / any password (3+ chars)</p>
-            </div>
           </div>
         </div>
       </div>
