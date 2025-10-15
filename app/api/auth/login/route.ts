@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const users = {
       'admin': {
         id: '11111111-1111-1111-1111-111111111111',
-        first_name: 'System',
+        first_name: 'Franklin',
         last_name: 'Administrator',
         username: 'admin',
         role: 'admin',
