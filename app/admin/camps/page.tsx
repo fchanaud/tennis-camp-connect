@@ -10,6 +10,7 @@ import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { Camp, User, PackageType } from '@/types';
 import { createClient } from '@/lib/supabase/client';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 export default function CampManagementPage() {
   const [camps, setCamps] = useState<any[]>([]);
@@ -209,8 +210,9 @@ export default function CampManagementPage() {
   const dates = startDate && endDate ? getDatesInRange(startDate, endDate) : [];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-8">
-      <div className="container mx-auto">
+    <AppLayout>
+      <div className="p-8">
+        <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Camp Management</h1>
           <Button variant="primary" onClick={() => setShowCreateModal(true)}>
@@ -402,7 +404,8 @@ export default function CampManagementPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </AppLayout>
   );
 }
 

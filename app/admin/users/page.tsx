@@ -10,6 +10,7 @@ import { Card, CardBody, CardTitle } from '@/components/ui/Card';
 import { generateUsername, generateRandomPassword } from '@/lib/utils/password-generator';
 import { User } from '@/types';
 import { createClient } from '@/lib/supabase/client';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -99,8 +100,9 @@ export default function UserManagementPage() {
   const usernamePreview = firstName && lastName ? generateUsername(firstName, lastName) : '';
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-8">
-      <div className="container mx-auto">
+    <AppLayout>
+      <div className="p-8">
+        <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">User Management</h1>
           <div className="flex gap-3">
@@ -306,7 +308,8 @@ export default function UserManagementPage() {
           </Card>
         </div>
       )}
-    </div>
+      </div>
+    </AppLayout>
   );
 }
 

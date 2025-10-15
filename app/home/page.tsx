@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Navbar } from '@/components/layout/Navbar';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { AuthWrapper } from '@/components/auth/AuthWrapper';
 import { User } from '@/types';
 import Link from 'next/link';
 
@@ -54,7 +53,6 @@ function getPackageLabel(packageType: string): string {
 
 function HomePageContent() {
   const [user, setUser] = useState<User | null>(null);
-  const [camps, setCamps] = useState<any[]>([]);
 
   useEffect(() => {
     // Get user from sessionStorage
@@ -63,9 +61,6 @@ function HomePageContent() {
       const userData = JSON.parse(userStr);
       setUser(userData);
     }
-    
-    // For now, set empty camps array
-    setCamps([]);
   }, []);
 
   if (!user) {
@@ -73,9 +68,7 @@ function HomePageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      <Navbar user={user} camps={camps} />
-      
+    <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -222,14 +215,10 @@ function HomePageContent() {
           </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
 export default function HomePage() {
-  return (
-    <AuthWrapper>
-      <HomePageContent />
-    </AuthWrapper>
-  );
+  return <HomePageContent />;
 }
