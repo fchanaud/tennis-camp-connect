@@ -3,18 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  Calendar, 
-  Hotel, 
-  Package, 
-  Users, 
-  FileText,
-  Settings,
-  LogOut,
-  Trophy,
-  UserCog
-} from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut } from 'lucide-react';
 import { User, Camp } from '@/types';
 import { Button } from '@/components/ui/Button';
 
@@ -23,17 +12,10 @@ interface NavbarProps {
   camps?: Camp[];
 }
 
-// Navigation item interface for role-based routing
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  showOnMobile?: boolean;
-}
-
 export function Navbar({ user, camps = [] }: NavbarProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [campDropdownOpen, setCampDropdownOpen] = useState(false);
   const pathname = usePathname();
-  const activeCamp = camps[0]; // Default to first camp for players
 
   const handleLogout = async () => {
     const response = await fetch('/api/auth/logout', { method: 'POST' });
@@ -42,193 +24,258 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
     }
   };
 
-  const isActive = (path: string) => pathname === path || pathname?.startsWith(path);
+  const isActive = (path: string) => pathname?.startsWith(path);
 
-  /**
-   * Get role-based navigation items
-   * Returns navigation items tailored to the user's role
-   */
-  const getNavigationItems = (): NavItem[] => {
-    if (!user) return [];
-
-    switch (user.role) {
-      case 'player':
-        // Player navigation - context-aware based on camp enrollment
-        const playerNav: NavItem[] = [
-          { label: 'Home', href: '/home', icon: Home, showOnMobile: true }
-        ];
+  const renderPlayerNav = () => {
+    const activeCamp = camps[0]; // Default to first camp
+    
+    return (
+      <>
+        <Link
+          href="/home"
+          className={`px-4 py-2 transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+        >
+          Home
+        </Link>
         
-        if (activeCamp) {
-          playerNav.push(
-            { label: 'Tennis', href: `/camp/${activeCamp.id}/tennis`, icon: Trophy, showOnMobile: true },
-            { label: 'Schedule', href: `/camp/${activeCamp.id}/schedule`, icon: Calendar, showOnMobile: true },
-            { label: 'Essentials', href: `/camp/${activeCamp.id}/essentials`, icon: Package, showOnMobile: true }
-          );
-          
-          // Add Stay navigation only for relevant packages
-          if (['stay_and_play', 'luxury_stay_and_play', 'no_tennis'].includes(activeCamp.package)) {
-            playerNav.splice(3, 0, { 
-              label: 'Stay', 
-              href: `/camp/${activeCamp.id}/stay`, 
-              icon: Hotel, 
-              showOnMobile: true 
-            });
-          }
-        }
-        
-        return playerNav;
-
-      case 'coach':
-        // Coach navigation - focused on player management and reports
-        return [
-          { label: 'Home', href: '/home', icon: Home, showOnMobile: true },
-          { label: 'Players', href: '/coach/players', icon: Users, showOnMobile: true },
-          { label: 'Reports', href: '/coach/players', icon: FileText, showOnMobile: true }
-        ];
-
-      case 'admin':
-        // Admin navigation - system management tools
-        return [
-          { label: 'Home', href: '/home', icon: Home, showOnMobile: true },
-          { label: 'Users', href: '/admin/users', icon: UserCog, showOnMobile: true },
-          { label: 'Camps', href: '/admin/camps', icon: Settings, showOnMobile: true }
-        ];
-
-      default:
-        return [];
-    }
+        {activeCamp && (
+          <div className="relative">
+            <button
+              onClick={() => setCampDropdownOpen(!campDropdownOpen)}
+              className="px-4 py-2 flex items-center gap-1 text-gray-700 hover:text-[#FF4C4C] transition-colors"
+            >
+              Current Camp
+              <ChevronDown className={`w-4 h-4 transition-transform ${campDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {campDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-soft border border-gray-200 py-2 min-w-[200px] z-50">
+                <Link
+                  href={`/camp/${activeCamp.id}/tennis`}
+                  className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                  onClick={() => setCampDropdownOpen(false)}
+                >
+                  Tennis
+                </Link>
+                <Link
+                  href={`/camp/${activeCamp.id}/schedule`}
+                  className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                  onClick={() => setCampDropdownOpen(false)}
+                >
+                  Schedule
+                </Link>
+                {(activeCamp.package === 'stay_and_play' || 
+                  activeCamp.package === 'luxury_stay_and_play' || 
+                  activeCamp.package === 'no_tennis') && (
+                  <Link
+                    href={`/camp/${activeCamp.id}/stay`}
+                    className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                    onClick={() => setCampDropdownOpen(false)}
+                  >
+                    Stay
+                  </Link>
+                )}
+                <Link
+                  href={`/camp/${activeCamp.id}/essentials`}
+                  className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                  onClick={() => setCampDropdownOpen(false)}
+                >
+                  Essentials
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    );
   };
 
-  const navigationItems = getNavigationItems();
+  const renderCoachNav = () => (
+    <>
+      <Link
+        href="/home"
+        className={`px-4 py-2 transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+      >
+        Home
+      </Link>
+      <Link
+        href="/coach/players"
+        className={`px-4 py-2 transition-colors ${isActive('/coach/players') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+      >
+        Players
+      </Link>
+    </>
+  );
+
+  const renderAdminNav = () => (
+    <>
+      <Link
+        href="/home"
+        className={`px-4 py-2 transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+      >
+        Home
+      </Link>
+      <Link
+        href="/admin/users"
+        className={`px-4 py-2 transition-colors ${isActive('/admin/users') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+      >
+        User Management
+      </Link>
+      <Link
+        href="/admin/camps"
+        className={`px-4 py-2 transition-colors ${isActive('/admin/camps') ? 'text-[#FF4C4C] font-semibold' : 'text-gray-700 hover:text-[#FF4C4C]'}`}
+      >
+        Camp Management
+      </Link>
+    </>
+  );
 
   if (!user) return null;
 
   return (
-    <>
-      {/* 
-        ========================================
-        TOP NAVIGATION BAR - Tablet & Desktop
-        ========================================
-        Visible on screens >= 768px (md breakpoint)
-        Displays text labels only, no icons
-      */}
-      <nav className="hidden md:block navbar sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Red Logo - Always Visible */}
-            <Link href="/home" className="text-2xl font-bold text-[#FF0000] hover:text-[#CC0000] transition-colors">
-              Tennis Camp Connect
-            </Link>
+    <nav className="navbar sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link href="/home" className="text-xl md:text-2xl font-bold text-[#FF4C4C]">
+            Tennis Camp Connect
+          </Link>
 
-            {/* Navigation Links - Text Only */}
-            <div className="flex items-center gap-6">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? 'text-[#FF0000] bg-red-50'
-                      : 'text-gray-700 hover:text-[#FF0000] hover:bg-gray-50'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              
-              {/* Logout Button */}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-2">
+            {user.role === 'player' && renderPlayerNav()}
+            {user.role === 'coach' && renderCoachNav()}
+            {user.role === 'admin' && renderAdminNav()}
+          </div>
+
+          {/* Right side buttons */}
+          <div className="hidden md:flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2 text-gray-700 hover:text-[#FF4C4C] transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t bg-white">
+            <div className="flex flex-col gap-1">
+              {user.role === 'player' && (
+                <>
+                  <Link
+                    href="/home"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  {camps[0] && (
+                    <>
+                      <Link
+                        href={`/camp/${camps[0].id}/tennis`}
+                        className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive(`/camp/${camps[0].id}/tennis`) ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Tennis
+                      </Link>
+                      <Link
+                        href={`/camp/${camps[0].id}/schedule`}
+                        className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive(`/camp/${camps[0].id}/schedule`) ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Schedule
+                      </Link>
+                      {(camps[0].package === 'stay_and_play' || 
+                        camps[0].package === 'luxury_stay_and_play' || 
+                        camps[0].package === 'no_tennis') && (
+                        <Link
+                          href={`/camp/${camps[0].id}/stay`}
+                          className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive(`/camp/${camps[0].id}/stay`) ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Stay
+                        </Link>
+                      )}
+                      <Link
+                        href={`/camp/${camps[0].id}/essentials`}
+                        className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive(`/camp/${camps[0].id}/essentials`) ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Essentials
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
+              {user.role === 'coach' && (
+                <>
+                  <Link
+                    href="/home"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/coach/players"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/coach/players') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Players
+                  </Link>
+                </>
+              )}
+              {user.role === 'admin' && (
+                <>
+                  <Link
+                    href="/home"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/home') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/admin/users"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/admin/users') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    User Management
+                  </Link>
+                  <Link
+                    href="/admin/camps"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors ${isActive('/admin/camps') ? 'text-[#FF4C4C] font-semibold bg-red-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Camp Management
+                  </Link>
+                </>
+              )}
               <button
                 onClick={handleLogout}
-                className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50 transition-colors flex items-center gap-2"
+                className="px-4 py-3 hover:bg-gray-50 rounded text-left flex items-center gap-2 text-gray-700 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
               </button>
             </div>
           </div>
-        </div>
-      </nav>
-
-      {/* 
-        ========================================
-        MOBILE TOP BAR - Logo Only
-        ========================================
-        Visible on mobile screens < 768px
-        Shows only the red logo
-      */}
-      <div className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="flex items-center justify-center h-14 px-4">
-          <Link href="/home" className="text-xl font-bold text-[#FF0000]">
-            Tennis Camp Connect
-          </Link>
-        </div>
+        )}
       </div>
-
-      {/* 
-        ========================================
-        BOTTOM NAVIGATION BAR - Mobile Only
-        ========================================
-        Visible on screens < 768px (mobile)
-        Fixed to bottom of viewport with icons only
-        Role-based navigation items
-        Follows iOS/Android native app patterns
-      */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-area-inset-bottom">
-        <div className="flex items-center justify-around h-16 px-2">
-          {navigationItems
-            .filter((item) => item.showOnMobile)
-            .map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
-              
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex flex-col items-center justify-center flex-1 h-full min-w-0 transition-colors"
-                  aria-label={item.label}
-                >
-                  <div className={`flex flex-col items-center justify-center gap-1 ${
-                    active ? 'text-[#FF0000]' : 'text-gray-600'
-                  }`}>
-                    {/* Icon - 44x44px touch target */}
-                    <div className="w-11 h-11 flex items-center justify-center">
-                      <Icon 
-                        className={`transition-all ${
-                          active ? 'w-7 h-7' : 'w-6 h-6'
-                        }`}
-                        strokeWidth={active ? 2.5 : 2}
-                      />
-                    </div>
-                    {/* Optional tiny label for context - only show on active */}
-                    {active && (
-                      <span className="text-[10px] font-semibold truncate max-w-full">
-                        {item.label}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          
-          {/* Logout Button - Mobile */}
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center justify-center flex-1 h-full min-w-0 transition-colors"
-            aria-label="Logout"
-          >
-            <div className="flex flex-col items-center justify-center gap-1 text-gray-600 hover:text-[#FF0000]">
-              <div className="w-11 h-11 flex items-center justify-center">
-                <LogOut className="w-6 h-6" strokeWidth={2} />
-              </div>
-            </div>
-          </button>
-        </div>
-      </nav>
-
-      {/* Spacer for mobile bottom navigation - prevents content from being hidden */}
-      <div className="md:hidden h-16" aria-hidden="true" />
-    </>
+    </nav>
   );
 }
 
