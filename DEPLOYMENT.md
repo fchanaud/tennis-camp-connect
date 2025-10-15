@@ -43,9 +43,14 @@ In Vercel project settings, add these environment variables:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+ADMIN_PASSWORD=your_secure_admin_password
+COACH_PASSWORD=your_secure_coach_password
 ```
 
-**Important:** Use your actual Supabase credentials from your Supabase project settings.
+**Important:**
+- Use your actual Supabase credentials from your Supabase project settings
+- Set secure passwords for admin and coach users
+- These passwords are stored securely in environment variables and never exposed in the code
 
 ### Step 4: Deploy
 
@@ -94,6 +99,8 @@ Before deploying, ensure your Supabase database is properly configured:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+ADMIN_PASSWORD=your_secure_admin_password
+COACH_PASSWORD=your_secure_coach_password
 ```
 
 ### Production (Vercel)

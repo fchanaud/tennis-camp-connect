@@ -19,62 +19,25 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Hardcoded users with specific passwords
-      const testUsers = {
-        'admin': { 
-          id: '11111111-1111-1111-1111-111111111111', 
-          first_name: 'System', 
-          last_name: 'Administrator', 
-          username: 'admin', 
-          role: 'admin',
-          password: 'Gardelapeche78&&'
+      // Call server-side API route for secure authentication
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        'patrickn': { 
-          id: '22222222-2222-2222-2222-222222222222', 
-          first_name: 'Patrick', 
-          last_name: 'Nadal', 
-          username: 'patrickn', 
-          role: 'coach',
-          password: 'marrakech'
-        },
-        'jdoe': { 
-          id: '33333333-3333-3333-3333-333333333333', 
-          first_name: 'John', 
-          last_name: 'Doe', 
-          username: 'jdoe', 
-          role: 'player',
-          password: null // Accept any password for player
-        }
-      };
+        body: JSON.stringify({ username, password }),
+      });
 
-      const user = testUsers[username.toLowerCase() as keyof typeof testUsers];
+      const data = await response.json();
 
-      if (!user) {
-        setError('Invalid username or password');
+      if (!response.ok) {
+        setError(data.error || 'Invalid username or password');
         setLoading(false);
         return;
       }
 
-      // Validate password
-      if (user.password) {
-        // Specific password required for admin and coach
-        if (password !== user.password) {
-          setError('Invalid username or password');
-          setLoading(false);
-          return;
-        }
-      } else {
-        // For player, accept any password with 3+ characters
-        if (password.length < 3) {
-          setError('Password must be at least 3 characters');
-          setLoading(false);
-          return;
-        }
-      }
-
       // Store user info in sessionStorage for temporary auth
-      const { password: _, ...userWithoutPassword } = user;
-      sessionStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      sessionStorage.setItem('user', JSON.stringify(data.user));
       
       router.push('/home');
       router.refresh();
