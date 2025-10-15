@@ -7,9 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
 import { Card, CardBody, CardTitle } from '@/components/ui/Card';
-import { generateUsername, generateRandomPassword } from '@/lib/utils/password-generator';
 import { User } from '@/types';
-import { createClient } from '@/lib/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 export default function UserManagementPage() {
@@ -29,13 +27,18 @@ export default function UserManagementPage() {
   }, []);
 
   const loadUsers = async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('users')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (data) setUsers(data);
+    try {
+      const response = await fetch('/api/admin/users');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUsers(data.users);
+      } else {
+        console.error('Error loading users:', data.error);
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
     setLoading(false);
   };
 
@@ -46,38 +49,33 @@ export default function UserManagementPage() {
     }
 
     setError('');
-    const username = generateUsername(firstName, lastName);
-    const password = generateRandomPassword(username);
 
     try {
-      const supabase = createClient();
-
-      // Create auth user with email format: userId@tenniscamp.local
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: `${username}@tenniscamp.local`,
-        password: password,
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          role: role,
+        }),
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create user');
+      const data = await response.json();
 
-      // Create user record
-      const { error: userError } = await supabase
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          username: username,
-          role: role,
+      if (response.ok) {
+        setGeneratedCredentials({ 
+          username: data.user.username, 
+          password: data.user.password 
         });
-
-      if (userError) throw userError;
-
-      setGeneratedCredentials({ username, password });
-      setFirstName('');
-      setLastName('');
-      loadUsers();
+        setFirstName('');
+        setLastName('');
+        loadUsers();
+      } else {
+        setError(data.error || 'Failed to create user');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to create user');
     }
@@ -97,7 +95,6 @@ export default function UserManagementPage() {
     return user.role === filter;
   });
 
-  const usernamePreview = firstName && lastName ? generateUsername(firstName, lastName) : '';
 
   return (
     <AppLayout>
@@ -222,12 +219,6 @@ export default function UserManagementPage() {
                     className="mb-3"
                   />
                   
-                  {usernamePreview && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                      <p className="text-sm text-gray-600">Username will be:</p>
-                      <p className="font-semibold text-[#2563EB]">{usernamePreview}</p>
-                    </div>
-                  )}
                   
                   <div className="flex gap-3">
                     <Button variant="outline" fullWidth onClick={closeModal}>
@@ -287,12 +278,6 @@ export default function UserManagementPage() {
                     className="mb-3"
                   />
                   
-                  {usernamePreview && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                      <p className="text-sm text-gray-600">Username will be:</p>
-                      <p className="font-semibold text-[#2563EB]">{usernamePreview}</p>
-                    </div>
-                  )}
                   
                   <div className="flex gap-3">
                     <Button variant="outline" fullWidth onClick={closeModal}>
