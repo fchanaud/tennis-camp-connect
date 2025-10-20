@@ -9,7 +9,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { Camp, User, PackageType } from '@/types';
-import { createClient } from '@/lib/supabase/client';
+import { createServiceRoleClient } from '@/lib/supabase/server';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 export default function CampManagementPage() {
@@ -37,7 +37,7 @@ export default function CampManagementPage() {
   }, []);
 
   const loadData = async () => {
-    const supabase = createClient();
+    const supabase = createServiceRoleClient();
     
     const { data: campsData } = await supabase
       .from('camps')
@@ -98,7 +98,7 @@ export default function CampManagementPage() {
     setError('');
     
     try {
-      const supabase = createClient();
+      const supabase = createServiceRoleClient();
 
       // Create camp
       const { data: campData, error: campError } = await supabase
