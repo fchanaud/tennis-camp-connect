@@ -10,7 +10,6 @@ import { Alert } from '@/components/ui/Alert';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ReportForm } from '@/components/features/ReportForm';
-import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 
 export default function SinglePlayerPage({ params }: { params: { id: string } }) {
@@ -30,67 +29,23 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
   }, []);
 
   const loadPlayerData = async () => {
-    const supabase = createClient();
+    try {
+      const response = await fetch(`/api/coach/players/${playerId}`);
+      const data = await response.json();
 
-    // Get current coach user
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    if (!authUser) return;
-
-    // Get player details
-    const { data: playerData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', playerId)
-      .single();
-
-    if (!playerData) {
-      setLoading(false);
-      return;
+      if (response.ok) {
+        setPlayer(data.player);
+        setCamps(data.camps || []);
+        setAssessments(data.assessments || []);
+        setReports(data.reports || []);
+      } else {
+        console.error('Error loading player data:', data.error);
+        setError(data.error || 'Failed to load player data');
+      }
+    } catch (error) {
+      console.error('Error loading player data:', error);
+      setError('Failed to load player data');
     }
-
-    setPlayer(playerData);
-
-    // Get player's camps (only those where current user is coach)
-    const { data: campPlayersData } = await supabase
-      .from('camp_players')
-      .select(`
-        camp_id,
-        camps!inner (
-          id,
-          start_date,
-          end_date,
-          package,
-          total_tennis_hours,
-          coach_id
-        )
-      `)
-      .eq('player_id', playerId)
-      .eq('camps.coach_id', authUser.id);
-
-    const playerCamps = (campPlayersData
-      ?.map((cp: any) => cp.camps)
-      .filter((camp: any) => camp !== null) || []) as any[];
-
-    setCamps(playerCamps);
-
-    // Get assessments for these camps
-    const campIds = playerCamps.map((c: any) => c.id);
-    const { data: assessmentsData } = await supabase
-      .from('pre_camp_assessments')
-      .select('*')
-      .eq('player_id', playerId)
-      .in('camp_id', campIds);
-
-    setAssessments(assessmentsData || []);
-
-    // Get reports for these camps
-    const { data: reportsData } = await supabase
-      .from('post_camp_reports')
-      .select('*')
-      .eq('player_id', playerId)
-      .in('camp_id', campIds);
-
-    setReports(reportsData || []);
     setLoading(false);
   };
 
@@ -99,20 +54,24 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
     setSuccess('');
 
     try {
-      const supabase = createClient();
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) throw new Error('Not authenticated');
+      const response = await fetch('/api/coach/reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerId,
+          campId,
+          reportContent: JSON.stringify(answers),
+          coachId: null, // Could be set if you track coach sessions
+        }),
+      });
 
-      const { error: insertError } = await supabase
-        .from('post_camp_reports')
-        .insert({
-          player_id: playerId,
-          camp_id: campId,
-          coach_id: authUser.id,
-          report_content: JSON.stringify(answers),
-        });
+      const data = await response.json();
 
-      if (insertError) throw insertError;
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create report');
+      }
 
       setSuccess('Report created successfully!');
       setEditingReport(null);
@@ -128,17 +87,22 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
     setSuccess('');
 
     try {
-      const supabase = createClient();
+      const response = await fetch('/api/coach/reports', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportId,
+          reportContent: JSON.stringify(answers),
+        }),
+      });
 
-      const { error: updateError } = await supabase
-        .from('post_camp_reports')
-        .update({
-          report_content: JSON.stringify(answers),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', reportId);
+      const data = await response.json();
 
-      if (updateError) throw updateError;
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update report');
+      }
 
       setSuccess('Report updated successfully!');
       setEditingReport(null);
