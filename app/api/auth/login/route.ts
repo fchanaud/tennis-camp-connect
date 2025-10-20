@@ -23,13 +23,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For now, accept any password for all users (since we're not storing passwords in DB)
-    // In a real app, you'd hash and compare passwords
-    if (!password || password.length < 3) {
-      return NextResponse.json(
-        { error: 'Password must be at least 3 characters' },
-        { status: 400 }
-      );
+    // Handle specific admin password
+    if (userData.role === 'admin') {
+      if (password !== 'Gardelapeche78&&') {
+        console.log('Admin login attempt failed - wrong password:', username);
+        return NextResponse.json(
+          { error: 'Invalid username or password' },
+          { status: 401 }
+        );
+      }
+    } else {
+      // For non-admin users, accept any password (since we're not storing passwords in DB)
+      if (!password || password.length < 3) {
+        return NextResponse.json(
+          { error: 'Password must be at least 3 characters' },
+          { status: 400 }
+        );
+      }
     }
 
     console.log('Login successful for user:', username);
