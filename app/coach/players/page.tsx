@@ -82,6 +82,24 @@ export default function PlayersListPage() {
     return 'in-progress';
   };
 
+  // Generate a unique key for each camp based on dates
+  const getCampKey = (camp: CampInfo): string => {
+    return `${camp.start_date}_${camp.end_date}`;
+  };
+
+  // Find how many players are in the same camp
+  const getPlayersInSameCamp = (camp: CampInfo): string[] => {
+    const campKey = getCampKey(camp);
+    return filteredPlayers
+      .filter(p => p.camps.some((c: CampInfo) => getCampKey(c) === campKey))
+      .map(p => `${p.first_name} ${p.last_name}`);
+  };
+
+  // Check if multiple players share this camp
+  const isSharedCamp = (camp: CampInfo): boolean => {
+    return getPlayersInSameCamp(camp).length > 1;
+  };
+
   if (loading) {
     return (
       <AppLayout>
@@ -160,31 +178,49 @@ export default function PlayersListPage() {
                         <div className="text-sm text-gray-400 italic">No camps assigned</div>
                       ) : (
                         <div className="space-y-2">
-                          {player.camps.map((camp, idx) => (
-                            <div key={idx} className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 p-3 rounded-lg">
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                <div className="flex-1">
-                                  <div className="font-medium text-sm text-gray-900 mb-1">
-                                    {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {player.camps.map((camp, idx) => {
+                            const playersInCamp = getPlayersInSameCamp(camp);
+                            const isShared = isSharedCamp(camp);
+                            
+                            return (
+                              <div 
+                                key={idx} 
+                                className={`p-3 rounded-lg border-2 ${
+                                  isShared 
+                                    ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300' 
+                                    : 'bg-gradient-to-r from-gray-50 to-white border-gray-200'
+                                }`}
+                              >
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-sm text-gray-900 mb-1">
+                                      {isShared && <span className="text-amber-600 mr-1">👥</span>}
+                                      {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </div>
+                                    <div className="flex gap-1.5 flex-wrap">
+                                      <Badge variant="primary" className="text-xs">
+                                        {getPackageLabel(camp.package)}
+                                      </Badge>
+                                      <Badge 
+                                        variant={
+                                          getCampStatus(camp) === 'upcoming' ? 'info' :
+                                          getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
+                                        }
+                                        className="text-xs"
+                                      >
+                                        {getCampStatus(camp)}
+                                      </Badge>
+                                    </div>
                                   </div>
-                                  <div className="flex gap-1.5 flex-wrap">
-                                    <Badge variant="primary" className="text-xs">
-                                      {getPackageLabel(camp.package)}
-                                    </Badge>
-                                    <Badge 
-                                      variant={
-                                        getCampStatus(camp) === 'upcoming' ? 'info' :
-                                        getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
-                                      }
-                                      className="text-xs"
-                                    >
-                                      {getCampStatus(camp)}
-                                    </Badge>
-                                  </div>
+                                  {isShared && (
+                                    <div className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-200">
+                                      <strong>Shared with:</strong> {playersInCamp.filter(name => name !== `${player.first_name} ${player.last_name}`).join(', ')}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -244,31 +280,53 @@ export default function PlayersListPage() {
                                 <div className="text-sm text-gray-400 italic">No camps assigned</div>
                               ) : (
                                 <div className="space-y-2">
-                                  {player.camps.map((camp, idx) => (
-                                    <div key={idx} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
-                                      <div className="flex items-center justify-between gap-3">
-                                        <div className="flex-1">
-                                          <div className="font-medium text-gray-900 text-sm mb-1.5">
-                                            📅 {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  {player.camps.map((camp, idx) => {
+                                    const playersInCamp = getPlayersInSameCamp(camp);
+                                    const isShared = isSharedCamp(camp);
+                                    
+                                    return (
+                                      <div 
+                                        key={idx} 
+                                        className={`rounded-lg p-3 border-2 ${
+                                          isShared 
+                                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300' 
+                                            : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                                        }`}
+                                      >
+                                        <div className="space-y-2">
+                                          <div className="flex-1">
+                                            <div className="font-medium text-gray-900 text-sm mb-1.5">
+                                              {isShared ? '👥' : '📅'} {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </div>
+                                            <div className="flex gap-2 flex-wrap">
+                                              <Badge variant="primary" className="text-xs">
+                                                {getPackageLabel(camp.package)}
+                                              </Badge>
+                                              <Badge 
+                                                variant={
+                                                  getCampStatus(camp) === 'upcoming' ? 'info' :
+                                                  getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
+                                                }
+                                                className="text-xs"
+                                              >
+                                                {getCampStatus(camp)}
+                                              </Badge>
+                                              {isShared && (
+                                                <Badge variant="warning" className="text-xs">
+                                                  {playersInCamp.length} players
+                                                </Badge>
+                                              )}
+                                            </div>
                                           </div>
-                                          <div className="flex gap-2 flex-wrap">
-                                            <Badge variant="primary" className="text-xs">
-                                              {getPackageLabel(camp.package)}
-                                            </Badge>
-                                            <Badge 
-                                              variant={
-                                                getCampStatus(camp) === 'upcoming' ? 'info' :
-                                                getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
-                                              }
-                                              className="text-xs"
-                                            >
-                                              {getCampStatus(camp)}
-                                            </Badge>
-                                          </div>
+                                          {isShared && (
+                                            <div className="text-xs bg-amber-100 text-amber-800 px-2 py-1.5 rounded border border-amber-200">
+                                              <strong>Also in this camp:</strong> {playersInCamp.filter(name => name !== `${player.first_name} ${player.last_name}`).join(', ')}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               )}
                             </td>
