@@ -201,17 +201,6 @@ function HomePageContent() {
               </CardBody>
             </Card>
 
-            <Card className="bg-white shadow-lg">
-              <CardBody className="p-6">
-                <CardTitle className="text-xl mb-4">System Overview</CardTitle>
-                <CardText className="text-gray-600 mb-4">
-                  View system statistics and reports
-                </CardText>
-                <Button variant="outline" fullWidth disabled>
-                  Coming Soon
-                </Button>
-              </CardBody>
-            </Card>
           </div>
         )}
       </div>

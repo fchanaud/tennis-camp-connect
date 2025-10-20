@@ -134,7 +134,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
 
   return (
     <nav className="navbar sticky top-0 z-50">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/home" className="text-xl md:text-2xl font-bold text-[#FF4C4C]">
@@ -172,7 +172,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t bg-white">
+          <div className="md:hidden py-4 border-t bg-white absolute top-full left-0 right-0 z-50 shadow-lg">
             <div className="flex flex-col gap-1">
               {user.role === 'player' && (
                 <>
