@@ -17,6 +17,8 @@ export default function CampManagementPage() {
   const [players, setPlayers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCamp, setEditingCamp] = useState<any>(null);
   
   // Form state
   const [startDate, setStartDate] = useState('');
@@ -117,6 +119,62 @@ export default function CampManagementPage() {
     }
   };
 
+  const editCamp = async () => {
+    if (!startDate || !endDate) {
+      setError('Please select start and end dates');
+      return;
+    }
+
+    if (new Date(endDate) <= new Date(startDate)) {
+      setError('End date must be after start date');
+      return;
+    }
+
+    if (selectedPlayers.length > parseInt(capacity)) {
+      setError(`Cannot assign more than ${capacity} players`);
+      return;
+    }
+
+    setError('');
+    
+    try {
+      const response = await fetch('/api/admin/camps', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campId: editingCamp.id,
+          startDate,
+          endDate,
+          packageType,
+          tennisHours,
+          accommodationDetails,
+          capacity,
+          selectedCoach,
+          selectedPlayers,
+          schedules,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Camp updated successfully!');
+        resetForm();
+        loadData();
+        setTimeout(() => {
+          setShowEditModal(false);
+          setEditingCamp(null);
+        }, 2000);
+      } else {
+        setError(data.error || 'Failed to update camp');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to update camp');
+    }
+  };
+
   const resetForm = () => {
     setStartDate('');
     setEndDate('');
@@ -133,7 +191,35 @@ export default function CampManagementPage() {
 
   const closeModal = () => {
     setShowCreateModal(false);
+    setShowEditModal(false);
+    setEditingCamp(null);
     resetForm();
+  };
+
+  const openEditModal = (camp: any) => {
+    setEditingCamp(camp);
+    
+    // Populate form with existing data
+    setStartDate(camp.start_date);
+    setEndDate(camp.end_date);
+    setPackageType(camp.package);
+    setTennisHours(camp.total_tennis_hours?.toString() || '10');
+    setAccommodationDetails(camp.accommodation_details || '');
+    setCapacity(camp.capacity.toString());
+    setSelectedCoach(camp.coach_id || '');
+    
+    // Set selected players
+    const playerIds = camp.camp_players?.map((cp: any) => cp.player_id) || [];
+    setSelectedPlayers(playerIds);
+    
+    // Set schedules
+    const scheduleData: Record<string, string> = {};
+    camp.camp_schedules?.forEach((schedule: any) => {
+      scheduleData[schedule.schedule_date] = schedule.schedule_content;
+    });
+    setSchedules(scheduleData);
+    
+    setShowEditModal(true);
   };
 
   const togglePlayerSelection = (playerId: string) => {
@@ -208,6 +294,16 @@ export default function CampManagementPage() {
                         Coach: {camp.coach.first_name}
                       </CardText>
                     )}
+                    <div className="mt-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => openEditModal(camp)}
+                        className="w-full"
+                      >
+                        Edit Camp
+                      </Button>
+                    </div>
                   </CardBody>
                 </Card>
               </div>
@@ -357,6 +453,154 @@ export default function CampManagementPage() {
                 </Button>
                 <Button variant="primary" fullWidth onClick={createCamp}>
                   Create Camp
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Camp Modal */}
+      {showEditModal && editingCamp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-3xl w-full my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Edit Camp</h2>
+              
+              {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
+              {success && <Alert variant="success" className="mb-4">{success}</Alert>}
+              
+              <div className="space-y-4">
+                {/* Dates */}
+                <div className="row">
+                  <div className="col-12 col-md-6">
+                    <Input
+                      label="Start Date"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-12 col-md-6">
+                    <Input
+                      label="End Date"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Package Type */}
+                <Select
+                  label="Package Type"
+                  value={packageType}
+                  onChange={(e) => setPackageType(e.target.value as PackageType)}
+                  options={[
+                    { value: 'tennis_only', label: 'Tennis Only' },
+                    { value: 'stay_and_play', label: 'Stay & Play' },
+                    { value: 'luxury_stay_and_play', label: 'Luxury Stay & Play' },
+                    { value: 'no_tennis', label: 'No Tennis' },
+                  ]}
+                />
+
+                {/* Tennis Hours */}
+                {packageType !== 'no_tennis' && (
+                  <Input
+                    label="Total Tennis Hours (0-20)"
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={tennisHours}
+                    onChange={(e) => setTennisHours(e.target.value)}
+                  />
+                )}
+
+                {/* Accommodation Details */}
+                {packageType !== 'tennis_only' && (
+                  <Textarea
+                    label="Accommodation Details"
+                    value={accommodationDetails}
+                    onChange={(e) => setAccommodationDetails(e.target.value)}
+                    rows={6}
+                    placeholder="Enter hotel name, address, check-in/out times, amenities, contact information..."
+                    helperText="Include: hotel name, address, check-in/out times, amenities, contact info"
+                  />
+                )}
+
+                {/* Capacity */}
+                <Input
+                  label="Capacity (1-4 players)"
+                  type="number"
+                  min="1"
+                  max="4"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+
+                {/* Coach Selection */}
+                <Select
+                  label="Assign Coach (Optional)"
+                  value={selectedCoach}
+                  onChange={(e) => setSelectedCoach(e.target.value)}
+                  options={[
+                    { value: '', label: 'No coach assigned' },
+                    ...coaches.map(coach => ({
+                      value: coach.id,
+                      label: coach.first_name
+                    }))
+                  ]}
+                />
+
+                {/* Player Assignment */}
+                <div>
+                  <label className="form-label">
+                    Assign Players ({selectedPlayers.length}/{capacity})
+                  </label>
+                  <div className="border rounded-lg p-3 max-h-40 overflow-y-auto">
+                    {players.map(player => (
+                      <label key={player.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedPlayers.includes(player.id)}
+                          onChange={() => togglePlayerSelection(player.id)}
+                          disabled={!selectedPlayers.includes(player.id) && selectedPlayers.length >= parseInt(capacity)}
+                        />
+                        <span>{player.first_name} {player.last_name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Daily Schedules */}
+                {dates.length > 0 && (
+                  <div>
+                    <label className="form-label mb-3">Daily Schedules (Optional)</label>
+                    <div className="space-y-2">
+                      {dates.map(date => (
+                        <Collapsible
+                          key={date}
+                          title={new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                        >
+                          <Textarea
+                            value={schedules[date] || ''}
+                            onChange={(e) => setSchedules({ ...schedules, [date]: e.target.value })}
+                            rows={4}
+                            placeholder="Enter schedule for this day (e.g., • 10:00 Tennis Lesson • Afternoon: City Tour)"
+                          />
+                        </Collapsible>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
+                <Button variant="outline" fullWidth onClick={closeModal}>
+                  Cancel
+                </Button>
+                <Button variant="primary" fullWidth onClick={editCamp}>
+                  Update Camp
                 </Button>
               </div>
             </div>
