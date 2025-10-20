@@ -21,12 +21,27 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
   const [editingReport, setEditingReport] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [currentCoach, setCurrentCoach] = useState<any>(null);
   const router = useRouter();
   const playerId = params.id;
 
   useEffect(() => {
+    loadCurrentCoach();
     loadPlayerData();
   }, []);
+
+  const loadCurrentCoach = async () => {
+    try {
+      // Get current user from localStorage (set during login)
+      const userStr = localStorage.getItem('currentUser');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setCurrentCoach(user);
+      }
+    } catch (error) {
+      console.error('Error loading current coach:', error);
+    }
+  };
 
   const loadPlayerData = async () => {
     try {
@@ -53,6 +68,11 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
     setError('');
     setSuccess('');
 
+    if (!currentCoach) {
+      setError('Coach information not found. Please log in again.');
+      throw new Error('Coach not authenticated');
+    }
+
     try {
       const response = await fetch('/api/coach/reports', {
         method: 'POST',
@@ -63,7 +83,7 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
           playerId,
           campId,
           reportContent: JSON.stringify(answers),
-          coachId: null, // Could be set if you track coach sessions
+          coachId: currentCoach.id,
         }),
       });
 

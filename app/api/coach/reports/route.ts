@@ -6,9 +6,11 @@ export async function POST(request: NextRequest) {
   try {
     const { playerId, campId, reportContent, coachId } = await request.json();
 
-    if (!playerId || !campId || !reportContent) {
+    console.log('Creating report with data:', { playerId, campId, hasContent: !!reportContent, coachId });
+
+    if (!playerId || !campId || !reportContent || !coachId) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields (playerId, campId, reportContent, coachId)' },
         { status: 400 }
       );
     }
@@ -20,7 +22,7 @@ export async function POST(request: NextRequest) {
       .insert({
         player_id: playerId,
         camp_id: campId,
-        coach_id: coachId || null,
+        coach_id: coachId,
         report_content: reportContent,
       })
       .select()
@@ -34,6 +36,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('Report created successfully:', data.id);
     return NextResponse.json({ success: true, report: data });
   } catch (error) {
     console.error('Error in POST /api/coach/reports:', error);
