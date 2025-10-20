@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { generateUsername, generateRandomPassword } from '@/lib/utils/password-generator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,9 +49,8 @@ export async function POST(request: NextRequest) {
     const supabase = createServiceRoleClient();
     console.log('POST /api/admin/users - Service role client created');
     
-    // Generate username and password
-    const baseUsername = `${firstName.toLowerCase()}.${lastName.toLowerCase()}`.replace(/\s+/g, '');
-    const password = Math.random().toString(36).slice(-8) + '123';
+    // Generate username using the utility function: {first_letter}{lastname}
+    const baseUsername = generateUsername(firstName, lastName);
     
     // Ensure username uniqueness
     let username = baseUsername;
@@ -69,6 +69,9 @@ export async function POST(request: NextRequest) {
       username = `${baseUsername}${suffix}`;
       suffix++;
     }
+    
+    // Generate password using the utility function: {username}{1 digit}{4 alphanumeric}
+    const password = generateRandomPassword(username);
     
     console.log('POST /api/admin/users - Generated credentials:', { username, password: '***' });
     
