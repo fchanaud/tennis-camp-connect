@@ -58,7 +58,7 @@ export default async function TennisPage({ params }: { params: { id: string } })
           <span className="font-semibold">Tennis</span>
         </nav>
 
-        <h1 className="text-4xl font-bold mb-8">Your Tennis Program</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Tennis Program</h1>
 
         {isNoTennis ? (
           <Alert variant="info">
@@ -91,26 +91,26 @@ export default async function TennisPage({ params }: { params: { id: string } })
               <CardBody>
                 <CardTitle>Camp Details</CardTitle>
                 <div className="space-y-2 mt-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Dates:</span>
-                    <span className="font-semibold">
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                    <span className="text-sm sm:text-base text-gray-600">Dates:</span>
+                    <span className="font-semibold text-sm sm:text-base break-words">
                       {new Date(camp.start_date).toLocaleDateString()} - {new Date(camp.end_date).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Package:</span>
-                    <Badge variant="primary">
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                    <span className="text-sm sm:text-base text-gray-600">Package:</span>
+                    <Badge variant="primary" className="text-xs sm:text-sm w-fit">
                       {camp.package.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                     </Badge>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Tennis Hours:</span>
-                    <span className="font-semibold">{camp.total_tennis_hours || 'N/A'}</span>
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                    <span className="text-sm sm:text-base text-gray-600">Total Tennis Hours:</span>
+                    <span className="font-semibold text-sm sm:text-base">{camp.total_tennis_hours || 'N/A'}</span>
                   </div>
                   {camp.coach && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Coach:</span>
-                      <span className="font-semibold">{camp.coach.first_name} {camp.coach.last_name}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                      <span className="text-sm sm:text-base text-gray-600">Coach:</span>
+                      <span className="font-semibold text-sm sm:text-base break-words">{camp.coach.first_name} {camp.coach.last_name}</span>
                     </div>
                   )}
                 </div>

@@ -213,9 +213,9 @@ export default function CampManagementPage() {
     <AppLayout>
       <div className="p-8">
         <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Camp Management</h1>
-          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">Camp Management</h1>
+          <Button variant="primary" onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             Create New Camp
           </Button>
         </div>
@@ -229,23 +229,23 @@ export default function CampManagementPage() {
               <div key={camp.id} className="col-12 col-md-6 col-lg-4 mb-4">
                 <Card hover>
                   <CardBody>
-                    <CardTitle className="text-lg">
+                    <CardTitle className="text-base sm:text-lg break-words">
                       {new Date(camp.start_date).toLocaleDateString()} - {new Date(camp.end_date).toLocaleDateString()}
                     </CardTitle>
-                    <div className="flex gap-2 mb-3">
-                      <Badge variant="primary">{getPackageLabel(camp.package)}</Badge>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Badge variant="primary" className="text-xs sm:text-sm">{getPackageLabel(camp.package)}</Badge>
                       <Badge variant={
                         getCampStatus(camp) === 'upcoming' ? 'info' :
                         getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
-                      }>
+                      } className="text-xs sm:text-sm">
                         {getCampStatus(camp)}
                       </Badge>
                     </div>
-                    <CardText className="mb-2">
+                    <CardText className="mb-2 text-sm sm:text-base">
                       Capacity: {camp.capacity} players
                     </CardText>
                     {camp.coach && (
-                      <CardText>
+                      <CardText className="text-sm sm:text-base">
                         Coach: {camp.coach.first_name}
                       </CardText>
                     )}
@@ -259,10 +259,10 @@ export default function CampManagementPage() {
 
       {/* Create Camp Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-6">Create New Camp</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-3xl w-full my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Create New Camp</h2>
               
               {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
               {success && <Alert variant="success" className="mb-4">{success}</Alert>}
@@ -392,7 +392,7 @@ export default function CampManagementPage() {
                 )}
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
                 <Button variant="outline" fullWidth onClick={closeModal}>
                   Cancel
                 </Button>

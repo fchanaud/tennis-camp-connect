@@ -55,7 +55,7 @@ export default async function SchedulePage({ params }: { params: { id: string } 
           <span className="font-semibold">Schedule</span>
         </nav>
 
-        <h1 className="text-4xl font-bold mb-8">Your Camp Schedule</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Camp Schedule</h1>
 
         {/* Daily Schedules */}
         <div className="space-y-3 mb-12">
@@ -82,8 +82,8 @@ export default async function SchedulePage({ params }: { params: { id: string } 
 
         {/* Recommendations Section */}
         <div className="mt-12">
-          <h2 className="text-3xl font-bold mb-6">Recommendations</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Recommendations</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
             Discover the best places to eat, relax, and explore during your stay in Marrakech.
           </p>
           

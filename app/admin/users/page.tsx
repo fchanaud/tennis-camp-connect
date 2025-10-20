@@ -100,24 +100,25 @@ export default function UserManagementPage() {
     <AppLayout>
       <div className="p-8">
         <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">User Management</h1>
-          <div className="flex gap-3">
-            <Button variant="primary" onClick={() => setShowPlayerModal(true)}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold">User Management</h1>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button variant="primary" onClick={() => setShowPlayerModal(true)} className="w-full sm:w-auto">
               Create New Player
             </Button>
-            <Button variant="secondary" onClick={() => setShowCoachModal(true)}>
+            <Button variant="secondary" onClick={() => setShowCoachModal(true)} className="w-full sm:w-auto">
               Create New Coach
             </Button>
           </div>
         </div>
 
         {/* Filter */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           <Button
             variant={filter === 'all' ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setFilter('all')}
+            className="flex-1 sm:flex-none"
           >
             All Users
           </Button>
@@ -125,6 +126,7 @@ export default function UserManagementPage() {
             variant={filter === 'player' ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setFilter('player')}
+            className="flex-1 sm:flex-none"
           >
             Players
           </Button>
@@ -132,6 +134,7 @@ export default function UserManagementPage() {
             variant={filter === 'coach' ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => setFilter('coach')}
+            className="flex-1 sm:flex-none"
           >
             Coaches
           </Button>
@@ -143,28 +146,32 @@ export default function UserManagementPage() {
         ) : (
           <Card>
             <div className="overflow-x-auto">
-              <table className="table table-striped table-hover">
+              <table className="table table-striped table-hover w-full min-w-[600px]">
                 <thead>
                   <tr>
-                    <th className="px-6 py-3">Name</th>
-                    <th className="px-6 py-3">Username</th>
-                    <th className="px-6 py-3">Role</th>
-                    <th className="px-6 py-3">Created Date</th>
+                    <th className="px-3 sm:px-6 py-3 text-left">Name</th>
+                    <th className="px-3 sm:px-6 py-3 text-left">Username</th>
+                    <th className="px-3 sm:px-6 py-3 text-left">Role</th>
+                    <th className="px-3 sm:px-6 py-3 text-left">Created Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((user) => (
                     <tr key={user.id}>
-                      <td className="px-6 py-4">
-                        {user.first_name} {user.last_name}
+                      <td className="px-3 sm:px-6 py-4 text-sm sm:text-base">
+                        <div className="break-words">
+                          {user.first_name} {user.last_name}
+                        </div>
                       </td>
-                      <td className="px-6 py-4">{user.username}</td>
-                      <td className="px-6 py-4">
-                        <Badge variant={user.role === 'admin' ? 'danger' : user.role === 'coach' ? 'info' : 'primary'}>
+                      <td className="px-3 sm:px-6 py-4 text-sm sm:text-base">
+                        <div className="break-words">{user.username}</div>
+                      </td>
+                      <td className="px-3 sm:px-6 py-4">
+                        <Badge variant={user.role === 'admin' ? 'danger' : user.role === 'coach' ? 'info' : 'primary'} className="text-xs sm:text-sm">
                           {user.role}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-6 py-4 text-sm sm:text-base">
                         {new Date(user.created_at).toLocaleDateString()}
                       </td>
                     </tr>

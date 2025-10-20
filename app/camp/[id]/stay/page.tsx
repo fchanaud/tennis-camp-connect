@@ -44,13 +44,13 @@ export default async function StayPage({ params }: { params: { id: string } }) {
           <span className="font-semibold">Stay</span>
         </nav>
 
-        <h1 className="text-4xl font-bold mb-8">Your Accommodation</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Accommodation</h1>
 
         {accommodationDetails ? (
           <div className="max-w-4xl">
             <Card hover premium>
-              <CardBody className="p-6">
-                <CardTitle className="text-2xl mb-6">Hotel Details</CardTitle>
+              <CardBody className="p-4 sm:p-6">
+                <CardTitle className="text-xl sm:text-2xl mb-4 sm:mb-6">Hotel Details</CardTitle>
                 
                 <div className="space-y-6">
                   {/* Accommodation Details Display */}

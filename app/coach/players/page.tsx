@@ -130,10 +130,10 @@ export default function PlayersListPage() {
   return (
     <div className="min-h-screen bg-[#F7F7F7] p-8">
       <div className="container mx-auto">
-        <h1 className="text-4xl font-bold mb-8">My Players</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">My Players</h1>
 
         {/* Search Bar */}
-        <div className="mb-6 max-w-md">
+        <div className="mb-6 max-w-full sm:max-w-md">
           <Input
             type="text"
             placeholder="Search players..."
@@ -157,33 +157,33 @@ export default function PlayersListPage() {
               <div key={player.id} className="col-12 col-md-6 col-lg-4 mb-4">
                 <Card hover>
                   <CardBody>
-                    <CardTitle className="mb-3">
+                    <CardTitle className="mb-3 text-base sm:text-lg break-words">
                       {player.first_name} {player.last_name}
                     </CardTitle>
                     
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Assessment:</span>
-                        <Badge variant={player.assessment_status === 'completed' ? 'success' : 'warning'}>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="text-xs sm:text-sm text-gray-600">Assessment:</span>
+                        <Badge variant={player.assessment_status === 'completed' ? 'success' : 'warning'} className="text-xs sm:text-sm w-fit">
                           {player.assessment_status}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Report:</span>
-                        <Badge variant={player.report_status === 'completed' ? 'success' : 'warning'}>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="text-xs sm:text-sm text-gray-600">Report:</span>
+                        <Badge variant={player.report_status === 'completed' ? 'success' : 'warning'} className="text-xs sm:text-sm w-fit">
                           {player.report_status}
                         </Badge>
                       </div>
                     </div>
 
                     {player.camps && player.camps.length > 0 && (
-                      <CardText className="text-sm mb-3">
+                      <CardText className="text-xs sm:text-sm mb-3 break-words">
                         Current Camp: {new Date(player.camps[0].start_date).toLocaleDateString()}
                       </CardText>
                     )}
 
                     <Link href={`/coach/players/${player.id}`}>
-                      <Button variant="primary" size="sm" fullWidth>
+                      <Button variant="primary" size="sm" fullWidth className="text-sm">
                         View Details
                       </Button>
                     </Link>

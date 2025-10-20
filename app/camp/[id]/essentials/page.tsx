@@ -4,12 +4,12 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { createClient } from '@/lib/supabase/server';
 
-export default async function EssentialsPage({ params }: { params: { id: string } }) {
+export default async function EssentialsPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect('/login');
 
   const supabase = await createClient();
-  const campId = params.id;
+  const { id: campId } = await params;
 
   // Get camp details
   const { data: camp } = await supabase

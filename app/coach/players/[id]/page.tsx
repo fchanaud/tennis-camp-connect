@@ -202,7 +202,7 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
           Back to Players
         </Link>
 
-        <h1 className="text-4xl font-bold mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 break-words">
           {player.first_name} {player.last_name}
         </h1>
 
@@ -212,15 +212,15 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
         {/* Player Profile */}
         <Card className="mb-6">
           <CardBody>
-            <CardTitle>Player Profile</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Player Profile</CardTitle>
             <div className="mt-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Username:</span>
-                <span className="font-semibold">{player.username}</span>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                <span className="text-sm sm:text-base text-gray-600">Username:</span>
+                <span className="font-semibold text-sm sm:text-base break-words">{player.username}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Enrolled Camps:</span>
-                <span className="font-semibold">{camps.length}</span>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                <span className="text-sm sm:text-base text-gray-600">Enrolled Camps:</span>
+                <span className="font-semibold text-sm sm:text-base">{camps.length}</span>
               </div>
             </div>
           </CardBody>
@@ -236,12 +236,12 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
             return (
               <Card key={camp.id} premium>
                 <CardBody>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <CardTitle>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
+                    <div className="flex-1">
+                      <CardTitle className="text-base sm:text-lg break-words">
                         Camp: {new Date(camp.start_date).toLocaleDateString()} - {new Date(camp.end_date).toLocaleDateString()}
                       </CardTitle>
-                      <Badge variant="primary" className="mt-2">
+                      <Badge variant="primary" className="mt-2 text-xs sm:text-sm">
                         {camp.package.replace(/_/g, ' ').toUpperCase()}
                       </Badge>
                     </div>
@@ -300,15 +300,16 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
                         <div className="bg-gray-50 p-4 rounded-lg mb-3 whitespace-pre-wrap">
                           {report.report_content}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => startEditingReport(camp.id, report.report_content)}
+                            className="w-full sm:w-auto"
                           >
                             Edit Report
                           </Button>
-                          <span className="text-sm text-gray-500 self-center">
+                          <span className="text-xs sm:text-sm text-gray-500 self-center text-center sm:text-left">
                             Last updated: {new Date(report.updated_at).toLocaleDateString()}
                           </span>
                         </div>
@@ -328,11 +329,12 @@ Include:
 • Strengths showcased
 • Recommendations for future training"
                         />
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                           <Button
                             variant="outline"
                             onClick={cancelEditing}
                             disabled={saving}
+                            className="w-full sm:w-auto"
                           >
                             Cancel
                           </Button>
@@ -340,6 +342,7 @@ Include:
                             variant="primary"
                             onClick={() => report ? handleUpdateReport(report.id) : handleCreateReport(camp.id)}
                             disabled={saving || !reportContent.trim()}
+                            className="w-full sm:w-auto"
                           >
                             {saving ? 'Saving...' : report ? 'Update Report' : 'Publish Report'}
                           </Button>
