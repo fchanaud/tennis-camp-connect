@@ -32,8 +32,17 @@ export async function POST(request: NextRequest) {
           { status: 401 }
         );
       }
+    } else if (username.toLowerCase() === 'patrickn') {
+      // Specific password for coach patrickn
+      if (password !== 'marrakech') {
+        console.log('Coach patrickn login attempt failed - wrong password');
+        return NextResponse.json(
+          { error: 'Invalid username or password' },
+          { status: 401 }
+        );
+      }
     } else {
-      // For non-admin users, accept any password (since we're not storing passwords in DB)
+      // For other non-admin users, accept any password (since we're not storing passwords in DB)
       if (!password || password.length < 3) {
         return NextResponse.json(
           { error: 'Password must be at least 3 characters' },
