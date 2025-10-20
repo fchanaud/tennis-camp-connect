@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Textarea } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { ReportForm } from '@/components/features/ReportForm';
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 
@@ -20,8 +20,6 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingReport, setEditingReport] = useState<string | null>(null);
-  const [reportContent, setReportContent] = useState('');
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
@@ -96,8 +94,7 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
     setLoading(false);
   };
 
-  const handleCreateReport = async (campId: string) => {
-    setSaving(true);
+  const handleCreateReport = async (campId: string, answers: Record<string, string>) => {
     setError('');
     setSuccess('');
 
@@ -112,24 +109,21 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
           player_id: playerId,
           camp_id: campId,
           coach_id: authUser.id,
-          report_content: reportContent,
+          report_content: JSON.stringify(answers),
         });
 
       if (insertError) throw insertError;
 
       setSuccess('Report created successfully!');
       setEditingReport(null);
-      setReportContent('');
       loadPlayerData();
     } catch (err: any) {
       setError(err.message || 'Failed to create report');
-    } finally {
-      setSaving(false);
+      throw err;
     }
   };
 
-  const handleUpdateReport = async (reportId: string) => {
-    setSaving(true);
+  const handleUpdateReport = async (reportId: string, answers: Record<string, string>) => {
     setError('');
     setSuccess('');
 
@@ -139,7 +133,7 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
       const { error: updateError } = await supabase
         .from('post_camp_reports')
         .update({
-          report_content: reportContent,
+          report_content: JSON.stringify(answers),
           updated_at: new Date().toISOString(),
         })
         .eq('id', reportId);
@@ -148,25 +142,21 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
 
       setSuccess('Report updated successfully!');
       setEditingReport(null);
-      setReportContent('');
       loadPlayerData();
     } catch (err: any) {
       setError(err.message || 'Failed to update report');
-    } finally {
-      setSaving(false);
+      throw err;
     }
   };
 
-  const startEditingReport = (campId: string, existingContent?: string) => {
+  const startEditingReport = (campId: string) => {
     setEditingReport(campId);
-    setReportContent(existingContent || '');
     setError('');
     setSuccess('');
   };
 
   const cancelEditing = () => {
     setEditingReport(null);
-    setReportContent('');
     setError('');
     setSuccess('');
   };
@@ -298,69 +288,82 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
                   </Collapsible>
 
                   {/* Post-Camp Report */}
-                  <div className="mt-4 pt-4 border-t">
-                    <h3 className="font-semibold text-lg mb-3">Post-Camp Report</h3>
+                  <div className="mt-6 pt-6 border-t">
+                    <h3 className="font-bold text-xl sm:text-2xl mb-4">Post-Camp Report</h3>
                     
                     {report && !isEditing ? (
                       <div>
-                        <div className="bg-gray-50 p-4 rounded-lg mb-3 whitespace-pre-wrap">
-                          {report.report_content}
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-2">
+                        {/* Display Report Answers */}
+                        {(() => {
+                          try {
+                            const answers = JSON.parse(report.report_content);
+                            const questions = [
+                              { id: 'performance_summary', label: 'Performance Summary' },
+                              { id: 'technical_skills', label: 'Technical Skills Assessment' },
+                              { id: 'areas_improved', label: 'Areas Improved During Camp' },
+                              { id: 'strengths_showcased', label: 'Strengths Showcased' },
+                              { id: 'recommendations', label: 'Recommendations for Future Training' },
+                            ];
+                            
+                            return (
+                              <div className="space-y-4 mb-4">
+                                {questions.map((q, idx) => (
+                                  <div key={q.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 mb-2">
+                                      {idx + 1}. {q.label}
+                                    </h4>
+                                    <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">
+                                      {answers[q.id] || 'No response provided'}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          } catch {
+                            // Fallback for old text-based reports
+                            return (
+                              <div className="bg-gray-50 p-4 rounded-lg mb-3 whitespace-pre-wrap text-sm sm:text-base">
+                                {report.report_content}
+                              </div>
+                            );
+                          }
+                        })()}
+                        
+                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => startEditingReport(camp.id, report.report_content)}
+                            onClick={() => startEditingReport(camp.id)}
                             className="w-full sm:w-auto"
                           >
                             Edit Report
                           </Button>
-                          <span className="text-xs sm:text-sm text-gray-500 self-center text-center sm:text-left">
+                          <span className="text-xs sm:text-sm text-gray-500">
                             Last updated: {new Date(report.updated_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
                     ) : isEditing ? (
-                      <div className="space-y-3">
-                        <Textarea
-                          value={reportContent}
-                          onChange={(e) => setReportContent(e.target.value)}
-                          rows={8}
-                          placeholder="Enter your comprehensive post-camp report here...
-
-Include:
-• Performance summary
-• Technical skills assessment
-• Areas of improvement demonstrated
-• Strengths showcased
-• Recommendations for future training"
-                        />
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <Button
-                            variant="outline"
-                            onClick={cancelEditing}
-                            disabled={saving}
-                            className="w-full sm:w-auto"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            variant="primary"
-                            onClick={() => report ? handleUpdateReport(report.id) : handleCreateReport(camp.id)}
-                            disabled={saving || !reportContent.trim()}
-                            className="w-full sm:w-auto"
-                          >
-                            {saving ? 'Saving...' : report ? 'Update Report' : 'Publish Report'}
-                          </Button>
-                        </div>
-                      </div>
+                      <ReportForm
+                        existingAnswers={report ? (() => {
+                          try {
+                            return JSON.parse(report.report_content);
+                          } catch {
+                            return undefined;
+                          }
+                        })() : undefined}
+                        onSubmit={(answers) => report ? handleUpdateReport(report.id, answers) : handleCreateReport(camp.id, answers)}
+                        onCancel={cancelEditing}
+                        isEditing={!!report}
+                      />
                     ) : (
                       <div>
-                        <p className="text-gray-600 mb-3">No report created yet.</p>
+                        <p className="text-gray-600 mb-4 text-sm sm:text-base">No report created yet. Create a comprehensive post-camp report for this player.</p>
                         <Button
                           variant="primary"
                           size="sm"
                           onClick={() => startEditingReport(camp.id)}
+                          className="w-full sm:w-auto"
                         >
                           Create Report
                         </Button>

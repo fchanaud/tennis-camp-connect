@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { User } from '@/types';
+import { Eye } from 'lucide-react';
 
 interface CampInfo {
   id: string;
@@ -185,6 +188,16 @@ export default function PlayersListPage() {
                         </div>
                       )}
                     </div>
+
+                    {/* View Details Button */}
+                    <div className="mt-4 pt-3 border-t">
+                      <Link href={`/coach/players/${player.id}`}>
+                        <Button variant="primary" size="sm" fullWidth className="flex items-center justify-center gap-2">
+                          <Eye className="w-4 h-4" />
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
                   </CardBody>
                 </Card>
               ))}
@@ -202,6 +215,7 @@ export default function PlayersListPage() {
                           <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Assessments</th>
                           <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Reports</th>
                           <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Assigned Camps</th>
+                          <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -257,6 +271,14 @@ export default function PlayersListPage() {
                                   ))}
                                 </div>
                               )}
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <Link href={`/coach/players/${player.id}`}>
+                                <Button variant="outline" size="sm" className="flex items-center justify-center gap-2 mx-auto">
+                                  <Eye className="w-4 h-4" />
+                                  View
+                                </Button>
+                              </Link>
                             </td>
                           </tr>
                         ))}
