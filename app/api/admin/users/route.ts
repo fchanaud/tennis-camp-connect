@@ -49,8 +49,26 @@ export async function POST(request: NextRequest) {
     console.log('POST /api/admin/users - Service role client created');
     
     // Generate username and password
-    const username = `${firstName.toLowerCase()}.${lastName.toLowerCase()}`.replace(/\s+/g, '');
+    const baseUsername = `${firstName.toLowerCase()}.${lastName.toLowerCase()}`.replace(/\s+/g, '');
     const password = Math.random().toString(36).slice(-8) + '123';
+    
+    // Ensure username uniqueness
+    let username = baseUsername;
+    let suffix = 1;
+    while (suffix <= 20) { // Prevent infinite loop
+      const { data: existingUsers } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', username)
+        .limit(1);
+      
+      if (!existingUsers || existingUsers.length === 0) {
+        break; // Username is unique
+      }
+      
+      username = `${baseUsername}${suffix}`;
+      suffix++;
+    }
     
     console.log('POST /api/admin/users - Generated credentials:', { username, password: '***' });
     
@@ -58,44 +76,44 @@ export async function POST(request: NextRequest) {
     const hasServiceRoleKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
     console.log('POST /api/admin/users - Service role key available:', hasServiceRoleKey);
     
-    // Create auth user
+    // Create auth user (skip if auth creation fails)
     let authUserId: string | null = null;
     if (hasServiceRoleKey) {
       console.log('POST /api/admin/users - Attempting to create auth user...');
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: `${username}@tenniscamp.local`,
-        password: password,
-        email_confirm: true,
-      });
-      
-      console.log('POST /api/admin/users - Auth creation result:', { 
-        hasData: !!authData, 
-        hasUser: !!authData?.user, 
-        userId: authData?.user?.id,
-        error: authError 
-      });
-      
-      if (authError) {
-        console.error('POST /api/admin/users - Auth creation error:', authError);
-        return NextResponse.json(
-          { error: `Failed to create user authentication: ${authError.message}` },
-          { status: 500 }
-        );
+      try {
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+          email: `${username}@tenniscamp.local`,
+          password: password,
+          email_confirm: true,
+        });
+        
+        console.log('POST /api/admin/users - Auth creation result:', { 
+          hasData: !!authData, 
+          hasUser: !!authData?.user, 
+          userId: authData?.user?.id,
+          error: authError 
+        });
+        
+        if (authError) {
+          console.warn('POST /api/admin/users - Auth creation failed, continuing without auth user:', authError.message);
+          // Don't return error, just continue without auth user
+        } else if (authData?.user?.id) {
+          authUserId = authData.user.id;
+          console.log('POST /api/admin/users - Auth user created successfully:', authUserId);
+        } else {
+          console.warn('POST /api/admin/users - No user data returned from auth creation');
+        }
+      } catch (authError) {
+        console.warn('POST /api/admin/users - Auth creation threw error, continuing without auth user:', authError);
       }
-      
-      if (!authData.user) {
-        console.error('POST /api/admin/users - No user returned from auth creation');
-        return NextResponse.json(
-          { error: 'Failed to create user - no user data returned' },
-          { status: 500 }
-        );
-      }
-      
-      authUserId = authData.user.id;
-      console.log('POST /api/admin/users - Auth user created successfully:', authUserId);
     } else {
       console.log('POST /api/admin/users - No service role key, generating UUID instead');
+    }
+    
+    // Generate fallback ID if auth creation failed or wasn't attempted
+    if (!authUserId) {
       authUserId = globalThis.crypto?.randomUUID() || `${Date.now()}-${Math.random()}`;
+      console.log('POST /api/admin/users - Using generated UUID:', authUserId);
     }
     
     // Create user record
