@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { User } from '@/types';
 
 interface CampInfo {
@@ -80,17 +81,20 @@ export default function PlayersListPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F7] p-4 sm:p-8">
-        <div className="container mx-auto text-center py-12">
-          Loading players...
+      <AppLayout>
+        <div className="p-4 sm:p-8">
+          <div className="container mx-auto text-center py-12">
+            Loading players...
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-4 sm:p-8">
-      <div className="container mx-auto">
+    <AppLayout>
+      <div className="p-4 sm:p-8">
+        <div className="container mx-auto">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8">All Players</h1>
 
         {/* Search Bar */}
@@ -259,8 +263,9 @@ export default function PlayersListPage() {
             </div>
           </>
         )}
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
 

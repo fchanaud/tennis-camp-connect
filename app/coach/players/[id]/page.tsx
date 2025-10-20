@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Input';
 import { Alert } from '@/components/ui/Alert';
 import { Collapsible } from '@/components/ui/Collapsible';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 
@@ -172,30 +173,35 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F7] p-8">
-        <div className="container mx-auto text-center py-12">
-          Loading player details...
+      <AppLayout>
+        <div className="p-8">
+          <div className="container mx-auto text-center py-12">
+            Loading player details...
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (!player) {
     return (
-      <div className="min-h-screen bg-[#F7F7F7] p-8">
-        <div className="container mx-auto text-center py-12">
-          <p>Player not found</p>
-          <Link href="/coach/players">
-            <Button variant="primary" className="mt-4">Back to Players</Button>
-          </Link>
+      <AppLayout>
+        <div className="p-8">
+          <div className="container mx-auto text-center py-12">
+            <p>Player not found</p>
+            <Link href="/coach/players">
+              <Button variant="primary" className="mt-4">Back to Players</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-8">
-      <div className="container mx-auto max-w-5xl">
+    <AppLayout>
+      <div className="p-8">
+        <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <Link href="/coach/players" className="flex items-center gap-2 text-gray-600 hover:text-[#FF4C4C] mb-6">
           <ArrowLeft className="w-4 h-4" />
@@ -374,8 +380,9 @@ Include:
             </CardBody>
           </Card>
         )}
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
