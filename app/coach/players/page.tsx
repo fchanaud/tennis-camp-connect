@@ -119,118 +119,52 @@ export default function PlayersListPage() {
           </Card>
         ) : (
           <>
-            {/* Mobile View - Cards */}
-            <div className="block lg:hidden space-y-4">
+            {/* Mobile & Tablet View - Cards */}
+            <div className="block xl:hidden space-y-3">
               {filteredPlayers.map((player) => (
-                <Card key={player.id}>
+                <Card key={player.id} className="hover:shadow-md transition-shadow">
                   <CardBody className="p-4">
-                    <div className="space-y-3">
-                      {/* Name */}
-                      <div>
-                        <h3 className="font-semibold text-lg break-words">
+                    {/* Player Header */}
+                    <div className="flex items-start justify-between mb-3 pb-3 border-b">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base sm:text-lg text-gray-900 break-words">
                           {player.first_name} {player.last_name}
                         </h3>
-                        <p className="text-sm text-gray-600">@{player.username}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">@{player.username}</p>
                       </div>
-
-                      {/* Assessments */}
-                      <div className="flex items-center justify-between py-2 border-t">
-                        <span className="text-sm text-gray-600">Assessments:</span>
-                        <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-xs">
-                          {player.assessment_count}
-                        </Badge>
-                      </div>
-
-                      {/* Reports */}
-                      <div className="flex items-center justify-between py-2 border-t">
-                        <span className="text-sm text-gray-600">Reports:</span>
-                        <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-xs">
-                          {player.report_count}
-                        </Badge>
-                      </div>
-
-                      {/* Assigned Camps */}
-                      <div className="py-2 border-t">
-                        <span className="text-sm text-gray-600 block mb-2">Assigned Camps:</span>
-                        {player.camps.length === 0 ? (
-                          <Badge variant="secondary" className="text-xs">No camps</Badge>
-                        ) : (
-                          <div className="space-y-2">
-                            {player.camps.map((camp, idx) => (
-                              <div key={idx} className="text-xs bg-gray-50 p-2 rounded">
-                                <div className="font-medium mb-1">
-                                  {new Date(camp.start_date).toLocaleDateString()} - {new Date(camp.end_date).toLocaleDateString()}
-                                </div>
-                                <div className="flex gap-2 flex-wrap">
-                                  <Badge variant="primary" className="text-xs">
-                                    {getPackageLabel(camp.package)}
-                                  </Badge>
-                                  <Badge 
-                                    variant={
-                                      getCampStatus(camp) === 'upcoming' ? 'info' :
-                                      getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
-                                    }
-                                    className="text-xs"
-                                  >
-                                    {getCampStatus(camp)}
-                                  </Badge>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                      <div className="flex gap-2 ml-3 flex-shrink-0">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-500 mb-1">Assess.</div>
+                          <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-xs px-2 py-1">
+                            {player.assessment_count}
+                          </Badge>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-500 mb-1">Reports</div>
+                          <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-xs px-2 py-1">
+                            {player.report_count}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
-                  </CardBody>
-                </Card>
-              ))}
-            </div>
 
-            {/* Desktop View - Table */}
-            <div className="hidden lg:block overflow-x-auto">
-              <Card>
-                <CardBody className="p-0">
-                  <table className="table table-hover mb-0">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Assessments</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Reports</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Assigned Camps</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredPlayers.map((player) => (
-                        <tr key={player.id} className="border-t hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-4">
-                            <span className="font-medium text-gray-900 break-words">
-                              {player.first_name} {player.last_name}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className="text-gray-600 text-sm">@{player.username}</span>
-                          </td>
-                          <td className="px-4 py-4 text-center">
-                            <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-xs">
-                              {player.assessment_count}
-                            </Badge>
-                          </td>
-                          <td className="px-4 py-4 text-center">
-                            <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-xs">
-                              {player.report_count}
-                            </Badge>
-                          </td>
-                          <td className="px-4 py-4">
-                            {player.camps.length === 0 ? (
-                              <Badge variant="secondary" className="text-xs">No camps assigned</Badge>
-                            ) : (
-                              <div className="space-y-2">
-                                {player.camps.map((camp, idx) => (
-                                  <div key={idx} className="flex flex-wrap items-center gap-2">
-                                    <span className="text-sm text-gray-700 whitespace-nowrap">
-                                      {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
+                    {/* Assigned Camps */}
+                    <div>
+                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                        Camps ({player.camps.length})
+                      </div>
+                      {player.camps.length === 0 ? (
+                        <div className="text-sm text-gray-400 italic">No camps assigned</div>
+                      ) : (
+                        <div className="space-y-2">
+                          {player.camps.map((camp, idx) => (
+                            <div key={idx} className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 p-3 rounded-lg">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm text-gray-900 mb-1">
+                                    {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  </div>
+                                  <div className="flex gap-1.5 flex-wrap">
                                     <Badge variant="primary" className="text-xs">
                                       {getPackageLabel(camp.package)}
                                     </Badge>
@@ -244,14 +178,91 @@ export default function PlayersListPage() {
                                       {getCampStatus(camp)}
                                     </Badge>
                                   </div>
-                                ))}
+                                </div>
                               </div>
-                            )}
-                          </td>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop View - Enhanced Table */}
+            <div className="hidden xl:block">
+              <Card>
+                <CardBody className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Player</th>
+                          <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Assessments</th>
+                          <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Reports</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Assigned Camps</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {filteredPlayers.map((player) => (
+                          <tr key={player.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div>
+                                <div className="font-semibold text-gray-900 text-base">
+                                  {player.first_name} {player.last_name}
+                                </div>
+                                <div className="text-sm text-gray-500">@{player.username}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-sm px-3 py-1">
+                                {player.assessment_count}
+                              </Badge>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-sm px-3 py-1">
+                                {player.report_count}
+                              </Badge>
+                            </td>
+                            <td className="px-6 py-4">
+                              {player.camps.length === 0 ? (
+                                <div className="text-sm text-gray-400 italic">No camps assigned</div>
+                              ) : (
+                                <div className="space-y-2">
+                                  {player.camps.map((camp, idx) => (
+                                    <div key={idx} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
+                                      <div className="flex items-center justify-between gap-3">
+                                        <div className="flex-1">
+                                          <div className="font-medium text-gray-900 text-sm mb-1.5">
+                                            📅 {new Date(camp.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(camp.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                          </div>
+                                          <div className="flex gap-2 flex-wrap">
+                                            <Badge variant="primary" className="text-xs">
+                                              {getPackageLabel(camp.package)}
+                                            </Badge>
+                                            <Badge 
+                                              variant={
+                                                getCampStatus(camp) === 'upcoming' ? 'info' :
+                                                getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'
+                                              }
+                                              className="text-xs"
+                                            >
+                                              {getCampStatus(camp)}
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CardBody>
               </Card>
             </div>
