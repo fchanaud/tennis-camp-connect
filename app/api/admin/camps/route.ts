@@ -55,6 +55,16 @@ export async function POST(request: NextRequest) {
       schedules
     } = await request.json();
 
+    console.log('POST /api/admin/camps - Request data:', {
+      startDate,
+      endDate,
+      packageType,
+      tennisHours,
+      capacity,
+      selectedCoach,
+      selectedPlayersCount: selectedPlayers?.length || 0
+    });
+
     if (!startDate || !endDate) {
       return NextResponse.json(
         { error: 'Please select start and end dates' },
@@ -77,8 +87,10 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createServiceRoleClient();
+    console.log('POST /api/admin/camps - Service role client created');
 
     // Create camp
+    console.log('POST /api/admin/camps - Creating camp...');
     const { data: campData, error: campError } = await supabase
       .from('camps')
       .insert({
@@ -93,7 +105,16 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (campError) throw campError;
+    console.log('POST /api/admin/camps - Camp creation result:', {
+      hasData: !!campData,
+      hasError: !!campError,
+      error: campError
+    });
+
+    if (campError) {
+      console.error('POST /api/admin/camps - Camp creation error:', campError);
+      throw campError;
+    }
 
     // Assign players
     if (selectedPlayers.length > 0) {
