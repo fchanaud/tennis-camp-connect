@@ -76,52 +76,16 @@ export async function POST(request: NextRequest) {
     const hasServiceRoleKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
     console.log('POST /api/admin/users - Service role key available:', hasServiceRoleKey);
     
-    // Create auth user (skip if auth creation fails)
-    let authUserId: string | null = null;
-    if (hasServiceRoleKey) {
-      console.log('POST /api/admin/users - Attempting to create auth user...');
-      try {
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: `${username}@tenniscamp.local`,
-          password: password,
-          email_confirm: true,
-        });
-        
-        console.log('POST /api/admin/users - Auth creation result:', { 
-          hasData: !!authData, 
-          hasUser: !!authData?.user, 
-          userId: authData?.user?.id,
-          error: authError 
-        });
-        
-        if (authError) {
-          console.warn('POST /api/admin/users - Auth creation failed, continuing without auth user:', authError.message);
-          // Don't return error, just continue without auth user
-        } else if (authData?.user?.id) {
-          authUserId = authData.user.id;
-          console.log('POST /api/admin/users - Auth user created successfully:', authUserId);
-        } else {
-          console.warn('POST /api/admin/users - No user data returned from auth creation');
-        }
-      } catch (authError) {
-        console.warn('POST /api/admin/users - Auth creation threw error, continuing without auth user:', authError);
-      }
-    } else {
-      console.log('POST /api/admin/users - No service role key, generating UUID instead');
-    }
-    
-    // Generate fallback ID if auth creation failed or wasn't attempted
-    if (!authUserId) {
-      authUserId = globalThis.crypto?.randomUUID() || `${Date.now()}-${Math.random()}`;
-      console.log('POST /api/admin/users - Using generated UUID:', authUserId);
-    }
+    // Generate a UUID for the user (no longer dependent on Supabase Auth)
+    const userId = globalThis.crypto?.randomUUID() || `${Date.now()}-${Math.random()}`;
+    console.log('POST /api/admin/users - Generated user ID:', userId);
     
     // Create user record
-    console.log('POST /api/admin/users - Creating user record with ID:', authUserId);
+    console.log('POST /api/admin/users - Creating user record with ID:', userId);
     const { error: userError } = await supabase
       .from('users')
       .insert({
-        id: authUserId,
+        id: userId,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         username: username,

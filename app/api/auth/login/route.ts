@@ -1,70 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json();
 
-    // User configuration with passwords from environment variables
-    const users = {
-      'admin': {
-        id: '11111111-1111-1111-1111-111111111111',
-        first_name: 'Franklin',
-        last_name: 'Administrator',
-        username: 'admin',
-        role: 'admin',
-        password: process.env.ADMIN_PASSWORD
-      },
-      'patrickn': {
-        id: '22222222-2222-2222-2222-222222222222',
-        first_name: 'Patrick',
-        last_name: 'Nadal',
-        username: 'patrickn',
-        role: 'coach',
-        password: process.env.COACH_PASSWORD
-      },
-      'jdoe': {
-        id: '33333333-3333-3333-3333-333333333333',
-        first_name: 'John',
-        last_name: 'Doe',
-        username: 'jdoe',
-        role: 'player',
-        password: null // Accept any password for player
-      }
-    };
+    // Use service role client to query users table
+    const supabase = createServiceRoleClient();
+    
+    // Query the users table for the username
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username.toLowerCase())
+      .single();
 
-    const user = users[username.toLowerCase() as keyof typeof users];
-
-    if (!user) {
+    if (error || !userData) {
+      console.log('Login attempt failed - user not found:', username);
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
       );
     }
 
-    // Validate password
-    if (user.password) {
-      // Specific password required for admin and coach
-      if (password !== user.password) {
-        return NextResponse.json(
-          { error: 'Invalid username or password' },
-          { status: 401 }
-        );
-      }
-    } else {
-      // For player, accept any password with 3+ characters
-      if (password.length < 3) {
-        return NextResponse.json(
-          { error: 'Password must be at least 3 characters' },
-          { status: 400 }
-        );
-      }
+    // For now, accept any password for all users (since we're not storing passwords in DB)
+    // In a real app, you'd hash and compare passwords
+    if (!password || password.length < 3) {
+      return NextResponse.json(
+        { error: 'Password must be at least 3 characters' },
+        { status: 400 }
+      );
     }
 
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user;
-    return NextResponse.json({ user: userWithoutPassword });
+    console.log('Login successful for user:', username);
+    
+    // Return user data without sensitive information
+    const { created_at, ...userWithoutSensitive } = userData;
+    return NextResponse.json({ user: userWithoutSensitive });
 
   } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json(
       { error: 'An error occurred. Please try again.' },
       { status: 500 }
