@@ -9,7 +9,6 @@ import { Alert } from '@/components/ui/Alert';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { Camp, User, PackageType } from '@/types';
-import { createServiceRoleClient } from '@/lib/supabase/server';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 export default function CampManagementPage() {
@@ -37,33 +36,20 @@ export default function CampManagementPage() {
   }, []);
 
   const loadData = async () => {
-    const supabase = createServiceRoleClient();
-    
-    const { data: campsData } = await supabase
-      .from('camps')
-      .select(`
-        *,
-        coach:users!camps_coach_id_fkey (
-          id,
-          first_name,
-          last_name
-        )
-      `)
-      .order('start_date', { ascending: false });
-    
-    const { data: coachesData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('role', 'coach');
-    
-    const { data: playersData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('role', 'player');
-    
-    if (campsData) setCamps(campsData);
-    if (coachesData) setCoaches(coachesData);
-    if (playersData) setPlayers(playersData);
+    try {
+      const response = await fetch('/api/admin/camps');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setCamps(data.camps);
+        setCoaches(data.coaches);
+        setPlayers(data.players);
+      } else {
+        console.error('Error loading data:', data.error);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
     setLoading(false);
   };
 
@@ -98,61 +84,34 @@ export default function CampManagementPage() {
     setError('');
     
     try {
-      const supabase = createServiceRoleClient();
+      const response = await fetch('/api/admin/camps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startDate,
+          endDate,
+          packageType,
+          tennisHours,
+          accommodationDetails,
+          capacity,
+          selectedCoach,
+          selectedPlayers,
+          schedules,
+        }),
+      });
 
-      // Create camp
-      const { data: campData, error: campError } = await supabase
-        .from('camps')
-        .insert({
-          start_date: startDate,
-          end_date: endDate,
-          package: packageType,
-          total_tennis_hours: packageType === 'no_tennis' ? null : parseInt(tennisHours),
-          accommodation_details: (packageType !== 'tennis_only') ? accommodationDetails : null,
-          capacity: parseInt(capacity),
-          coach_id: selectedCoach || null,
-        })
-        .select()
-        .single();
+      const data = await response.json();
 
-      if (campError) throw campError;
-
-      // Assign players
-      if (selectedPlayers.length > 0) {
-        const playerAssignments = selectedPlayers.map(playerId => ({
-          camp_id: campData.id,
-          player_id: playerId,
-        }));
-
-        const { error: playersError } = await supabase
-          .from('camp_players')
-          .insert(playerAssignments);
-
-        if (playersError) throw playersError;
+      if (response.ok) {
+        setSuccess('Camp created successfully!');
+        resetForm();
+        loadData();
+        setTimeout(() => setShowCreateModal(false), 2000);
+      } else {
+        setError(data.error || 'Failed to create camp');
       }
-
-      // Create schedules
-      const dates = getDatesInRange(startDate, endDate);
-      const scheduleInserts = dates
-        .filter(date => schedules[date]?.trim())
-        .map(date => ({
-          camp_id: campData.id,
-          schedule_date: date,
-          schedule_content: schedules[date],
-        }));
-
-      if (scheduleInserts.length > 0) {
-        const { error: scheduleError } = await supabase
-          .from('camp_schedules')
-          .insert(scheduleInserts);
-
-        if (scheduleError) throw scheduleError;
-      }
-
-      setSuccess('Camp created successfully!');
-      resetForm();
-      loadData();
-      setTimeout(() => setShowCreateModal(false), 2000);
     } catch (err: any) {
       setError(err.message || 'Failed to create camp');
     }
