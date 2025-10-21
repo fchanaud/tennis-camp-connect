@@ -24,10 +24,17 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
     }
   };
 
-  const isActive = (path: string) => pathname?.startsWith(path);
+  const isActive = (path: string) => {
+    if (!pathname) return false;
+    // Exact match for home
+    if (path === '/home') return pathname === '/home';
+    // For camp routes, check if pathname includes the path segment
+    return pathname.includes(path);
+  };
 
   const renderPlayerNav = () => {
     const activeCamp = camps[0]; // Default to first camp
+    const hasAccommodation = activeCamp && activeCamp.package !== 'tennis_only';
     
     return (
       <>
@@ -40,28 +47,30 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         
         <Link
           href={activeCamp ? `/camp/${activeCamp.id}/tennis` : '/camp/loading/tennis'}
-          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/camp') && isActive('/tennis') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/tennis') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
         >
           Tennis program
         </Link>
         <Link
           href={activeCamp ? `/camp/${activeCamp.id}/schedule` : '/camp/loading/schedule'}
-          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/camp') && isActive('/schedule') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
         >
           Schedule
         </Link>
         <Link
           href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
-          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/camp') && isActive('/essentials') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
         >
           Essentials guide
         </Link>
-        <Link
-          href={activeCamp ? `/camp/${activeCamp.id}/stay` : '/camp/loading/stay'}
-          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/camp') && isActive('/stay') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
-        >
-          Accommodation
-        </Link>
+        {hasAccommodation && (
+          <Link
+            href={`/camp/${activeCamp.id}/stay`}
+            className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+          >
+            Accommodation
+          </Link>
+        )}
       </>
     );
   };
@@ -221,32 +230,34 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                   </Link>
                   <Link
                     href={camps[0] ? `/camp/${camps[0].id}/tennis` : '/camp/loading/tennis'}
-                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/camp') && isActive('/tennis') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/tennis') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Tennis program
                   </Link>
                   <Link
                     href={camps[0] ? `/camp/${camps[0].id}/schedule` : '/camp/loading/schedule'}
-                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/camp') && isActive('/schedule') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Schedule
                   </Link>
                   <Link
                     href={camps[0] ? `/camp/${camps[0].id}/essentials` : '/camp/loading/essentials'}
-                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/camp') && isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Essentials guide
                   </Link>
-                  <Link
-                    href={camps[0] ? `/camp/${camps[0].id}/stay` : '/camp/loading/stay'}
-                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/camp') && isActive('/stay') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Accommodation
-                  </Link>
+                  {camps[0] && camps[0].package !== 'tennis_only' && (
+                    <Link
+                      href={`/camp/${camps[0].id}/stay`}
+                      className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Accommodation
+                    </Link>
+                  )}
                 </>
               )}
               {user.role === 'coach' && (

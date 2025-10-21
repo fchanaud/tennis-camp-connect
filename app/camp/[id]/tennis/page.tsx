@@ -1,57 +1,97 @@
-import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/utils/auth';
-import { Navbar } from '@/components/layout/Navbar';
+'use client';
+
+import { use, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
-import { AssessmentForm } from '@/components/features/AssessmentForm';
-import { createClient } from '@/lib/supabase/server';
+import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
+import { capitalizeName } from '@/lib/utils/auth';
 
-export default async function TennisPage({ params }: { params: Promise<{ id: string }> }) {
-  const user = await getCurrentUser();
-  if (!user) redirect('/login');
+export default function TennisPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const { id: campId } = use(params);
+  const [loading, setLoading] = useState(true);
+  const [camp, setCamp] = useState<any>(null);
+  const [assessment, setAssessment] = useState<any>(null);
+  const [report, setReport] = useState<any>(null);
 
-  const supabase = await createClient();
-  const { id: campId } = await params;
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const userStr = sessionStorage.getItem('user');
+        if (!userStr) {
+          router.push('/login');
+          return;
+        }
 
-  // Get camp details with coach info
-  const { data: camp } = await supabase
-    .from('camps')
-    .select(`
-      *,
-      coach:users!camps_coach_id_fkey (
-        id,
-        first_name,
-        last_name
-      )
-    `)
-    .eq('id', campId)
-    .single();
+        const user = JSON.parse(userStr);
 
-  if (!camp) redirect('/home');
+        // Fetch camp details
+        const campResponse = await fetch(`/api/camps/${campId}`);
+        if (!campResponse.ok) {
+          router.push('/home');
+          return;
+        }
+        const campData = await campResponse.json();
+        setCamp(campData);
 
-  // Get assessment if exists
-  const { data: assessment } = await supabase
-    .from('pre_camp_assessments')
-    .select('*')
-    .eq('player_id', user.id)
-    .eq('camp_id', campId)
-    .single();
+        // Fetch assessment
+        const assessmentResponse = await fetch(`/api/player/assessment?userId=${user.id}`);
+        if (assessmentResponse.ok) {
+          const assessmentData = await assessmentResponse.json();
+          if (assessmentData.hasAssessment && assessmentData.assessment.camp_id === campId) {
+            setAssessment(assessmentData.assessment);
+          }
+        }
 
-  // Get post-camp report if exists
-  const { data: report } = await supabase
-    .from('post_camp_reports')
-    .select('*')
-    .eq('player_id', user.id)
-    .eq('camp_id', campId)
-    .single();
+        // Fetch report
+        const reportResponse = await fetch(`/api/player/report?userId=${user.id}&campId=${campId}`);
+        if (reportResponse.ok) {
+          const reportData = await reportResponse.json();
+          setReport(reportData.report);
+        }
+      } catch (error) {
+        console.error('Error loading tennis page data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [campId, router]);
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <div className="flex justify-center items-center py-20">
+            <Spinner size="lg" />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!camp) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <Alert variant="danger">Camp not found</Alert>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const isNoTennis = camp.package === 'no_tennis';
+  const userStr = sessionStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      <Navbar user={user} camps={[camp]} />
-      
+    <AppLayout>
       <div className="container mx-auto px-4 py-8">
         <nav className="mb-6 text-sm">
           <span className="text-gray-500">Camp / </span>
@@ -73,7 +113,7 @@ export default async function TennisPage({ params }: { params: Promise<{ id: str
                 <div className="mt-4">
                   <div className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden">
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.6748934058!2d-7.9898!3d31.6295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM3JzQ2LjIiTiA3wrA1OSczNS4zIlc!5e0!3m2!1sen!2s!4v1234567890"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.444!2d-7.997!3d31.638!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzE3LjAiTiA3wrA1OScxMC4wIlc!5e0!3m2!1sen!2s!4v1234567890"
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}
@@ -81,7 +121,16 @@ export default async function TennisPage({ params }: { params: Promise<{ id: str
                       loading="lazy"
                     />
                   </div>
-                  <p className="mt-3 text-gray-600">JXQC+JMQ, Marrakech, Morocco</p>
+                  <p className="mt-3 text-gray-600">
+                    <a 
+                      href="https://www.google.com/maps/search/?api=1&query=COS-ONE,+Rte+de+Targa,+Marrakech+40000,+Maroc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline cursor-pointer"
+                    >
+                      COS-ONE, Rte de Targa, Marrakech 40000, Maroc
+                    </a>
+                  </p>
                 </div>
               </CardBody>
             </Card>
@@ -110,7 +159,9 @@ export default async function TennisPage({ params }: { params: Promise<{ id: str
                   {camp.coach && (
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                       <span className="text-sm sm:text-base text-gray-600">Coach:</span>
-                      <span className="font-semibold text-sm sm:text-base break-words">{camp.coach.first_name} {camp.coach.last_name}</span>
+                      <span className="font-semibold text-sm sm:text-base break-words">
+                        {capitalizeName(camp.coach.first_name)} {capitalizeName(camp.coach.last_name)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -118,11 +169,17 @@ export default async function TennisPage({ params }: { params: Promise<{ id: str
             </Card>
 
             {/* Pre-Camp Assessment */}
-            <AssessmentForm
-              campId={campId}
-              playerId={user.id}
-              existingAssessment={assessment}
-            />
+            {user && (
+              <Card>
+                <CardBody>
+                  <Link href="/player/assessment/form">
+                    <Button variant={assessment ? "secondary" : "primary"} fullWidth>
+                      {assessment ? 'Edit assessment' : 'Complete assessment'}
+                    </Button>
+                  </Link>
+                </CardBody>
+              </Card>
+            )}
 
             {/* Post-Camp Report */}
             <Card>
@@ -147,7 +204,6 @@ export default async function TennisPage({ params }: { params: Promise<{ id: str
           </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
-

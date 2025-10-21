@@ -539,7 +539,7 @@ export default function AssessmentForm() {
                   >
                     {isSubmitting 
                       ? (existingAssessment ? 'Updating...' : 'Submitting...') 
-                      : (existingAssessment ? 'Update technical assessment' : 'Submit technical Assessment')
+                      : (existingAssessment ? 'Update technical assessment' : 'Submit technical assessment')
                     }
                   </Button>
                 </div>

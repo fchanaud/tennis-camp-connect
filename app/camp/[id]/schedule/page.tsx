@@ -1,11 +1,13 @@
-import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/utils/auth';
-import { Navbar } from '@/components/layout/Navbar';
+'use client';
+
+import { use, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { Alert } from '@/components/ui/Alert';
 import { RecommendationCard } from '@/components/schedule/RecommendationCard';
 import { recommendations } from '@/lib/constants/recommendations';
-import { createClient } from '@/lib/supabase/server';
+import { Spinner } from '@/components/ui/Spinner';
 
 function getDatesInRange(startDate: string, endDate: string): Date[] {
   const dates: Date[] = [];
@@ -19,36 +21,74 @@ function getDatesInRange(startDate: string, endDate: string): Date[] {
   return dates;
 }
 
-export default async function SchedulePage({ params }: { params: Promise<{ id: string }> }) {
-  const user = await getCurrentUser();
-  if (!user) redirect('/login');
+export default function SchedulePage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const { id: campId } = use(params);
+  const [loading, setLoading] = useState(true);
+  const [camp, setCamp] = useState<any>(null);
+  const [schedules, setSchedules] = useState<any[]>([]);
 
-  const supabase = await createClient();
-  const { id: campId } = await params;
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const userStr = sessionStorage.getItem('user');
+        if (!userStr) {
+          router.push('/login');
+          return;
+        }
 
-  // Get camp details
-  const { data: camp } = await supabase
-    .from('camps')
-    .select('*')
-    .eq('id', campId)
-    .single();
+        // Fetch camp details
+        const campResponse = await fetch(`/api/camps/${campId}`);
+        if (!campResponse.ok) {
+          router.push('/home');
+          return;
+        }
+        const campData = await campResponse.json();
+        setCamp(campData);
 
-  if (!camp) redirect('/home');
+        // Fetch schedules
+        const schedulesResponse = await fetch(`/api/camps/${campId}/schedules`);
+        if (schedulesResponse.ok) {
+          const schedulesData = await schedulesResponse.json();
+          setSchedules(schedulesData);
+        }
+      } catch (error) {
+        console.error('Error loading schedule page data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Get all schedules for this camp
-  const { data: schedules } = await supabase
-    .from('camp_schedules')
-    .select('*')
-    .eq('camp_id', campId)
-    .order('schedule_date', { ascending: true });
+    loadData();
+  }, [campId, router]);
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <div className="flex justify-center items-center py-20">
+            <Spinner size="lg" />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!camp) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <Alert variant="danger">Camp not found</Alert>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const dates = getDatesInRange(camp.start_date, camp.end_date);
   const scheduleMap = new Map(schedules?.map(s => [s.schedule_date, s.schedule_content]) || []);
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      <Navbar user={user} camps={[camp]} />
-      
+    <AppLayout>
       <div className="container mx-auto px-4 py-8">
         <nav className="mb-6 text-sm">
           <span className="text-gray-500">Camp / </span>
@@ -96,7 +136,6 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
-
