@@ -10,12 +10,12 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  primary: 'bg-[#FF4C4C] text-white',
-  success: 'bg-[#66B032] text-white',
-  warning: 'bg-[#FFD633] text-[#1E1E1E]',
-  danger: 'bg-red-600 text-white',
-  info: 'bg-[#2563EB] text-white',
-  secondary: 'bg-gray-500 text-white',
+  primary: 'bg-[#FF4C4C] text-white', // Main brand elements
+  success: 'bg-[#66B032] text-white', // Success states, tennis-related
+  warning: 'bg-[#FFD633] text-[#1E1E1E]', // Attention, highlights
+  danger: 'bg-red-600 text-white', // Errors, critical
+  info: 'bg-[#2563EB] text-white', // Information, neutral
+  secondary: 'bg-gray-500 text-white', // Secondary information
 };
 
 export function Badge({ children, variant = 'primary', className = '', style }: BadgeProps) {

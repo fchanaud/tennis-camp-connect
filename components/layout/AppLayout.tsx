@@ -58,17 +58,34 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7]">
-        <div className="text-center">
-          <Spinner size="lg" />
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-[#F7F7F7]">
+        <Navbar user={user} camps={camps} />
+        <main>
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="text-center">
+              <Spinner size="lg" />
+              <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
 
   if (!user) {
-    return null; // Will redirect to login
+    return (
+      <div className="min-h-screen bg-[#F7F7F7]">
+        <Navbar user={null} camps={[]} />
+        <main>
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="text-center">
+              <Spinner size="lg" />
+              <p className="mt-4 text-gray-600">Redirecting to login...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (

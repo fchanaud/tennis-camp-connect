@@ -260,7 +260,7 @@ export default function CampManagementPage() {
         <div className="container mx-auto">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold">Camp Management</h1>
-          <Button variant="primary" onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
+          <Button variant="secondary" onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             Create New Camp
           </Button>
         </div>
@@ -278,7 +278,7 @@ export default function CampManagementPage() {
                       {new Date(camp.start_date).toLocaleDateString()} - {new Date(camp.end_date).toLocaleDateString()}
                     </CardTitle>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <Badge variant="primary" className="text-xs sm:text-sm">{getPackageLabel(camp.package)}</Badge>
+                      <Badge variant="success" className="text-xs sm:text-sm">{getPackageLabel(camp.package)}</Badge>
                       <Badge variant={
                         getCampStatus(camp) === 'upcoming' ? 'info' :
                         getCampStatus(camp) === 'in-progress' ? 'warning' : 'secondary'

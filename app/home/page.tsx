@@ -55,6 +55,7 @@ function HomePageContent() {
   const [user, setUser] = useState<User | null>(null);
   const [camps, setCamps] = useState<any[]>([]);
   const [coachData, setCoachData] = useState<any>(null);
+  const [assessmentData, setAssessmentData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ function HomePageContent() {
       
       // Load data based on user role
       if (userData.role === 'player') {
-        loadPlayerCamps(userData.id);
+        loadPlayerData(userData.id);
       } else if (userData.role === 'coach') {
         loadCoachData(userData.id);
       } else {
@@ -75,20 +76,34 @@ function HomePageContent() {
     }
   }, []);
 
-  const loadPlayerCamps = async (userId: string) => {
+  const loadPlayerData = async (userId: string) => {
     try {
-      const response = await fetch(`/api/player/camps?userId=${userId}`);
-      const data = await response.json();
-      
-      if (response.ok) {
-        setCamps(data.camps || []);
+      // Load both camps and assessment data in parallel
+      const [campsResponse, assessmentResponse] = await Promise.all([
+        fetch(`/api/player/camps?userId=${userId}`),
+        fetch(`/api/player/assessment?userId=${userId}`)
+      ]);
+
+      // Handle camps data
+      if (campsResponse.ok) {
+        const campsData = await campsResponse.json();
+        setCamps(campsData.camps || []);
       } else {
-        console.error('Error loading player camps:', data.error);
+        console.error('Error loading player camps:', campsResponse.status);
+      }
+
+      // Handle assessment data
+      if (assessmentResponse.ok) {
+        const assessmentData = await assessmentResponse.json();
+        setAssessmentData(assessmentData);
+      } else {
+        console.error('Error loading player assessment:', assessmentResponse.status);
       }
     } catch (error) {
-      console.error('Error loading player camps:', error);
+      console.error('Error loading player data:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadCoachData = async (coachId: string) => {
@@ -147,12 +162,12 @@ function HomePageContent() {
                     })()}
                   </p>
                   <p className="text-lg">
-                    You have <span className="font-semibold text-[#FF4C4C]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+                    You have <span className="font-semibold text-[#2563EB]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
                   </p>
                 </div>
               ) : (
                 <p>
-                  You have <span className="font-semibold text-[#FF4C4C]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+                  You have <span className="font-semibold text-[#2563EB]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
                 </p>
               )}
             </div>
@@ -170,7 +185,7 @@ function HomePageContent() {
                       <p className="mb-2">
                         Your camp starts in <span className="font-semibold text-[#FF4C4C]">{daysUntil}</span> day{daysUntil !== 1 ? 's' : ''}
                       </p>
-                      <p className="mb-2 font-semibold text-[#FF4C4C] text-lg md:text-xl">
+                      <p className="mb-2 font-semibold text-[#2563EB] text-lg md:text-xl">
                         {(() => {
                           const date = new Date(nextCamp.start_date);
                           const options: Intl.DateTimeFormatOptions = { 
@@ -182,6 +197,35 @@ function HomePageContent() {
                           return date.toLocaleDateString('en-US', options);
                         })()}
                       </p>
+                      
+                      {/* Assessment Section */}
+                      {assessmentData && (
+                        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                          {assessmentData.hasAssessment ? (
+                            <div>
+                              <p className="text-gray-600 mb-3">
+                                You have completed your technical assessment. Click below to view your results.
+                              </p>
+                              <Link href={`/player/assessment/${assessmentData.assessment.id}`}>
+                                <Button variant="secondary" className="w-full sm:w-auto">
+                                  View technical assessment
+                                </Button>
+                              </Link>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-gray-600 mb-3">
+                                Please take a moment to complete your technical assessment for the coach to design sessions focused on you and your goals
+                              </p>
+                              <Link href="/player/assessment/form">
+                                <Button variant="primary" className="w-full sm:w-auto">
+                                  Complete technical assessment
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 }
@@ -204,7 +248,7 @@ function HomePageContent() {
                 <Card key={camp.id} className="bg-white shadow-lg">
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <Badge variant="primary">{getPackageLabel(camp.package)}</Badge>
+                      <Badge variant="success">{getPackageLabel(camp.package)}</Badge>
                       <Badge variant="secondary">
                         {camp.total_tennis_hours ? `${camp.total_tennis_hours}h Tennis` : 'No Tennis'}
                       </Badge>
@@ -213,10 +257,10 @@ function HomePageContent() {
                     <CardText className="text-gray-600 mb-4">
                       {formatDateRange(camp.start_date, camp.end_date)}
                     </CardText>
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       <Link href={`/camp/${camp.id}/tennis`}>
                         <Button variant="primary" fullWidth>
-                          Tennis Program
+                          Tennis program
                         </Button>
                       </Link>
                       <Link href={`/camp/${camp.id}/schedule`}>
@@ -232,8 +276,8 @@ function HomePageContent() {
                         </Link>
                       )}
                       <Link href={`/camp/${camp.id}/essentials`}>
-                        <Button variant="outline" fullWidth>
-                          Essentials Guide
+                        <Button variant="secondary" fullWidth>
+                          Essentials guide
                         </Button>
                       </Link>
                     </div>
@@ -297,7 +341,7 @@ function HomePageContent() {
                   Create camps, assign coaches, and manage schedules
                 </CardText>
                 <Link href="/admin/camps">
-                  <Button variant="primary" fullWidth>
+                  <Button variant="secondary" fullWidth>
                     Manage Camps
                   </Button>
                 </Link>

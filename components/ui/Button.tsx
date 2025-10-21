@@ -12,13 +12,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-[#FF4C4C] text-white hover:opacity-90',
-  premium: 'gradient-citrus text-white shadow-premium',
-  outline: 'bg-white border-2 border-[#1E1E1E] text-[#1E1E1E] hover:bg-[#1E1E1E] hover:text-white',
-  whatsapp: 'bg-[#2F7D32] text-white hover:opacity-90',
-  ghost: 'bg-transparent text-[#1E1E1E] hover:bg-gray-100',
-  secondary: 'bg-[#66B032] text-white hover:opacity-90',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+  primary: 'bg-[#FF4C4C] text-white hover:opacity-90', // Main brand actions
+  premium: 'gradient-citrus text-white shadow-premium', // Premium features
+  outline: 'bg-white border-2 border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white', // Secondary actions
+  whatsapp: 'bg-[#2F7D32] text-white hover:opacity-90', // Communication
+  ghost: 'bg-transparent text-[#1E1E1E] hover:bg-[#FFD633] hover:text-[#1E1E1E]', // Subtle interactions
+  secondary: 'bg-[#66B032] text-white hover:opacity-90', // Success/positive actions
+  danger: 'bg-red-600 text-white hover:bg-red-700', // Destructive actions
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -35,7 +35,7 @@ export function Button({
   fullWidth = false,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'font-semibold rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'mb-2 font-semibold rounded-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
   const widthClass = fullWidth ? 'w-full' : '';
   
   return (

@@ -8,9 +8,9 @@ interface CardProps {
 }
 
 export function Card({ children, className = '', hover = false, premium = false }: CardProps) {
-  const baseClasses = 'bg-white rounded-xl border-2 border-[rgba(37,99,235,0.2)] transition-all duration-300';
+  const baseClasses = 'bg-white rounded-xl border-2 border-[rgba(102,176,50,0.2)] transition-all duration-300';
   const shadowClass = premium ? 'shadow-premium' : 'shadow-soft';
-  const hoverClass = hover ? 'hover:shadow-premium hover:scale-[1.02]' : '';
+  const hoverClass = hover ? 'hover:shadow-premium hover:scale-[1.02] hover:border-[rgba(255,214,51,0.3)]' : '';
   
   return (
     <div className={`${baseClasses} ${shadowClass} ${hoverClass} ${className}`}>
