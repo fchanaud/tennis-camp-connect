@@ -13,7 +13,7 @@ export default function AssessmentForm() {
     
     // Playing Background
     playingDuration: '',
-    weeklyFrequency: '',
+    monthlyFrequency: '',
     competitionExperience: '',
     competitionLevel: '',
     
@@ -26,9 +26,9 @@ export default function AssessmentForm() {
     discomfortMovements: '',
     fitnessRating: '',
     
-    // Learning & Motivation
-    motivation: '',
-    learningPreference: '',
+    // Learning & Motivation (checkboxes)
+    motivations: [] as string[],
+    learningPreferences: [] as string[],
     
     // Goals & Expectations
     mainGoal: '',
@@ -42,6 +42,18 @@ export default function AssessmentForm() {
     setIsSubmitting(true);
     
     try {
+      // Validate checkboxes
+      if (formData.motivations.length === 0) {
+        setMessage('Please select at least one motivation.');
+        setIsSubmitting(false);
+        return;
+      }
+      if (formData.learningPreferences.length === 0) {
+        setMessage('Please select at least one learning preference.');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -53,7 +65,7 @@ export default function AssessmentForm() {
         
         // Playing Background
         playingDuration: '',
-        weeklyFrequency: '',
+        monthlyFrequency: '',
         competitionExperience: '',
         competitionLevel: '',
         
@@ -67,8 +79,8 @@ export default function AssessmentForm() {
         fitnessRating: '',
         
         // Learning & Motivation
-        motivation: '',
-        learningPreference: '',
+        motivations: [],
+        learningPreferences: [],
         
         // Goals & Expectations
         mainGoal: '',
@@ -85,6 +97,20 @@ export default function AssessmentForm() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const handleCheckboxChange = (field: 'motivations' | 'learningPreferences', value: string) => {
+    setFormData(prev => {
+      const currentArray = prev[field];
+      const newArray = currentArray.includes(value)
+        ? currentArray.filter(item => item !== value)
+        : [...currentArray, value];
+      
+      return {
+        ...prev,
+        [field]: newArray
+      };
     });
   };
 
@@ -105,6 +131,7 @@ export default function AssessmentForm() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Personal Information */}
                 <div className="border-b pb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Date of birth *
@@ -126,7 +153,7 @@ export default function AssessmentForm() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        How long have you been playing tennis? *
+                        How many years of tennis experience do you have in total? *
                       </label>
                       <select
                         name="playingDuration"
@@ -135,7 +162,7 @@ export default function AssessmentForm() {
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">Select duration</option>
+                        <option value="">Select total years</option>
                         <option value="less-than-1">Less than 1 year</option>
                         <option value="1-2">1-2 years</option>
                         <option value="3-5">3-5 years</option>
@@ -146,21 +173,19 @@ export default function AssessmentForm() {
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        How often do you currently play per week? *
+                        How often do you currently play per month? *
                       </label>
                       <select
-                        name="weeklyFrequency"
-                        value={formData.weeklyFrequency}
+                        name="monthlyFrequency"
+                        value={formData.monthlyFrequency}
                         onChange={handleChange}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select frequency</option>
-                        <option value="1">1 time per week</option>
-                        <option value="2">2 times per week</option>
-                        <option value="3">3 times per week</option>
-                        <option value="4">4 times per week</option>
-                        <option value="5">5+ times per week</option>
+                        <option value="1-2">1-2 times per month</option>
+                        <option value="3-4">3-4 times per month</option>
+                        <option value="5+">5+ times per month</option>
                       </select>
                     </div>
                     
@@ -180,7 +205,6 @@ export default function AssessmentForm() {
                         <option value="local">Yes, local competitions</option>
                         <option value="regional">Yes, regional tournaments</option>
                         <option value="national">Yes, national tournaments</option>
-                        <option value="international">Yes, international tournaments</option>
                       </select>
                     </div>
                     
@@ -200,7 +224,6 @@ export default function AssessmentForm() {
                           <option value="beginner">Beginner level</option>
                           <option value="intermediate">Intermediate level</option>
                           <option value="advanced">Advanced level</option>
-                          <option value="professional">Professional level</option>
                         </select>
                       </div>
                     )}
@@ -302,51 +325,59 @@ export default function AssessmentForm() {
                 {/* Learning & Motivation */}
                 <div className="border-b pb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Learning & Motivation</h3>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        What motivates you most about tennis? *
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        What motivates you most about tennis? * <span className="text-gray-500 text-xs">(Select all that apply)</span>
                       </label>
-                      <select
-                        name="motivation"
-                        value={formData.motivation}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select motivation</option>
-                        <option value="competition">Competition</option>
-                        <option value="fitness">Fitness</option>
-                        <option value="enjoyment">Enjoyment</option>
-                        <option value="improvement">Improvement</option>
-                        <option value="social">Social aspect</option>
-                        <option value="multiple">Multiple reasons</option>
-                      </select>
+                      <div className="space-y-2">
+                        {[
+                          { value: 'competition', label: 'Competition' },
+                          { value: 'fitness', label: 'Fitness' },
+                          { value: 'enjoyment', label: 'Enjoyment' },
+                          { value: 'improvement', label: 'Improvement' },
+                          { value: 'social', label: 'Social aspect' }
+                        ].map((option) => (
+                          <label key={option.value} className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.motivations.includes(option.value)}
+                              onChange={() => handleCheckboxChange('motivations', option.value)}
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Do you prefer learning through technical detail, video feedback, or playing matches? *
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Do you prefer learning through: * <span className="text-gray-500 text-xs">(Select all that apply)</span>
                       </label>
-                      <select
-                        name="learningPreference"
-                        value={formData.learningPreference}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select preference</option>
-                        <option value="technical">Technical detail</option>
-                        <option value="video">Video feedback</option>
-                        <option value="matches">Playing matches</option>
-                        <option value="combination">Combination of methods</option>
-                      </select>
+                      <div className="space-y-2">
+                        {[
+                          { value: 'technical', label: 'Technical detail' },
+                          { value: 'video', label: 'Video feedback' },
+                          { value: 'matches', label: 'Playing matches' }
+                        ].map((option) => (
+                          <label key={option.value} className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.learningPreferences.includes(option.value)}
+                              onChange={() => handleCheckboxChange('learningPreferences', option.value)}
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Goals & Expectations */}
-                <div className="2">
+                <div className="pb-2">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Goals & Expectations</h3>
                   <div className="space-y-4">
                     <div>
