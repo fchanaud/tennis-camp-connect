@@ -16,6 +16,22 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [camps, setCamps] = useState<any[]>([]);
   const router = useRouter();
 
+  const loadPlayerCamps = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/player/camps?userId=${userId}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setCamps(data.camps || []);
+      } else {
+        console.error('Error loading player camps:', data.error);
+      }
+    } catch (error) {
+      console.error('Error loading player camps:', error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     // Check for user in sessionStorage
     const userStr = sessionStorage.getItem('user');
@@ -24,11 +40,11 @@ export function AppLayout({ children }: AppLayoutProps) {
         const userData = JSON.parse(userStr);
         setUser(userData);
         
-        // Load camps for players (you can extend this logic later)
+        // Load camps for players
         if (userData.role === 'player') {
-          // For now, set empty camps array
-          // In the future, you can fetch actual camps from the API
-          setCamps([]);
+          loadPlayerCamps(userData.id);
+        } else {
+          setLoading(false);
         }
       } catch {
         sessionStorage.removeItem('user');

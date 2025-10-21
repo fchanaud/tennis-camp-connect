@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
@@ -12,7 +12,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { ReportForm } from '@/components/features/ReportForm';
 import { ArrowLeft } from 'lucide-react';
 
-export default function SinglePlayerPage({ params }: { params: { id: string } }) {
+export default function SinglePlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const [player, setPlayer] = useState<any>(null);
   const [camps, setCamps] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
@@ -23,7 +23,8 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
   const [success, setSuccess] = useState('');
   const [currentCoach, setCurrentCoach] = useState<any>(null);
   const router = useRouter();
-  const playerId = params.id;
+  const resolvedParams = React.use(params);
+  const playerId = resolvedParams.id;
 
   useEffect(() => {
     loadCurrentCoach();
@@ -143,6 +144,33 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
     setEditingReport(null);
     setError('');
     setSuccess('');
+  };
+
+  // Helper function to check if current date is within the last 2 days of camp
+  const canCreateReport = (camp: any) => {
+    const now = new Date();
+    const campEndDate = new Date(camp.end_date);
+    const twoDaysBeforeEnd = new Date(campEndDate);
+    twoDaysBeforeEnd.setDate(campEndDate.getDate() - 2);
+    
+    // Can create report if current date is within the last 2 days of camp or after camp ends
+    return now >= twoDaysBeforeEnd;
+  };
+
+  // Helper function to get days remaining until report creation is allowed
+  const getDaysUntilReportAllowed = (camp: any) => {
+    const now = new Date();
+    const campEndDate = new Date(camp.end_date);
+    const twoDaysBeforeEnd = new Date(campEndDate);
+    twoDaysBeforeEnd.setDate(campEndDate.getDate() - 2);
+    
+    if (now >= twoDaysBeforeEnd) {
+      return 0; // Can create report now
+    }
+    
+    const diffTime = twoDaysBeforeEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
   if (loading) {
@@ -342,15 +370,29 @@ export default function SinglePlayerPage({ params }: { params: { id: string } })
                       />
                     ) : (
                       <div>
-                        <p className="text-gray-600 mb-4 text-sm sm:text-base">No report created yet. Create a comprehensive post-camp report for this player.</p>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => startEditingReport(camp.id)}
-                          className="w-full sm:w-auto"
-                        >
-                          Create Report
-                        </Button>
+                        {canCreateReport(camp) ? (
+                          <>
+                            <p className="text-gray-600 mb-4 text-sm sm:text-base">No report created yet. Create a comprehensive post-camp report for this player.</p>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => startEditingReport(camp.id)}
+                              className="w-full sm:w-auto"
+                            >
+                              Create Report
+                            </Button>
+                          </>
+                        ) : (
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <p className="text-yellow-800 text-sm sm:text-base mb-2">
+                              <strong>Report creation not yet available</strong>
+                            </p>
+                            <p className="text-yellow-700 text-sm">
+                              You can create reports starting {getDaysUntilReportAllowed(camp) === 1 ? 'tomorrow' : `in ${getDaysUntilReportAllowed(camp)} days `} 
+                              (2 days before camp ends on {new Date(camp.end_date).toLocaleDateString()}).
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

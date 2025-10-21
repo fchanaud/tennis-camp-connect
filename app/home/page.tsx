@@ -53,6 +53,9 @@ function getPackageLabel(packageType: string): string {
 
 function HomePageContent() {
   const [user, setUser] = useState<User | null>(null);
+  const [camps, setCamps] = useState<any[]>([]);
+  const [coachData, setCoachData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Get user from sessionStorage
@@ -60,11 +63,60 @@ function HomePageContent() {
     if (userStr) {
       const userData = JSON.parse(userStr);
       setUser(userData);
+      
+      // Load data based on user role
+      if (userData.role === 'player') {
+        loadPlayerCamps(userData.id);
+      } else if (userData.role === 'coach') {
+        loadCoachData(userData.id);
+      } else {
+        setLoading(false);
+      }
     }
   }, []);
 
-  if (!user) {
-    return null;
+  const loadPlayerCamps = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/player/camps?userId=${userId}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setCamps(data.camps || []);
+      } else {
+        console.error('Error loading player camps:', data.error);
+      }
+    } catch (error) {
+      console.error('Error loading player camps:', error);
+    }
+    setLoading(false);
+  };
+
+  const loadCoachData = async (coachId: string) => {
+    try {
+      const response = await fetch(`/api/coach/camps?coachId=${coachId}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setCoachData(data);
+      } else {
+        console.error('Error loading coach data:', data.error);
+      }
+    } catch (error) {
+      console.error('Error loading coach data:', error);
+    }
+    setLoading(false);
+  };
+
+  if (!user || loading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <div className="text-center py-12">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
   }
 
   return (
@@ -75,14 +127,77 @@ function HomePageContent() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Welcome, {user.first_name}!
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Manage your tennis camp experience with ease
-          </p>
+          {user.role === 'coach' && coachData ? (
+            <div className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {coachData.nextUpcomingCamp ? (
+                <div>
+                  <p className="mb-2">
+                    Your next camp starts on
+                  </p>
+                  <p className="mb-2 font-semibold text-[#FF4C4C] text-lg md:text-xl">
+                    {(() => {
+                      const date = new Date(coachData.nextUpcomingCamp.start_date);
+                      const options: Intl.DateTimeFormatOptions = { 
+                        weekday: 'long', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      };
+                      return date.toLocaleDateString('en-US', options);
+                    })()}
+                  </p>
+                  <p className="text-lg">
+                    You have <span className="font-semibold text-[#FF4C4C]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+                  </p>
+                </div>
+              ) : (
+                <p>
+                  You have <span className="font-semibold text-[#FF4C4C]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+                </p>
+              )}
+            </div>
+          ) : user.role === 'player' && camps.length > 0 ? (
+            <div className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {(() => {
+                const now = new Date();
+                const upcomingCamps = camps.filter(camp => new Date(camp.start_date) >= now);
+                const nextCamp = upcomingCamps.length > 0 ? upcomingCamps[0] : null;
+                
+                if (nextCamp) {
+                  const daysUntil = Math.ceil((new Date(nextCamp.start_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  return (
+                    <div>
+                      <p className="mb-2">
+                        Your camp starts in <span className="font-semibold text-[#FF4C4C]">{daysUntil}</span> day{daysUntil !== 1 ? 's' : ''}
+                      </p>
+                      <p className="mb-2 font-semibold text-[#FF4C4C] text-lg md:text-xl">
+                        {(() => {
+                          const date = new Date(nextCamp.start_date);
+                          const options: Intl.DateTimeFormatOptions = { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          };
+                          return date.toLocaleDateString('en-US', options);
+                        })()}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+            </div>
+          ) : (
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Manage your tennis camp experience with ease
+            </p>
+          )}
         </div>
 
         {/* Role-based Content */}
         {user.role === 'player' && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid gap-6 ${camps.length === 1 ? 'justify-center' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
             {/* Camp Countdown */}
             {camps.length > 0 ? (
               camps.map((camp) => (
@@ -90,7 +205,9 @@ function HomePageContent() {
                   <CardBody className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <Badge variant="primary">{getPackageLabel(camp.package)}</Badge>
-                      <Badge variant="secondary">{calculateCountdown(camp.start_date, camp.end_date)}</Badge>
+                      <Badge variant="secondary">
+                        {camp.total_tennis_hours ? `${camp.total_tennis_hours}h Tennis` : 'No Tennis'}
+                      </Badge>
                     </div>
                     <CardTitle className="text-xl mb-2">Camp Session</CardTitle>
                     <CardText className="text-gray-600 mb-4">
@@ -140,12 +257,12 @@ function HomePageContent() {
         )}
 
         {user.role === 'coach' && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid gap-6 ${coachData?.totalCamps === 1 ? 'justify-center' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
             <Card className="bg-white shadow-lg">
               <CardBody className="p-6">
                 <CardTitle className="text-xl mb-4">My Players</CardTitle>
                 <CardText className="text-gray-600 mb-4">
-                  Manage and track your assigned players
+                  Manage and track your assigned players, create reports
                 </CardText>
                 <Link href="/coach/players">
                   <Button variant="primary" fullWidth>
@@ -154,25 +271,11 @@ function HomePageContent() {
                 </Link>
               </CardBody>
             </Card>
-
-            <Card className="bg-white shadow-lg">
-              <CardBody className="p-6">
-                <CardTitle className="text-xl mb-4">Reports</CardTitle>
-                <CardText className="text-gray-600 mb-4">
-                  Create and manage post-camp reports
-                </CardText>
-                <Link href="/coach/players">
-                  <Button variant="outline" fullWidth>
-                    Manage Reports
-                  </Button>
-                </Link>
-              </CardBody>
-            </Card>
           </div>
         )}
 
         {user.role === 'admin' && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 justify-center md:grid-cols-2 lg:grid-cols-3">
             <Card className="bg-white shadow-lg">
               <CardBody className="p-6">
                 <CardTitle className="text-xl mb-4">User Management</CardTitle>
