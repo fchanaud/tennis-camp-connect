@@ -140,7 +140,7 @@ function HomePageContent() {
         {/* Hero Section */}
         <div className="text-center mb-4">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Welcome, {user.first_name}!
+            Welcome, {user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1).toLowerCase()}!
           </h1>
           {user.role === 'coach' && coachData ? (
             <div className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -183,7 +183,7 @@ function HomePageContent() {
                   return (
                     <div>
                       <p className="mb-2">
-                        Your camp starts in <span className="font-semibold text-[#FF4C4C]">{daysUntil}</span> day{daysUntil !== 1 ? 's' : ''}
+                        🎉 Your camp starts in <span className="font-semibold text-[#FF4C4C]">{daysUntil}</span> day{daysUntil !== 1 ? 's' : ''}
                       </p>
                       <p className="mb-2 font-semibold text-[#2563EB] text-lg md:text-xl">
                         {(() => {
@@ -215,7 +215,7 @@ function HomePageContent() {
                           ) : (
                             <div>
                               <p className="text-gray-600 mb-3">
-                                Please complete your technical assessment for the coach to design sessions focused on you and your goals
+                                Please complete your assessment for the coach to design sessions focused on you and your goals
                               </p>
                               <Link href="/player/assessment/form">
                                 <Button variant="primary" className="w-full sm:w-auto">
@@ -253,19 +253,11 @@ function HomePageContent() {
                         {camp.total_tennis_hours ? `${camp.total_tennis_hours}h Tennis` : 'No Tennis'}
                       </Badge>
                     </div>
-                    <CardTitle className="text-xl mb-2">Camp Session</CardTitle>
-                    <CardText className="text-gray-600 mb-4">
-                      {formatDateRange(camp.start_date, camp.end_date)}
-                    </CardText>
+                    <CardTitle className="text-xl mb-2">{formatDateRange(camp.start_date, camp.end_date)}</CardTitle>
                     <div className="space-y-4">
                       <Link href={`/camp/${camp.id}/tennis`}>
                         <Button variant="primary" fullWidth>
                           Tennis program
-                        </Button>
-                      </Link>
-                      <Link href={`/camp/${camp.id}/schedule`}>
-                        <Button variant="outline" fullWidth>
-                          Schedule
                         </Button>
                       </Link>
                       {camp.package !== 'tennis_only' && (
@@ -280,6 +272,9 @@ function HomePageContent() {
                           Essentials guide
                         </Button>
                       </Link>
+                      <Button variant="outline" fullWidth disabled className="opacity-50 cursor-not-allowed">
+                        Schedule <span className="text-xs">(Coming soon)</span>
+                      </Button>
                     </div>
                   </CardBody>
                 </Card>

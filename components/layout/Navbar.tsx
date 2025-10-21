@@ -51,25 +51,27 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         >
           Tennis program
         </Link>
-        <Link
-          href={activeCamp ? `/camp/${activeCamp.id}/schedule` : '/camp/loading/schedule'}
-          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
-        >
-          Schedule
-        </Link>
+        <span className="px-4 py-2 text-gray-500 cursor-not-allowed">
+          Schedule <span className="text-xs">(Coming soon)</span>
+        </span>
         <Link
           href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
           className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
         >
           Essentials guide
         </Link>
-        {hasAccommodation && (
+        {/* Always render accommodation slot to prevent layout shift */}
+        {hasAccommodation ? (
           <Link
             href={`/camp/${activeCamp.id}/stay`}
             className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
           >
             Accommodation
           </Link>
+        ) : (
+          <div className="px-4 py-2 text-gray-400 cursor-not-allowed">
+            Accommodation
+          </div>
         )}
       </>
     );
@@ -115,82 +117,154 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
     </>
   );
 
-  if (!user) {
-    return (
-      <nav className="navbar sticky top-0 z-50">
-        <div className="container mx-auto px-4 relative">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link href="/home" className="text-xl md:text-2xl font-bold text-[#66B032] cursor-pointer">
-              Tennis Camp Connect
-            </Link>
+  // Always render the same navbar structure to prevent layout shifts
+  const renderNavigation = () => {
+    if (!user) {
+      // Show placeholder navigation items with same dimensions
+      return (
+        <>
+          <div className="px-4 py-2 text-gray-400">Home</div>
+          <div className="px-4 py-2 text-gray-400">Tennis program</div>
+          <div className="px-4 py-2 text-gray-400">Schedule</div>
+          <div className="px-4 py-2 text-gray-400">Essentials guide</div>
+          <div className="px-4 py-2 text-gray-400">Accommodation</div>
+        </>
+      );
+    }
 
-            {/* Loading state for navigation */}
-            <div className="hidden md:flex items-center gap-2">
-              <Link
-                href="/home"
-                className="px-4 py-2 transition-colors cursor-pointer text-gray-700 hover:text-[#2563EB]"
-              >
-                Home
-              </Link>
-              <Link
-                href="/camp/loading/tennis"
-                className="px-4 py-2 transition-colors cursor-pointer text-gray-700 hover:text-[#2563EB]"
-              >
-                Tennis program
-              </Link>
-              <Link
-                href="/camp/loading/schedule"
-                className="px-4 py-2 transition-colors cursor-pointer text-gray-700 hover:text-[#2563EB]"
-              >
-                Schedule
-              </Link>
-              <Link
-                href="/camp/loading/essentials"
-                className="px-4 py-2 transition-colors cursor-pointer text-gray-700 hover:text-[#2563EB]"
-              >
-                Essentials guide
-              </Link>
-              <Link
-                href="/camp/loading/stay"
-                className="px-4 py-2 transition-colors cursor-pointer text-gray-700 hover:text-[#2563EB]"
-              >
-                Accommodation
-              </Link>
-            </div>
+    if (user.role === 'player') {
+      return renderPlayerNav();
+    } else if (user.role === 'coach') {
+      return renderCoachNav();
+    } else if (user.role === 'admin') {
+      return renderAdminNav();
+    }
 
-            {/* Loading state for logout */}
-            <div className="hidden md:flex items-center gap-4">
-              <div className="px-4 py-2 text-gray-400">Loading...</div>
-            </div>
+    return null;
+  };
 
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden p-2 text-gray-700 hover:text-[#FF4C4C] transition-colors cursor-pointer"
-              disabled
+  const renderMobileNavigation = () => {
+    if (!user) {
+      // Show placeholder mobile navigation items with same dimensions
+      return (
+        <>
+          <div className="px-4 py-3 text-gray-400">Home</div>
+          <div className="px-4 py-3 text-gray-400">Tennis program</div>
+          <div className="px-4 py-3 text-gray-400">Schedule</div>
+          <div className="px-4 py-3 text-gray-400">Essentials guide</div>
+          <div className="px-4 py-3 text-gray-400">Accommodation</div>
+        </>
+      );
+    }
+
+    if (user.role === 'player') {
+      const activeCamp = camps[0];
+      const hasAccommodation = activeCamp && activeCamp.package !== 'tennis_only';
+      
+      return (
+        <>
+          <Link
+            href="/home"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/home') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href={activeCamp ? `/camp/${activeCamp.id}/tennis` : '/camp/loading/tennis'}
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/tennis') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Tennis program
+          </Link>
+          <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
+            Schedule <span className="text-xs">(Coming soon)</span>
+          </span>
+          <Link
+            href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Essentials guide
+          </Link>
+          {/* Always render accommodation slot to prevent layout shift */}
+          {hasAccommodation ? (
+            <Link
+              href={`/camp/${activeCamp.id}/stay`}
+              className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+              onClick={() => setMobileMenuOpen(false)}
             >
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+              Accommodation
+            </Link>
+          ) : (
+            <div className="px-4 py-3 text-gray-400 cursor-not-allowed">
+              Accommodation
+            </div>
+          )}
+        </>
+      );
+    } else if (user.role === 'coach') {
+      return (
+        <>
+          <Link
+            href="/home"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/home') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href="/coach/players"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/coach/players') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Players
+          </Link>
+        </>
+      );
+    } else if (user.role === 'admin') {
+      return (
+        <>
+          <Link
+            href="/home"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/home') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href="/admin/users"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/users') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            User Management
+          </Link>
+          <Link
+            href="/admin/camps"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/camps') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Camp Management
+          </Link>
+        </>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <nav className="navbar sticky top-0 z-50">
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/home" className="text-xl md:text-2xl font-bold text-[#66B032] cursor-pointer">
+          <Link href="/home" className="text-xl md:text-2xl font-bold text-[#FF4C4C] cursor-pointer">
             Tennis Camp Connect
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2">
-            {user.role === 'player' && renderPlayerNav()}
-            {user.role === 'coach' && renderCoachNav()}
-            {user.role === 'admin' && renderAdminNav()}
+            {renderNavigation()}
           </div>
 
           {/* Right side buttons */}
@@ -219,7 +293,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t bg-white absolute top-full left-0 right-0 z-50 shadow-lg">
             <div className="flex flex-col gap-1">
-              {user.role === 'player' && (
+              {user && user.role === 'player' && (
                 <>
                   <Link
                     href="/home"
@@ -235,13 +309,9 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                   >
                     Tennis program
                   </Link>
-                  <Link
-                    href={camps[0] ? `/camp/${camps[0].id}/schedule` : '/camp/loading/schedule'}
-                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Schedule
-                  </Link>
+                  <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
+                    Schedule <span className="text-xs">(Coming soon)</span>
+                  </span>
                   <Link
                     href={camps[0] ? `/camp/${camps[0].id}/essentials` : '/camp/loading/essentials'}
                     className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
@@ -260,7 +330,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                   )}
                 </>
               )}
-              {user.role === 'coach' && (
+              {user && user.role === 'coach' && (
                 <>
                   <Link
                     href="/home"
@@ -278,7 +348,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                   </Link>
                 </>
               )}
-              {user.role === 'admin' && (
+              {user && user.role === 'admin' && (
                 <>
                   <Link
                     href="/home"

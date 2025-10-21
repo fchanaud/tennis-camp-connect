@@ -1,111 +1,247 @@
-import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/utils/auth';
-import { Navbar } from '@/components/layout/Navbar';
+'use client';
+
+import { use, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { Spinner } from '@/components/ui/Spinner';
+import { MapPin, Phone, Mail, Clock, Wifi, Car, Utensils, Dumbbell, Waves } from 'lucide-react';
 
-export default async function StayPage({ params }: { params: Promise<{ id: string }> }) {
-  const user = await getCurrentUser();
-  if (!user) redirect('/login');
+export default function StayPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const { id: campId } = use(params);
+  const [loading, setLoading] = useState(true);
+  const [camp, setCamp] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
-  const supabase = await createClient();
-  const { id: campId } = await params;
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const userStr = sessionStorage.getItem('user');
+        if (!userStr) {
+          router.push('/login');
+          return;
+        }
+        const userData = JSON.parse(userStr);
+        setUser(userData);
 
-  // Get camp details
-  const { data: camp } = await supabase
-    .from('camps')
-    .select('*')
-    .eq('id', campId)
-    .single();
+        // Fetch camp details
+        const campResponse = await fetch(`/api/camps/${campId}`);
+        if (!campResponse.ok) {
+          router.push('/home');
+          return;
+        }
+        const campData = await campResponse.json();
+        setCamp(campData);
 
-  if (!camp) redirect('/home');
+        // Check if camp includes accommodation
+        const hasAccommodation = 
+          campData.package === 'stay_and_play' || 
+          campData.package === 'luxury_stay_and_play' || 
+          campData.package === 'no_tennis';
 
-  // Check if camp includes accommodation
-  const hasAccommodation = 
-    camp.package === 'stay_and_play' || 
-    camp.package === 'luxury_stay_and_play' || 
-    camp.package === 'no_tennis';
+        if (!hasAccommodation) {
+          router.push(`/camp/${campId}/tennis`);
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading accommodation data:', error);
+        router.push('/home');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!hasAccommodation) {
-    redirect(`/camp/${campId}/tennis`);
+    loadData();
+  }, [campId, router]);
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Spinner />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!camp || !user) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <Alert variant="danger">
+            Camp not found. Please check your camp details.
+          </Alert>
+        </div>
+      </AppLayout>
+    );
   }
 
   const accommodationDetails = camp.accommodation_details || '';
 
-  return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      <Navbar user={user} camps={[camp]} />
-      
-      <div className="container mx-auto px-4 py-8">
-        <nav className="mb-6 text-sm">
-          <span className="text-gray-500">Camp / </span>
-          <span className="font-semibold">Stay</span>
-        </nav>
+  // Function to detect and extract Google Maps links
+  const extractGoogleMapsLinks = (text: string) => {
+    const googleMapsRegex = /(https:\/\/www\.google\.com\/maps\/[^\s]+)/g;
+    const matches = text.match(googleMapsRegex);
+    return matches || [];
+  };
 
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Accommodation</h1>
+  // Function to render text with Google Maps embeds
+  const renderTextWithMaps = (text: string) => {
+    const googleMapsLinks = extractGoogleMapsLinks(text);
+    let processedText = text;
+
+    // Replace Google Maps links with placeholders
+    googleMapsLinks.forEach((link, index) => {
+      processedText = processedText.replace(link, `__MAP_PLACEHOLDER_${index}__`);
+    });
+
+    // Split by line breaks and process each line
+    const lines = processedText.split('\n');
+    const elements: JSX.Element[] = [];
+
+    lines.forEach((line, lineIndex) => {
+      if (line.trim()) {
+        elements.push(
+          <p key={lineIndex} className="mb-3 text-sm sm:text-base text-gray-700 leading-relaxed">
+            {line}
+          </p>
+        );
+      }
+    });
+
+    // Add Google Maps embeds after the text
+    googleMapsLinks.forEach((link, index) => {
+      elements.push(
+        <div key={`map-${index}`} className="mt-4">
+          <div 
+            className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden relative"
+            style={{ touchAction: 'pan-y pinch-zoom' }}
+          >
+            <iframe
+              src={`https://www.google.com/maps/embed?pb=${link.split('pb=')[1]?.split('&')[0] || ''}&gestureHandling=greedy`}
+              width="100%"
+              height="100%"
+              style={{ border: 0, pointerEvents: 'auto' }}
+              allowFullScreen
+              loading="lazy"
+              title={`Accommodation Location ${index + 1}`}
+            />
+          </div>
+          <p className="mt-3 text-sm sm:text-base text-gray-600">
+            <a 
+              href={link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline cursor-pointer inline-flex items-center gap-1"
+            >
+              📍 View on Google Maps
+              <span className="text-xs">(Tap to open)</span>
+            </a>
+          </p>
+        </div>
+      );
+    });
+
+    return elements;
+  };
+
+  return (
+    <AppLayout>
+      <div className="container mx-auto px-4 pt-8 pb-8">
 
         {accommodationDetails ? (
-          <div className="max-w-4xl">
-            <Card hover premium>
+          <div className="max-w-4xl space-y-4 sm:space-y-6">
+            {/* Accommodation Details Card */}
+            <Card>
               <CardBody className="p-4 sm:p-6">
-                <CardTitle className="text-xl sm:text-2xl mb-4 sm:mb-6">Hotel Details</CardTitle>
+                <CardTitle className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 md:mb-6">Accommodation Details</CardTitle>
                 
-                <div className="space-y-6">
-                  {/* Accommodation Details Display */}
-                  <div className="prose max-w-none">
-                    <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-                      {accommodationDetails}
-                    </div>
-                  </div>
-
-                  {/* Embedded Map */}
-                  <div>
-                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-[#FF4C4C]" />
-                      Location
-                    </h3>
-                    <div className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden">
-                      <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.6748934058!2d-7.9898!3d31.6295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM3JzQ2LjIiTiA3wrA1OSczNS4zIlc!5e0!3m2!1sen!2s!4v1234567890"
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Common Amenities List (visual enhancement) */}
-                  <div>
-                    <h3 className="font-semibold text-lg mb-3">Common Amenities</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {['WiFi', 'Pool', 'Restaurant', 'Gym', 'Spa', 'Air Conditioning', 'Room Service', 'Parking'].map((amenity) => (
-                        <div key={amenity} className="flex items-center gap-2 text-gray-700">
-                          <div className="w-2 h-2 bg-[#66B032] rounded-full" />
-                          <span>{amenity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Important Information */}
-                  <Alert variant="info">
-                    <strong>Important:</strong> Please verify check-in/check-out times and any specific hotel policies directly with the accommodation.
-                  </Alert>
+                <div className="space-y-3 sm:space-y-4">
+                  {renderTextWithMaps(accommodationDetails)}
                 </div>
+              </CardBody>
+            </Card>
+
+            {/* Amenities Card */}
+            <Card>
+              <CardBody className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 md:mb-6">Amenities & Services</CardTitle>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2 sm:space-y-3">
+                    <h4 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">Standard Amenities</h4>
+                    {[
+                      { icon: Wifi, name: 'Free WiFi', description: 'High-speed internet access' },
+                      { icon: Utensils, name: 'Restaurant', description: 'On-site dining options' },
+                      { icon: Waves, name: 'Swimming Pool', description: 'Outdoor pool area' },
+                    ].map((amenity) => (
+                      <div key={amenity.name} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
+                        <amenity.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#66B032] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium text-gray-800 text-sm sm:text-base">{amenity.name}</div>
+                          <div className="text-xs sm:text-sm text-gray-600">{amenity.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-2 sm:space-y-3">
+                    <h4 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">Additional Services</h4>
+                    {[
+                      'Air conditioning',
+                      'Daily housekeeping',
+                      'Concierge Service',
+                      'Laundry Service'
+                    ].map((service) => (
+                      <div key={service} className="flex items-center gap-2 p-2 sm:p-3 bg-gray-50 rounded-lg">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#66B032] rounded-full flex-shrink-0" />
+                        <span className="text-gray-700 text-sm sm:text-base">{service}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Important Information Card */}
+            <Card>
+              <CardBody className="p-4 sm:p-6">
+                <Alert variant="info">
+                  <div className="space-y-2">
+                    <div className="font-semibold text-sm sm:text-base">Important Information:</div>
+                    <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
+                      <li>Please verify check-in/check-out times directly with the accommodation</li>
+                      <li>Contact the hotel for any special requests or dietary requirements</li>
+                      <li>Keep your booking confirmation handy during your stay</li>
+                      <li>Check for any specific hotel policies or restrictions</li>
+                    </ul>
+                  </div>
+                </Alert>
               </CardBody>
             </Card>
           </div>
         ) : (
-          <Alert variant="warning">
-            Accommodation details have not been added yet. Please contact your administrator for information.
-          </Alert>
+          <Card>
+            <CardBody className="p-4 sm:p-6">
+              <Alert variant="warning">
+                <div className="text-center py-6 sm:py-8">
+                  <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🏨</div>
+                  <div className="font-semibold text-base sm:text-lg mb-2">Accommodation Details Coming Soon</div>
+                  <div className="text-gray-600 text-sm sm:text-base">
+                    Detailed accommodation information will be available soon. 
+                    Please contact your administrator for more information about your stay.
+                  </div>
+                </div>
+              </Alert>
+            </CardBody>
+          </Card>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
