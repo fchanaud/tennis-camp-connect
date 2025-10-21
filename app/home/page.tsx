@@ -138,7 +138,7 @@ function HomePageContent() {
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-4">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Welcome, {user.first_name}!
           </h1>
@@ -215,7 +215,7 @@ function HomePageContent() {
                           ) : (
                             <div>
                               <p className="text-gray-600 mb-3">
-                                Please take a moment to complete your technical assessment for the coach to design sessions focused on you and your goals
+                                Please complete your technical assessment for the coach to design sessions focused on you and your goals
                               </p>
                               <Link href="/player/assessment/form">
                                 <Button variant="primary" className="w-full sm:w-auto">

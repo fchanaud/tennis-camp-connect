@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     // Assign players
     if (selectedPlayers.length > 0) {
-      const playerAssignments = selectedPlayers.map(playerId => ({
+      const playerAssignments = selectedPlayers.map((playerId: string) => ({
         camp_id: campData.id,
         player_id: playerId,
       }));

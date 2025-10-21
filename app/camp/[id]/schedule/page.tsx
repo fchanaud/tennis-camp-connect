@@ -19,12 +19,12 @@ function getDatesInRange(startDate: string, endDate: string): Date[] {
   return dates;
 }
 
-export default async function SchedulePage({ params }: { params: { id: string } }) {
+export default async function SchedulePage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect('/login');
 
   const supabase = await createClient();
-  const campId = params.id;
+  const { id: campId } = await params;
 
   // Get camp details
   const { data: camp } = await supabase

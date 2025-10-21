@@ -7,12 +7,12 @@ import { Alert } from '@/components/ui/Alert';
 import { AssessmentForm } from '@/components/features/AssessmentForm';
 import { createClient } from '@/lib/supabase/server';
 
-export default async function TennisPage({ params }: { params: { id: string } }) {
+export default async function TennisPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect('/login');
 
   const supabase = await createClient();
-  const campId = params.id;
+  const { id: campId } = await params;
 
   // Get camp details with coach info
   const { data: camp } = await supabase

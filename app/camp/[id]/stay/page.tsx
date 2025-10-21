@@ -6,12 +6,12 @@ import { Alert } from '@/components/ui/Alert';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 
-export default async function StayPage({ params }: { params: { id: string } }) {
+export default async function StayPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect('/login');
 
   const supabase = await createClient();
-  const campId = params.id;
+  const { id: campId } = await params;
 
   // Get camp details
   const { data: camp } = await supabase

@@ -3,10 +3,10 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const playerId = params.id;
+    const { id: playerId } = await params;
     const supabase = createServiceRoleClient();
 
     // Get player details
