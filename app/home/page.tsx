@@ -204,11 +204,11 @@ function HomePageContent() {
                           {assessmentData.hasAssessment ? (
                             <div>
                               <p className="text-gray-600 mb-3">
-                                You have completed your technical assessment. Click below to view your results.
+                                You have completed your technical assessment. Click below to edit it.
                               </p>
-                              <Link href={`/player/assessment/${assessmentData.assessment.id}`}>
+                              <Link href="/player/assessment/form">
                                 <Button variant="secondary" className="w-full sm:w-auto">
-                                  View technical assessment
+                                  Edit technical assessment
                                 </Button>
                               </Link>
                             </div>

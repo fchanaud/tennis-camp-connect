@@ -1,12 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { Spinner } from '@/components/ui/Spinner';
 
 export default function AssessmentForm() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [existingAssessment, setExistingAssessment] = useState<any>(null);
   const [formData, setFormData] = useState({
     // Personal Information
     dateOfBirth: '',
@@ -36,59 +41,138 @@ export default function AssessmentForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({
+    motivations: '',
+    learningPreferences: ''
+  });
+
+  // Load existing assessment on mount
+  useEffect(() => {
+    const loadAssessment = async () => {
+      try {
+        const userStr = sessionStorage.getItem('user');
+        if (!userStr) {
+          router.push('/login');
+          return;
+        }
+        
+        const user = JSON.parse(userStr);
+        const response = await fetch(`/api/player/assessment?userId=${user.id}`);
+        const data = await response.json();
+        
+        if (data.hasAssessment && data.assessment) {
+          // Populate form with existing data from answers JSONB field
+          setExistingAssessment(data.assessment);
+          const answers = data.assessment.answers || {};
+          setFormData({
+            dateOfBirth: answers.date_of_birth || '',
+            playingDuration: answers.playing_duration || '',
+            monthlyFrequency: answers.monthly_frequency || '',
+            competitionExperience: answers.competition_experience || '',
+            competitionLevel: answers.competition_level || '',
+            confidentAspects: answers.confident_aspects || '',
+            improvementAreas: answers.improvement_areas || '',
+            currentInjuries: answers.current_injuries || '',
+            discomfortMovements: answers.discomfort_movements || '',
+            fitnessRating: answers.fitness_rating || '',
+            motivations: answers.motivations || [],
+            learningPreferences: answers.learning_preferences || [],
+            mainGoal: answers.main_goal || '',
+            additionalInfo: answers.additional_info || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error loading assessment:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAssessment();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear previous errors and messages
+    setErrors({
+      motivations: '',
+      learningPreferences: ''
+    });
+    setMessage('');
+    
+    // Validate checkboxes
+    let hasErrors = false;
+    const newErrors = {
+      motivations: '',
+      learningPreferences: ''
+    };
+    
+    if (formData.motivations.length === 0) {
+      newErrors.motivations = 'Please select at least one motivation';
+      hasErrors = true;
+    }
+    
+    if (formData.learningPreferences.length === 0) {
+      newErrors.learningPreferences = 'Please select at least one learning preference';
+      hasErrors = true;
+    }
+    
+    if (hasErrors) {
+      setErrors(newErrors);
+      setMessage('Please complete all required fields');
+      // Scroll to top to show error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // Validate checkboxes
-      if (formData.motivations.length === 0) {
-        setMessage('Please select at least one motivation.');
-        setIsSubmitting(false);
+      const userStr = sessionStorage.getItem('user');
+      if (!userStr) {
+        router.push('/login');
         return;
       }
-      if (formData.learningPreferences.length === 0) {
-        setMessage('Please select at least one learning preference.');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setMessage('Assessment submitted successfully! Thank you for your feedback.');
-      // Reset form
-      setFormData({
-        // Personal Information
-        dateOfBirth: '',
-        
-        // Playing Background
-        playingDuration: '',
-        monthlyFrequency: '',
-        competitionExperience: '',
-        competitionLevel: '',
-        
-        // Game Profile
-        confidentAspects: '',
-        improvementAreas: '',
-        
-        // Physical & Health
-        currentInjuries: '',
-        discomfortMovements: '',
-        fitnessRating: '',
-        
-        // Learning & Motivation
-        motivations: [],
-        learningPreferences: [],
-        
-        // Goals & Expectations
-        mainGoal: '',
-        additionalInfo: ''
+      const user = JSON.parse(userStr);
+      
+      // Submit assessment to API
+      const response = await fetch('/api/player/assessment', {
+        method: existingAssessment ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          assessmentData: {
+            date_of_birth: formData.dateOfBirth,
+            playing_duration: formData.playingDuration,
+            monthly_frequency: formData.monthlyFrequency,
+            competition_experience: formData.competitionExperience,
+            competition_level: formData.competitionLevel,
+            confident_aspects: formData.confidentAspects,
+            improvement_areas: formData.improvementAreas,
+            current_injuries: formData.currentInjuries,
+            discomfort_movements: formData.discomfortMovements,
+            fitness_rating: formData.fitnessRating,
+            motivations: formData.motivations,
+            learning_preferences: formData.learningPreferences,
+            main_goal: formData.mainGoal,
+            additional_info: formData.additionalInfo
+          }
+        })
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit assessment');
+      }
+      
+      // Redirect to home page after successful submission
+      router.push('/home');
     } catch (error) {
       setMessage('Error submitting assessment. Please try again.');
-    } finally {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setIsSubmitting(false);
     }
   };
@@ -112,16 +196,41 @@ export default function AssessmentForm() {
         [field]: newArray
       };
     });
+    
+    // Clear error for this field when user makes a selection
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
   };
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 pt-8 pb-8">
+          <div className="max-w-3xl mx-auto flex justify-center items-center py-20">
+            <Spinner size="lg" />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Technical Assessment</h1>
+          <h1 className="text-3xl font-bold mb-8">
+            {existingAssessment ? 'Edit Technical Assessment' : 'Technical Assessment'}
+          </h1>
           
           {message && (
-            <Alert variant={message.includes('Error') ? 'danger' : 'success'} className="mb-6">
+            <Alert 
+              variant={message.includes('Error') || message.includes('complete all required') ? 'danger' : 'success'} 
+              className="mb-6 text-base md:text-lg font-semibold"
+            >
               {message}
             </Alert>
           )}
@@ -131,7 +240,6 @@ export default function AssessmentForm() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Personal Information */}
                 <div className="border-b pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Date of birth *
@@ -330,7 +438,7 @@ export default function AssessmentForm() {
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         What motivates you most about tennis? * <span className="text-gray-500 text-xs">(Select all that apply)</span>
                       </label>
-                      <div className="space-y-2">
+                      <div className={`space-y-2 ${errors.motivations ? 'border-2 border-red-500 rounded-md p-3 bg-red-50' : ''}`}>
                         {[
                           { value: 'competition', label: 'Competition' },
                           { value: 'fitness', label: 'Fitness' },
@@ -349,17 +457,23 @@ export default function AssessmentForm() {
                           </label>
                         ))}
                       </div>
+                      {errors.motivations && (
+                        <p className="mt-2 text-sm md:text-base text-red-600 font-semibold">
+                          ⚠️ {errors.motivations}
+                        </p>
+                      )}
                     </div>
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Do you prefer learning through: * <span className="text-gray-500 text-xs">(Select all that apply)</span>
+                        What helps you learn best? * <span className="text-gray-500 text-xs">(Select all that apply)</span>
                       </label>
-                      <div className="space-y-2">
+                      <div className={`space-y-2 ${errors.learningPreferences ? 'border-2 border-red-500 rounded-md p-3 bg-red-50' : ''}`}>
                         {[
-                          { value: 'technical', label: 'Technical detail' },
-                          { value: 'video', label: 'Video feedback' },
-                          { value: 'matches', label: 'Playing matches' }
+                          { value: 'drills', label: 'Drills and repetition' },
+                          { value: 'explanation', label: 'Clear explanations and demonstrations' },
+                          { value: 'video', label: 'Video analysis of my technique' },
+                          { value: 'practice-matches', label: 'Practice matches and point play' }
                         ].map((option) => (
                           <label key={option.value} className="flex items-center cursor-pointer">
                             <input
@@ -372,6 +486,11 @@ export default function AssessmentForm() {
                           </label>
                         ))}
                       </div>
+                      {errors.learningPreferences && (
+                        <p className="mt-2 text-sm md:text-base text-red-600 font-semibold">
+                          ⚠️ {errors.learningPreferences}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -418,7 +537,10 @@ export default function AssessmentForm() {
                     disabled={isSubmitting}
                     className="flex-1"
                   >
-                    {isSubmitting ? 'Submitting...' : 'Submit Technical Assessment'}
+                    {isSubmitting 
+                      ? (existingAssessment ? 'Updating...' : 'Submitting...') 
+                      : (existingAssessment ? 'Update technical assessment' : 'Submit technical Assessment')
+                    }
                   </Button>
                 </div>
               </form>
