@@ -95,7 +95,7 @@ export default function SchedulePage({ params }: { params: Promise<{ id: string 
           <span className="font-semibold">Schedule</span>
         </nav>
 
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Camp Schedule</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your camp schedule</h1>
 
         {/* Daily Schedules */}
         <div className="space-y-3 mb-12">

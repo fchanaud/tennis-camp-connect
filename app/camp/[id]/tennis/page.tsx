@@ -98,7 +98,7 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
           <span className="font-semibold">Tennis</span>
         </nav>
 
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Tennis Program</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your tennis program</h1>
 
         {isNoTennis ? (
           <Alert variant="info">
@@ -111,24 +111,28 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
               <CardBody>
                 <CardTitle>Court Location</CardTitle>
                 <div className="mt-4">
-                  <div className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden">
+                  <div 
+                    className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden relative"
+                    style={{ touchAction: 'pan-y pinch-zoom' }}
+                  >
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.444!2d-7.997!3d31.638!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzE3LjAiTiA3wrA1OScxMC4wIlc!5e0!3m2!1sen!2s!4v1234567890"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.8266861843846!2d-8.0564861!3d31.6491204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdafeeeb6677a635%3A0x2936795494e33117!2sTennis%20Academy%20Marrakech!5e0!3m2!1sen!2s!4v1234567890&gestureHandling=greedy"
                       width="100%"
                       height="100%"
-                      style={{ border: 0 }}
+                      style={{ border: 0, pointerEvents: 'auto' }}
                       allowFullScreen
                       loading="lazy"
+                      title="Tennis Academy Marrakech Location"
                     />
                   </div>
-                  <p className="mt-3 text-gray-600">
+                  <p className="mt-3 text-sm sm:text-base text-gray-600">
                     <a 
-                      href="https://www.google.com/maps/search/?api=1&query=COS-ONE,+Rte+de+Targa,+Marrakech+40000,+Maroc" 
+                      href="https://www.google.com/maps/place/Tennis+Academy+Marrakech/@31.6491204,-8.0539112,17z/data=!3m1!4b1!4m6!3m5!1s0xdafeeeb6677a635:0x2936795494e33117!8m2!3d31.6491204!4d-8.0539112!16s%2Fg%2F11ckr5vc9_?entry=ttu&g_ep=EgoyMDI1MTAxNC4wIKXMDSoASAFQAw%3D%3D" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline cursor-pointer"
+                      className="text-blue-600 hover:underline cursor-pointer inline-flex items-center gap-1"
                     >
-                      COS-ONE, Rte de Targa, Marrakech 40000, Maroc
+                      📍 Tennis Academy Marrakech
                     </a>
                   </p>
                 </div>
@@ -174,7 +178,7 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                 <CardBody>
                   <Link href="/player/assessment/form">
                     <Button variant={assessment ? "secondary" : "primary"} fullWidth>
-                      {assessment ? 'Edit assessment' : 'Complete assessment'}
+                      {assessment ? 'Edit technical assessment' : 'Complete technical assessment'}
                     </Button>
                   </Link>
                 </CardBody>
@@ -196,7 +200,7 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                   </div>
                 ) : (
                   <CardText className="mt-4">
-                    No report available yet. Your coach will provide feedback after the camp concludes.
+                    No report available yet. Your coach will provide feedback after the camp.
                   </CardText>
                 )}
               </CardBody>

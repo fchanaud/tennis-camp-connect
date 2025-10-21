@@ -1,21 +1,17 @@
 /**
- * Generates a random password following the pattern: {username}{1 digit}{4 alphanumeric}
- * Example: username "jdoe" -> "jdoe3a7k2"
+ * Generates a random password following the pattern: {username}{5 random digits}
+ * Example: username "jdoe" -> "jdoe37492"
  */
 export function generateRandomPassword(username: string): string {
   const digits = '0123456789';
-  const alphanumeric = '0123456789abcdefghijklmnopqrstuvwxyz';
   
-  // First character: random digit (0-9)
-  const firstChar = digits[Math.floor(Math.random() * digits.length)];
-  
-  // Next 4 characters: random alphanumeric
-  let randomChars = '';
-  for (let i = 0; i < 4; i++) {
-    randomChars += alphanumeric[Math.floor(Math.random() * alphanumeric.length)];
+  // Generate 5 random digits
+  let randomDigits = '';
+  for (let i = 0; i < 5; i++) {
+    randomDigits += digits[Math.floor(Math.random() * digits.length)];
   }
   
-  return `${username}${firstChar}${randomChars}`;
+  return `${username}${randomDigits}`;
 }
 
 /**

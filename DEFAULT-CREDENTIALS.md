@@ -6,7 +6,7 @@ These credentials are created when you run the `seed-data.sql` file in your Supa
 
 ### Admin Account
 - **Username:** `admin`
-- **Password:** `admin7k4m1` (example - will vary based on seed data)
+- **Password:** `admin37492` (example - will vary based on seed data)
 - **Role:** Administrator
 - **Full Name:** System Administrator
 - **Email (internal):** admin@tenniscamp.local
@@ -22,7 +22,7 @@ These credentials are created when you run the `seed-data.sql` file in your Supa
 
 ### Coach Account
 - **Username:** `coach`
-- **Password:** `coach3x9p2` (example - will vary based on seed data)
+- **Password:** `coach58291` (example - will vary based on seed data)
 - **Role:** Coach
 - **Full Name:** Rafael Nadal
 - **Email (internal):** coach@tenniscamp.local
@@ -38,7 +38,7 @@ These credentials are created when you run the `seed-data.sql` file in your Supa
 
 ### Test Player Account
 - **Username:** `jdoe`
-- **Password:** `jdoe5m1n9` (example - will vary based on seed data)
+- **Password:** `jdoe73945` (example - will vary based on seed data)
 - **Role:** Player
 - **Full Name:** John Doe
 - **Email (internal):** jdoe@tenniscamp.local
@@ -58,14 +58,14 @@ These credentials are created when you run the `seed-data.sql` file in your Supa
 ### Password Generation Pattern
 All passwords follow this pattern:
 ```
-{username}{1 random digit}{4 random alphanumeric characters}
+{username}{5 random digits}
 ```
 
 Examples:
-- `admin` → `admin7k4m1`
-- `coach` → `coach3x9p2`
-- `jdoe` → `jdoe5m1n9`
-- `jsmith` → `jsmith2n8x4`
+- `admin` → `admin37492`
+- `coach` → `coach58291`
+- `jdoe` → `jdoe73945`
+- `jsmith` → `jsmith28476`
 
 ### Username Generation Pattern
 ```
@@ -112,14 +112,14 @@ Examples:
 1. First Name: Sarah
 2. Last Name: Wilson
 3. Auto-generated username: `swilson`
-4. Auto-generated password: `swilson5k3m9` (example)
+4. Auto-generated password: `swilson28476` (example)
 5. Save password and share with Sarah
 
 **Creating Coach "Andre Agassi":**
 1. First Name: Andre
 2. Last Name: Agassi
 3. Auto-generated username: `aagassi`
-4. Auto-generated password: `aagassi8p2n7` (example)
+4. Auto-generated password: `aagassi73945` (example)
 5. Save password and share with Andre
 
 ---
@@ -174,7 +174,7 @@ jdoe     | John       | Doe           | player | 2024-01-15 10:00:00
 
 ### 1. Admin Test
 ```
-Login: admin / admin7k4m1
+Login: admin / admin37492
 → Should see admin dashboard with user/camp stats
 → Navigate to User Management
 → Create a test player
@@ -184,7 +184,7 @@ Login: admin / admin7k4m1
 
 ### 2. Coach Test
 ```
-Login: coach / coach3x9p2
+Login: coach / coach58291
 → Should see coach dashboard
 → Navigate to Players
 → View player details
@@ -193,7 +193,7 @@ Login: coach / coach3x9p2
 
 ### 3. Player Test
 ```
-Login: jdoe / jdoe5m1n9
+Login: jdoe / jdoe73945
 → Should see player dashboard
 → If assigned to camp, see countdown
 → Navigate to Tennis

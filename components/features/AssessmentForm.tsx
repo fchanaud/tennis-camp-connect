@@ -81,7 +81,7 @@ export function AssessmentForm({ campId, playerId, existingAssessment }: Assessm
           <CardTitle>Pre-Camp Assessment</CardTitle>
           {existingAssessment && !isEditing && (
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-              Edit Assessment
+              Edit technical assessment
             </Button>
           )}
         </div>
