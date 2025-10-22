@@ -26,6 +26,11 @@ export default function CampManagementPage() {
   const [packageType, setPackageType] = useState<PackageType>('tennis_only');
   const [tennisHours, setTennisHours] = useState('10');
   const [accommodationDetails, setAccommodationDetails] = useState('');
+  const [accommodationName, setAccommodationName] = useState('');
+  const [accommodationPhone, setAccommodationPhone] = useState('');
+  const [accommodationMapLink, setAccommodationMapLink] = useState('');
+  const [accommodationPhoto, setAccommodationPhoto] = useState<File | null>(null);
+  const [accommodationPhotoPreview, setAccommodationPhotoPreview] = useState<string | null>(null);
   const [capacity, setCapacity] = useState('4');
   const [selectedCoach, setSelectedCoach] = useState('');
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
@@ -83,9 +88,42 @@ export default function CampManagementPage() {
       return;
     }
 
+    // Validate accommodation fields for stay packages
+    if (packageType !== 'tennis_only' && packageType !== 'no_tennis') {
+      if (!accommodationName.trim()) {
+        setError('Accommodation name is required for stay packages');
+        return;
+      }
+      if (!accommodationPhone.trim()) {
+        setError('Accommodation phone number is required for stay packages');
+        return;
+      }
+    }
+
     setError('');
     
     try {
+      // Upload photo if provided
+      let photoUrl = null;
+      if (accommodationPhoto) {
+        const formData = new FormData();
+        formData.append('photo', accommodationPhoto);
+        formData.append('type', 'accommodation');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          photoUrl = uploadData.url;
+        } else {
+          setError('Failed to upload accommodation photo');
+          return;
+        }
+      }
+
       const response = await fetch('/api/admin/camps', {
         method: 'POST',
         headers: {
@@ -97,6 +135,10 @@ export default function CampManagementPage() {
           packageType,
           tennisHours,
           accommodationDetails,
+          accommodationName,
+          accommodationPhone,
+          accommodationMapLink,
+          accommodationPhotoUrl: photoUrl,
           capacity,
           selectedCoach,
           selectedPlayers,
@@ -135,9 +177,42 @@ export default function CampManagementPage() {
       return;
     }
 
+    // Validate accommodation fields for stay packages
+    if (packageType !== 'tennis_only' && packageType !== 'no_tennis') {
+      if (!accommodationName.trim()) {
+        setError('Accommodation name is required for stay packages');
+        return;
+      }
+      if (!accommodationPhone.trim()) {
+        setError('Accommodation phone number is required for stay packages');
+        return;
+      }
+    }
+
     setError('');
     
     try {
+      // Upload photo if provided
+      let photoUrl = accommodationPhotoPreview; // Keep existing photo if no new one uploaded
+      if (accommodationPhoto) {
+        const formData = new FormData();
+        formData.append('photo', accommodationPhoto);
+        formData.append('type', 'accommodation');
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          photoUrl = uploadData.url;
+        } else {
+          setError('Failed to upload accommodation photo');
+          return;
+        }
+      }
+
       const response = await fetch('/api/admin/camps', {
         method: 'PUT',
         headers: {
@@ -150,6 +225,10 @@ export default function CampManagementPage() {
           packageType,
           tennisHours,
           accommodationDetails,
+          accommodationName,
+          accommodationPhone,
+          accommodationMapLink,
+          accommodationPhotoUrl: photoUrl,
           capacity,
           selectedCoach,
           selectedPlayers,
@@ -175,12 +254,29 @@ export default function CampManagementPage() {
     }
   };
 
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAccommodationPhoto(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAccommodationPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const resetForm = () => {
     setStartDate('');
     setEndDate('');
     setPackageType('tennis_only');
     setTennisHours('10');
     setAccommodationDetails('');
+    setAccommodationName('');
+    setAccommodationPhone('');
+    setAccommodationMapLink('');
+    setAccommodationPhoto(null);
+    setAccommodationPhotoPreview(null);
     setCapacity('4');
     setSelectedCoach('');
     setSelectedPlayers([]);
@@ -205,6 +301,10 @@ export default function CampManagementPage() {
     setPackageType(camp.package);
     setTennisHours(camp.total_tennis_hours?.toString() || '10');
     setAccommodationDetails(camp.accommodation_details || '');
+    setAccommodationName(camp.accommodation_name || '');
+    setAccommodationPhone(camp.accommodation_phone || '');
+    setAccommodationMapLink(camp.accommodation_map_link || '');
+    setAccommodationPhotoPreview(camp.accommodation_photo_url || null);
     setCapacity(camp.capacity.toString());
     setSelectedCoach(camp.coach_id || '');
     
@@ -368,16 +468,73 @@ export default function CampManagementPage() {
                   />
                 )}
 
-                {/* Accommodation Details */}
+                {/* Accommodation Section */}
                 {packageType !== 'tennis_only' && (
-                  <Textarea
-                    label="Accommodation Details"
-                    value={accommodationDetails}
-                    onChange={(e) => setAccommodationDetails(e.target.value)}
-                    rows={6}
-                    placeholder="Enter hotel name, address, check-in/out times, amenities, contact information..."
-                    helperText="Include: hotel name, address, check-in/out times, amenities, contact info"
-                  />
+                  <div className="space-y-4">
+                    <div className="border-t pt-4">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-800">Accommodation Information</h3>
+                      
+                      {/* Accommodation Name */}
+                      <Input
+                        label="Accommodation Name *"
+                        value={accommodationName}
+                        onChange={(e) => setAccommodationName(e.target.value)}
+                        placeholder="e.g., Hotel Riad Dar Karma"
+                        helperText="Name of the hotel or accommodation"
+                      />
+
+                      {/* Phone Number */}
+                      <Input
+                        label="Phone Number *"
+                        value={accommodationPhone}
+                        onChange={(e) => setAccommodationPhone(e.target.value)}
+                        placeholder="e.g., +212 5XX-XXXXXX"
+                        helperText="Contact phone number for the accommodation"
+                      />
+
+                      {/* Google Maps Link */}
+                      <Input
+                        label="Google Maps Link"
+                        value={accommodationMapLink}
+                        onChange={(e) => setAccommodationMapLink(e.target.value)}
+                        placeholder="https://www.google.com/maps/place/..."
+                        helperText="Paste the Google Maps link for easy navigation"
+                      />
+
+                      {/* Photo Upload */}
+                      <div>
+                        <label className="form-label">Accommodation Photo</label>
+                        <div className="space-y-3">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                          />
+                          {accommodationPhotoPreview && (
+                            <div className="mt-2">
+                              <img
+                                src={accommodationPhotoPreview}
+                                alt="Accommodation preview"
+                                className="w-full max-w-xs h-32 object-cover rounded-lg border"
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Upload a photo of the accommodation (optional)</p>
+                      </div>
+
+                      {/* Details */}
+                      <Textarea
+                        label="Accommodation Details"
+                        value={accommodationDetails}
+                        onChange={(e) => setAccommodationDetails(e.target.value)}
+                        rows={6}
+                        placeholder="Enter detailed information about the accommodation, amenities, check-in/out times, policies, etc..."
+                        helperText="Include: amenities, check-in/out times, policies, special instructions"
+                      />
+                    </div>
+                  </div>
                 )}
 
                 {/* Capacity */}
@@ -516,16 +673,73 @@ export default function CampManagementPage() {
                   />
                 )}
 
-                {/* Accommodation Details */}
+                {/* Accommodation Section */}
                 {packageType !== 'tennis_only' && (
-                  <Textarea
-                    label="Accommodation Details"
-                    value={accommodationDetails}
-                    onChange={(e) => setAccommodationDetails(e.target.value)}
-                    rows={6}
-                    placeholder="Enter hotel name, address, check-in/out times, amenities, contact information..."
-                    helperText="Include: hotel name, address, check-in/out times, amenities, contact info"
-                  />
+                  <div className="space-y-4">
+                    <div className="border-t pt-4">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-800">Accommodation Information</h3>
+                      
+                      {/* Accommodation Name */}
+                      <Input
+                        label="Accommodation Name *"
+                        value={accommodationName}
+                        onChange={(e) => setAccommodationName(e.target.value)}
+                        placeholder="e.g., Hotel Riad Dar Karma"
+                        helperText="Name of the hotel or accommodation"
+                      />
+
+                      {/* Phone Number */}
+                      <Input
+                        label="Phone Number *"
+                        value={accommodationPhone}
+                        onChange={(e) => setAccommodationPhone(e.target.value)}
+                        placeholder="e.g., +212 5XX-XXXXXX"
+                        helperText="Contact phone number for the accommodation"
+                      />
+
+                      {/* Google Maps Link */}
+                      <Input
+                        label="Google Maps Link"
+                        value={accommodationMapLink}
+                        onChange={(e) => setAccommodationMapLink(e.target.value)}
+                        placeholder="https://www.google.com/maps/place/..."
+                        helperText="Paste the Google Maps link for easy navigation"
+                      />
+
+                      {/* Photo Upload */}
+                      <div>
+                        <label className="form-label">Accommodation Photo</label>
+                        <div className="space-y-3">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                          />
+                          {accommodationPhotoPreview && (
+                            <div className="mt-2">
+                              <img
+                                src={accommodationPhotoPreview}
+                                alt="Accommodation preview"
+                                className="w-full max-w-xs h-32 object-cover rounded-lg border"
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Upload a photo of the accommodation (optional)</p>
+                      </div>
+
+                      {/* Details */}
+                      <Textarea
+                        label="Accommodation Details"
+                        value={accommodationDetails}
+                        onChange={(e) => setAccommodationDetails(e.target.value)}
+                        rows={6}
+                        placeholder="Enter detailed information about the accommodation, amenities, check-in/out times, policies, etc..."
+                        helperText="Include: amenities, check-in/out times, policies, special instructions"
+                      />
+                    </div>
+                  </div>
                 )}
 
                 {/* Capacity */}

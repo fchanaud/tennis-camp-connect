@@ -101,7 +101,7 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
 
     // Split by line breaks and process each line
     const lines = processedText.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
 
     lines.forEach((line, lineIndex) => {
       if (line.trim()) {
@@ -153,18 +153,73 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
 
-        {accommodationDetails ? (
+        {(accommodationDetails || camp.accommodation_name) ? (
           <div className="max-w-4xl space-y-4 sm:space-y-6">
+            {/* Accommodation Header Card */}
+            {camp.accommodation_name && (
+              <Card>
+                <CardBody className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    {/* Photo */}
+                    {camp.accommodation_photo_url && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={camp.accommodation_photo_url}
+                          alt={camp.accommodation_name}
+                          className="w-full sm:w-48 h-32 sm:h-40 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Info */}
+                    <div className="flex-1">
+                      <CardTitle className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4">
+                        {camp.accommodation_name}
+                      </CardTitle>
+                      
+                      {camp.accommodation_phone && (
+                        <div className="mb-2 sm:mb-3">
+                          <span className="text-sm sm:text-base text-gray-600">📞 Phone: </span>
+                          <a 
+                            href={`tel:${camp.accommodation_phone}`}
+                            className="text-blue-600 hover:underline cursor-pointer font-medium text-sm sm:text-base"
+                          >
+                            {camp.accommodation_phone}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {camp.accommodation_map_link && (
+                        <div className="mb-3 sm:mb-4">
+                          <a 
+                            href={camp.accommodation_map_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-blue-600 hover:underline cursor-pointer text-sm sm:text-base"
+                          >
+                            📍 View on Google Maps
+                            <span className="text-xs">(Tap to open)</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
             {/* Accommodation Details Card */}
-            <Card>
-              <CardBody className="p-4 sm:p-6">
-                <CardTitle className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 md:mb-6">Accommodation Details</CardTitle>
-                
-                <div className="space-y-3 sm:space-y-4">
-                  {renderTextWithMaps(accommodationDetails)}
-                </div>
-              </CardBody>
-            </Card>
+            {accommodationDetails && (
+              <Card>
+                <CardBody className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 md:mb-6">Accommodation Details</CardTitle>
+                  
+                  <div className="space-y-3 sm:space-y-4">
+                    {renderTextWithMaps(accommodationDetails)}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
 
             {/* Amenities Card */}
             <Card>
@@ -176,7 +231,7 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
                     <h4 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">Standard Amenities</h4>
                     {[
                       { icon: Wifi, name: 'Free WiFi', description: 'High-speed internet access' },
-                      { icon: Utensils, name: 'Restaurant', description: 'On-site dining options' },
+                      { icon: Utensils, name: 'Restaurant', description: 'On-site full meal for 20€ per person' },
                       { icon: Waves, name: 'Swimming Pool', description: 'Outdoor pool area' },
                     ].map((amenity) => (
                       <div key={amenity.name} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
@@ -216,7 +271,6 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
                     <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
                       <li>Please verify check-in/check-out times directly with the accommodation</li>
                       <li>Contact the hotel for any special requests or dietary requirements</li>
-                      <li>Keep your booking confirmation handy during your stay</li>
                       <li>Check for any specific hotel policies or restrictions</li>
                     </ul>
                   </div>

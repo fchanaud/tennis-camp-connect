@@ -18,6 +18,10 @@ export interface Camp {
   package: PackageType;
   total_tennis_hours: number | null;
   accommodation_details: string | null;
+  accommodation_name: string | null;
+  accommodation_phone: string | null;
+  accommodation_map_link: string | null;
+  accommodation_photo_url: string | null;
   capacity: number;
   coach_id: string | null;
   created_at: string;
