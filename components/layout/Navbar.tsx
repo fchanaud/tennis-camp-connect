@@ -45,29 +45,29 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
           Home
         </Link>
         
-        <Link
+                <Link
           href={activeCamp ? `/camp/${activeCamp.id}/tennis` : '/camp/loading/tennis'}
           className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/tennis') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
-        >
+                >
           Tennis program
-        </Link>
+                </Link>
         <span className="px-4 py-2 text-gray-500 cursor-not-allowed">
-          Schedule <span className="text-xs">(Coming soon)</span>
+          Schedule (coming soon!)
         </span>
-        <Link
+                <Link
           href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
           className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
-        >
+                >
           Essentials guide
-        </Link>
+                </Link>
         {/* Always render accommodation slot to prevent layout shift */}
         {hasAccommodation ? (
-          <Link
-            href={`/camp/${activeCamp.id}/stay`}
+                  <Link
+                    href={`/camp/${activeCamp.id}/stay`}
             className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
-          >
+                  >
             Accommodation
-          </Link>
+                  </Link>
         ) : (
           <div className="px-4 py-2 text-gray-400 cursor-not-allowed">
             Accommodation
@@ -125,7 +125,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         <>
           <div className="px-4 py-2 text-gray-400">Home</div>
           <div className="px-4 py-2 text-gray-400">Tennis program</div>
-          <div className="px-4 py-2 text-gray-400">Schedule</div>
+          <div className="px-4 py-2 text-gray-400">Schedule (coming soon!)</div>
           <div className="px-4 py-2 text-gray-400">Essentials guide</div>
           <div className="px-4 py-2 text-gray-400">Accommodation</div>
         </>
@@ -150,7 +150,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         <>
           <div className="px-4 py-3 text-gray-400">Home</div>
           <div className="px-4 py-3 text-gray-400">Tennis program</div>
-          <div className="px-4 py-3 text-gray-400">Schedule</div>
+          <div className="px-4 py-3 text-gray-400">Schedule (coming soon!)</div>
           <div className="px-4 py-3 text-gray-400">Essentials guide</div>
           <div className="px-4 py-3 text-gray-400">Accommodation</div>
         </>
@@ -178,7 +178,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
             Tennis program
           </Link>
           <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
-            Schedule <span className="text-xs">(Coming soon)</span>
+            Schedule (coming soon!)
           </span>
           <Link
             href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
@@ -302,31 +302,31 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                   >
                     Home
                   </Link>
-                  <Link
+                      <Link
                     href={camps[0] ? `/camp/${camps[0].id}/tennis` : '/camp/loading/tennis'}
                     className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/tennis') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                     Tennis program
-                  </Link>
+                      </Link>
                   <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
-                    Schedule <span className="text-xs">(Coming soon)</span>
+                    Schedule <span className="text-xs">(Coming soon!)</span>
                   </span>
-                  <Link
+                      <Link
                     href={camps[0] ? `/camp/${camps[0].id}/essentials` : '/camp/loading/essentials'}
                     className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                     Essentials guide
-                  </Link>
+                      </Link>
                   {camps[0] && camps[0].package !== 'tennis_only' && (
-                    <Link
-                      href={`/camp/${camps[0].id}/stay`}
+                        <Link
+                          href={`/camp/${camps[0].id}/stay`}
                       className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/stay') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
                       Accommodation
-                    </Link>
+                      </Link>
                   )}
                 </>
               )}
