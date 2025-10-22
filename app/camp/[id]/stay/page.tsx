@@ -105,10 +105,16 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
 
     lines.forEach((line, lineIndex) => {
       if (line.trim()) {
+        // Non-empty line - render as paragraph
         elements.push(
           <p key={lineIndex} className="mb-3 text-sm sm:text-base text-gray-700 leading-relaxed">
             {line}
           </p>
+        );
+      } else {
+        // Empty line - render as spacing div to preserve original formatting
+        elements.push(
+          <div key={`spacing-${lineIndex}`} className="h-3"></div>
         );
       }
     });
