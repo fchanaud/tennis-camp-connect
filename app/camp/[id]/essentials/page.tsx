@@ -82,7 +82,7 @@ export default function EssentialsPage({ params }: { params: Promise<{ id: strin
           {/* Tennis Court Rental */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
             <p className="text-blue-800 text-sm sm:text-base">
-              <span className="font-semibold">🎾 Court rental:</span> 23€/hour anytime during your stay. 
+              <span className="font-semibold">🎾 Additional court rental:</span> 23€/hour anytime during your stay. 
               Arrange with your coach, payment to Franklin at camp end.
             </p>
           </div>
