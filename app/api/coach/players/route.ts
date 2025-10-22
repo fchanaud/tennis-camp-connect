@@ -5,12 +5,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createServiceRoleClient();
 
-    // Get all players
+    // Get all players (no ordering - we'll sort on the frontend)
     const { data: playersData, error: playersError } = await supabase
       .from('users')
       .select('*')
-      .eq('role', 'player')
-      .order('first_name', { ascending: true });
+      .eq('role', 'player');
 
     if (playersError) {
       console.error('Error fetching players:', playersError);

@@ -35,14 +35,73 @@ export default function PlayersListPage() {
   }, []);
 
   useEffect(() => {
+    let filtered = players;
+    
     if (searchTerm.trim()) {
-      const filtered = players.filter(player => 
+      filtered = players.filter(player => 
         `${player.first_name} ${player.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setFilteredPlayers(filtered);
-    } else {
-      setFilteredPlayers(players);
     }
+    
+    // Sort players by their upcoming camp dates
+    const sortedPlayers = filtered.sort((a, b) => {
+      const now = new Date();
+      
+      // Get the next upcoming camp for each player
+      const getNextUpcomingCamp = (player: PlayerWithCamp) => {
+        const upcomingCamps = player.camps.filter(camp => new Date(camp.start_date) >= now);
+        return upcomingCamps.length > 0 ? upcomingCamps[0] : null;
+      };
+      
+      const nextCampA = getNextUpcomingCamp(a);
+      const nextCampB = getNextUpcomingCamp(b);
+      
+      // Debug logging
+      if (a.first_name === 'Andre' || a.first_name === 'Augustin' || b.first_name === 'Andre' || b.first_name === 'Augustin') {
+        console.log(`Sorting: ${a.first_name} vs ${b.first_name}`);
+        console.log(`${a.first_name} camps:`, a.camps.map(c => ({ start: c.start_date, end: c.end_date })));
+        console.log(`${b.first_name} camps:`, b.camps.map(c => ({ start: c.start_date, end: c.end_date })));
+        console.log(`${a.first_name} next upcoming:`, nextCampA?.start_date);
+        console.log(`${b.first_name} next upcoming:`, nextCampB?.start_date);
+      }
+      
+      // If both players have upcoming camps, sort by start date
+      if (nextCampA && nextCampB) {
+        const result = new Date(nextCampA.start_date).getTime() - new Date(nextCampB.start_date).getTime();
+        console.log(`Both have upcoming camps: ${a.first_name} (${nextCampA.start_date}) vs ${b.first_name} (${nextCampB.start_date}) = ${result}`);
+        return result;
+      }
+      
+      // If only one has upcoming camps, prioritize that one
+      if (nextCampA && !nextCampB) return -1;
+      if (!nextCampA && nextCampB) return 1;
+      
+      // If neither has upcoming camps, sort by their most recent camp
+      const getMostRecentCamp = (player: PlayerWithCamp) => {
+        if (player.camps.length === 0) return null;
+        return player.camps.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())[0];
+      };
+      
+      const recentCampA = getMostRecentCamp(a);
+      const recentCampB = getMostRecentCamp(b);
+      
+      if (recentCampA && recentCampB) {
+        return new Date(recentCampB.start_date).getTime() - new Date(recentCampA.start_date).getTime();
+      }
+      
+      if (recentCampA && !recentCampB) return -1;
+      if (!recentCampA && recentCampB) return 1;
+      
+      // If no camps at all, sort alphabetically by name
+      return `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`);
+    });
+    
+    console.log('Final sorted players:', sortedPlayers.map(p => ({ 
+      name: `${p.first_name} ${p.last_name}`, 
+      camps: p.camps.map(c => ({ start: c.start_date, end: c.end_date }))
+    })));
+    
+    setFilteredPlayers(sortedPlayers);
   }, [searchTerm, players]);
 
   const loadPlayers = async () => {
@@ -51,6 +110,10 @@ export default function PlayersListPage() {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('Loaded players:', data.players.map(p => ({ 
+          name: `${p.first_name} ${p.last_name}`, 
+          camps: p.camps.map(c => ({ start: c.start_date, end: c.end_date }))
+        })));
         setPlayers(data.players || []);
         setFilteredPlayers(data.players || []);
       } else {
@@ -155,15 +218,15 @@ export default function PlayersListPage() {
                       </div>
                       <div className="flex gap-2 ml-3 flex-shrink-0">
                         <div className="text-center">
-                          <div className="text-xs text-gray-500 mb-1">Assess.</div>
+                          <div className="text-xs text-gray-500 mb-1">Assessment</div>
                           <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-xs px-2 py-1">
-                            {player.assessment_count}
+                            {player.assessment_count > 0 ? 'Yes' : 'No'}
                           </Badge>
                         </div>
                         <div className="text-center">
                           <div className="text-xs text-gray-500 mb-1">Reports</div>
                           <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-xs px-2 py-1">
-                            {player.report_count}
+                            {player.report_count > 0 ? 'Yes' : 'No'}
                           </Badge>
                         </div>
                       </div>
@@ -267,12 +330,12 @@ export default function PlayersListPage() {
                             </td>
                             <td className="px-6 py-4 text-center">
                               <Badge variant={player.assessment_count > 0 ? 'success' : 'secondary'} className="text-sm px-3 py-1">
-                                {player.assessment_count}
+                                {player.assessment_count > 0 ? 'Yes' : 'No'}
                               </Badge>
                             </td>
                             <td className="px-6 py-4 text-center">
                               <Badge variant={player.report_count > 0 ? 'success' : 'secondary'} className="text-sm px-3 py-1">
-                                {player.report_count}
+                                {player.report_count > 0 ? 'Yes' : 'No'}
                               </Badge>
                             </td>
                             <td className="px-6 py-4">

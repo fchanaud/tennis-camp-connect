@@ -314,13 +314,13 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
                           {assessment.answers.playing_duration && (
                             <div className="mb-2">
                               <p className="text-sm text-gray-600">Playing Duration:</p>
-                              <p className="font-semibold">{assessment.answers.playing_duration}</p>
+                              <p className="font-semibold">{assessment.answers.playing_duration} years</p>
                             </div>
                           )}
                           {assessment.answers.monthly_frequency && (
                             <div className="mb-2">
                               <p className="text-sm text-gray-600">Monthly Frequency:</p>
-                              <p className="font-semibold">{assessment.answers.monthly_frequency}</p>
+                              <p className="font-semibold">{assessment.answers.monthly_frequency} times per month</p>
                             </div>
                           )}
                           {assessment.answers.competition_experience && (
