@@ -59,8 +59,8 @@ export default function PlayersListPage() {
       // Debug logging
       if (a.first_name === 'Andre' || a.first_name === 'Augustin' || b.first_name === 'Andre' || b.first_name === 'Augustin') {
         console.log(`Sorting: ${a.first_name} vs ${b.first_name}`);
-        console.log(`${a.first_name} camps:`, a.camps.map(c => ({ start: c.start_date, end: c.end_date })));
-        console.log(`${b.first_name} camps:`, b.camps.map(c => ({ start: c.start_date, end: c.end_date })));
+        console.log(`${a.first_name} camps:`, a.camps.map((c: CampInfo) => ({ start: c.start_date, end: c.end_date })));
+        console.log(`${b.first_name} camps:`, b.camps.map((c: CampInfo) => ({ start: c.start_date, end: c.end_date })));
         console.log(`${a.first_name} next upcoming:`, nextCampA?.start_date);
         console.log(`${b.first_name} next upcoming:`, nextCampB?.start_date);
       }
@@ -96,9 +96,9 @@ export default function PlayersListPage() {
       return `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`);
     });
     
-    console.log('Final sorted players:', sortedPlayers.map(p => ({ 
+    console.log('Final sorted players:', sortedPlayers.map((p: PlayerWithCamp) => ({ 
       name: `${p.first_name} ${p.last_name}`, 
-      camps: p.camps.map(c => ({ start: c.start_date, end: c.end_date }))
+      camps: p.camps.map((c: CampInfo) => ({ start: c.start_date, end: c.end_date }))
     })));
     
     setFilteredPlayers(sortedPlayers);
@@ -110,9 +110,9 @@ export default function PlayersListPage() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Loaded players:', data.players.map(p => ({ 
+        console.log('Loaded players:', data.players.map((p: PlayerWithCamp) => ({ 
           name: `${p.first_name} ${p.last_name}`, 
-          camps: p.camps.map(c => ({ start: c.start_date, end: c.end_date }))
+          camps: p.camps.map((c: CampInfo) => ({ start: c.start_date, end: c.end_date }))
         })));
         setPlayers(data.players || []);
         setFilteredPlayers(data.players || []);
