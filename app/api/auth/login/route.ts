@@ -6,27 +6,7 @@ export async function POST(request: NextRequest) {
     const { username, password } = await request.json();
 
     // Use service role client to query users table
-    let supabase;
-    try {
-      supabase = createServiceRoleClient();
-    } catch (clientError) {
-      const errorMessage = clientError instanceof Error ? clientError.message : String(clientError);
-      console.error('Failed to create service role client:', errorMessage);
-      
-      // Check if it's a configuration error (missing keys, URL, etc.)
-      if (errorMessage.includes('Missing') || errorMessage.includes('configuration')) {
-        return NextResponse.json(
-          { 
-            error: 'Server configuration error. Please contact administrator.',
-            details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
-          },
-          { status: 500 }
-        );
-      }
-      
-      // Re-throw to be caught by outer catch
-      throw clientError;
-    }
+    const supabase = createServiceRoleClient();
     
     // Debug: Log which database we're connecting to
     const isTestEnv = process.env.VERCEL_ENV === 'preview' || 
@@ -46,31 +26,7 @@ export async function POST(request: NextRequest) {
       .eq('username', username.toLowerCase())
       .single();
 
-    if (error) {
-      // Log database errors for debugging but don't expose details to client
-      console.error('Database query error:', error);
-      
-      // Check for specific error types
-      if (error.code === 'PGRST116') {
-        // No rows returned - user not found
-        console.log('Login attempt failed - user not found:', username);
-        return NextResponse.json(
-          { error: 'Invalid username or password' },
-          { status: 401 }
-        );
-      }
-      
-      // Other database errors
-      return NextResponse.json(
-        { 
-          error: 'An error occurred during authentication. Please try again.',
-          details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        },
-        { status: 500 }
-      );
-    }
-
-    if (!userData) {
+    if (error || !userData) {
       console.log('Login attempt failed - user not found:', username);
       return NextResponse.json(
         { error: 'Invalid username or password' },

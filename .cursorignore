@@ -1,0 +1,16 @@
+# Ignore common files but allow .env.local for Composer
+.env
+.env.*
+!.env.local
+
+# Ignore build artifacts and dependencies
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.log
+.DS_Store
+*.tsbuildinfo
+.vercel
+

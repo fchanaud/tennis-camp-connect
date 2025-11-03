@@ -1,0 +1,7 @@
+{
+  "setup-worktree": [
+    "./scripts/setup-worktree-env.sh",
+    "rm -rf .next .turbo"
+  ]
+}
+

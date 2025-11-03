@@ -28,21 +28,10 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        // If JSON parsing fails, handle gracefully
-        setError('An error occurred. Please try again.');
-        setLoading(false);
-        return;
-      }
+      const data = await response.json();
 
       if (!response.ok) {
-        // Show error details in development mode for debugging
-        const errorMessage = data.error || 'Invalid username or password';
-        const details = data.details ? ` (${data.details})` : '';
-        setError(errorMessage + details);
+        setError(data.error || 'Invalid username or password');
         setLoading(false);
         return;
       }
@@ -53,7 +42,6 @@ export default function LoginPage() {
       router.push('/home');
       router.refresh();
     } catch (err) {
-      // Silently handle errors without logging to console
       setError('An error occurred. Please try again.');
       setLoading(false);
     }
