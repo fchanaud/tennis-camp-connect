@@ -19,17 +19,15 @@ export function AppLayout({ children }: AppLayoutProps) {
   const loadPlayerCamps = async (userId: string) => {
     try {
       const response = await fetch(`/api/player/camps?userId=${userId}`);
-      
-      if (!response.ok) {
-        // Silently handle errors - don't log to console
-        setLoading(false);
-        return;
-      }
-      
       const data = await response.json();
-      setCamps(data.camps || []);
+      
+      if (response.ok) {
+        setCamps(data.camps || []);
+      } else {
+        console.error('Error loading player camps:', data.error);
+      }
     } catch (error) {
-      // Silently handle errors - don't log to console
+      console.error('Error loading player camps:', error);
     }
     setLoading(false);
   };

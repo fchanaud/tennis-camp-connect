@@ -33,14 +33,7 @@ export async function createClient() {
 
 // Service role client for admin operations
 export function createServiceRoleClient() {
-  let config;
-  try {
-    config = getSupabaseConfig();
-  } catch (configError) {
-    // Re-throw config errors with more context
-    const errorMessage = configError instanceof Error ? configError.message : String(configError);
-    throw new Error(`Supabase configuration error: ${errorMessage}`);
-  }
+  const config = getSupabaseConfig();
   
   // Service role key is required for admin operations
   if (!config.serviceRoleKey) {

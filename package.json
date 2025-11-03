@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "clear-cache": "rm -rf .next .turbo",
     "sync-users": "tsx scripts/sync-users-to-test.ts",
     "sync-all-data": "tsx scripts/sync-all-data-to-test.ts"
   },

@@ -75,10 +75,12 @@ export interface CampSchedule {
 }
 
 export interface Recommendation {
-  type: 'food' | 'relax' | 'excursion';
+  type: 'food' | 'relax' | 'culture' | 'local';
   name: string;
   description: string;
   location: string;
   priceRange: '€' | '€€' | '€€€';
+  photo: string;
+  mapEmbedUrl: string;
 }
 

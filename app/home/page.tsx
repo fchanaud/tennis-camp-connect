@@ -86,25 +86,21 @@ function HomePageContent() {
 
       // Handle camps data
       if (campsResponse.ok) {
-        try {
-          const campsData = await campsResponse.json();
-          setCamps(campsData.camps || []);
-        } catch (error) {
-          // Silently handle JSON parsing errors
-        }
+        const campsData = await campsResponse.json();
+        setCamps(campsData.camps || []);
+      } else {
+        console.error('Error loading player camps:', campsResponse.status);
       }
 
       // Handle assessment data
       if (assessmentResponse.ok) {
-        try {
-          const assessmentData = await assessmentResponse.json();
-          setAssessmentData(assessmentData);
-        } catch (error) {
-          // Silently handle JSON parsing errors
-        }
+        const assessmentData = await assessmentResponse.json();
+        setAssessmentData(assessmentData);
+      } else {
+        console.error('Error loading player assessment:', assessmentResponse.status);
       }
     } catch (error) {
-      // Silently handle network errors
+      console.error('Error loading player data:', error);
     } finally {
       setLoading(false);
     }
@@ -113,21 +109,15 @@ function HomePageContent() {
   const loadCoachData = async (coachId: string) => {
     try {
       const response = await fetch(`/api/coach/camps?coachId=${coachId}`);
+      const data = await response.json();
       
-      if (!response.ok) {
-        // Silently handle errors - don't log to console
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const data = await response.json();
+      if (response.ok) {
         setCoachData(data);
-      } catch (error) {
-        // Silently handle JSON parsing errors
+      } else {
+        console.error('Error loading coach data:', data.error);
       }
     } catch (error) {
-      // Silently handle network errors
+      console.error('Error loading coach data:', error);
     }
     setLoading(false);
   };

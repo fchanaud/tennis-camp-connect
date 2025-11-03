@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { RecommendationCard } from '@/components/schedule/RecommendationCard';
-import { CampSchedule } from '@/types';
+import { CampSchedule, Recommendation } from '@/types';
 import { recommendations } from '@/lib/constants/recommendations';
 
 export default function SchedulePage({ params }: { params: Promise<{ id: string }> }) {
@@ -113,19 +113,102 @@ export default function SchedulePage({ params }: { params: Promise<{ id: string 
         )}
 
         {/* Recommendations Section */}
-        <div className="mt-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Recommendations</h2>
-          <p className="text-gray-600 mb-6">
-            Discover the best places to eat, relax, and explore during your stay in Marrakech.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {recommendations.map((rec, index) => (
-              <RecommendationCard key={index} recommendation={rec} />
-            ))}
-          </div>
-        </div>
+        <RecommendationsSection />
       </div>
     </AppLayout>
+  );
+}
+
+// Recommendations Section with Filtering
+function RecommendationsSection() {
+  const [selectedFilter, setSelectedFilter] = useState<Recommendation['type'] | 'all'>('all');
+
+  const filterOptions: Array<{ value: Recommendation['type'] | 'all'; label: string; count: number }> = [
+    { value: 'all', label: 'All', count: recommendations.length },
+    { value: 'food', label: 'Food & Drinks', count: recommendations.filter(r => r.type === 'food').length },
+    { value: 'relax', label: 'Relax', count: recommendations.filter(r => r.type === 'relax').length },
+    { value: 'culture', label: 'Culture', count: recommendations.filter(r => r.type === 'culture').length },
+    { value: 'local', label: 'Local Vibes', count: recommendations.filter(r => r.type === 'local').length },
+  ];
+
+  const filteredRecommendations = selectedFilter === 'all' 
+    ? recommendations 
+    : recommendations.filter(rec => rec.type === selectedFilter);
+
+  return (
+    <div className="mt-8 sm:mt-12">
+      {/* Header */}
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
+          Recommendations
+        </h2>
+        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+          Discover the best places to eat, relax, and explore during your stay in Marrakech.
+        </p>
+      </div>
+
+      {/* Filter Buttons - Mobile Optimized */}
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          {filterOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setSelectedFilter(option.value)}
+              className={`
+                px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-sm sm:text-base
+                transition-all duration-200 shadow-sm hover:shadow-md
+                min-h-[44px] sm:min-h-[48px] flex items-center justify-center
+                ${selectedFilter === option.value
+                  ? option.value === 'all'
+                    ? 'bg-[#2563EB] text-white shadow-md'
+                    : option.value === 'food'
+                    ? 'bg-[#FF4C4C] text-white shadow-md'
+                    : option.value === 'relax'
+                    ? 'bg-[#66B032] text-white shadow-md'
+                    : option.value === 'culture'
+                    ? 'bg-[#FF7F2A] text-white shadow-md'
+                    : 'bg-[#9B59B6] text-white shadow-md'
+                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300'
+                }
+              `}
+              aria-label={`Filter by ${option.label}`}
+            >
+              <span className="whitespace-nowrap">{option.label}</span>
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                selectedFilter === option.value
+                  ? 'bg-white/20 text-white'
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {option.count}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Results Count */}
+      {filteredRecommendations.length > 0 && (
+        <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">
+          Showing {filteredRecommendations.length} {filteredRecommendations.length === 1 ? 'recommendation' : 'recommendations'}
+        </p>
+      )}
+
+      {/* Recommendations Grid */}
+      {filteredRecommendations.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+          {filteredRecommendations.map((rec, index) => (
+            <RecommendationCard key={`${rec.type}-${index}`} recommendation={rec} />
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardBody className="py-8 sm:py-12 text-center">
+            <p className="text-gray-500 text-base sm:text-lg">
+              No recommendations found for this category.
+            </p>
+          </CardBody>
+        </Card>
+      )}
+    </div>
   );
 }
