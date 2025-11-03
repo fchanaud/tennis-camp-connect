@@ -59,10 +59,29 @@ npm install
 
 Update `.env.local` with your Supabase credentials:
 
+**Production/Development:**
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
+
+**Test/Preview Environment (Optional):**
+To use a separate test database for preview/test environments, add these variables:
+```env
+NEXT_PUBLIC_SUPABASE_URL_TEST=your_test_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY_TEST=your_test_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY_TEST=your_test_service_role_key
+```
+
+The application will automatically use test credentials when:
+- `VERCEL_ENV=preview` (Vercel preview deployments)
+- `NODE_ENV=test` (local test runs)
+- `NEXT_PUBLIC_ENV=test` (manually set)
+
+If test credentials are not provided, it falls back to production credentials.
+
+**📖 For detailed test database setup instructions, see [TEST-DATABASE-SETUP.md](./TEST-DATABASE-SETUP.md)**
 
 ### 4. Run Development Server
 

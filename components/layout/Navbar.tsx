@@ -51,9 +51,12 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                 >
           Tennis program
                 </Link>
-        <span className="px-4 py-2 text-gray-500 cursor-not-allowed">
-          Schedule (coming soon!)
-        </span>
+        <Link
+          href={activeCamp ? `/camp/${activeCamp.id}/schedule` : '/camp/loading/schedule'}
+          className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+        >
+          Schedule
+        </Link>
                 <Link
           href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
           className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
@@ -125,7 +128,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         <>
           <div className="px-4 py-2 text-gray-400">Home</div>
           <div className="px-4 py-2 text-gray-400">Tennis program</div>
-          <div className="px-4 py-2 text-gray-400">Schedule (coming soon!)</div>
+          <div className="px-4 py-2 text-gray-400">Schedule</div>
           <div className="px-4 py-2 text-gray-400">Essentials guide</div>
           <div className="px-4 py-2 text-gray-400">Accommodation</div>
         </>
@@ -150,7 +153,7 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         <>
           <div className="px-4 py-3 text-gray-400">Home</div>
           <div className="px-4 py-3 text-gray-400">Tennis program</div>
-          <div className="px-4 py-3 text-gray-400">Schedule (coming soon!)</div>
+          <div className="px-4 py-3 text-gray-400">Schedule</div>
           <div className="px-4 py-3 text-gray-400">Essentials guide</div>
           <div className="px-4 py-3 text-gray-400">Accommodation</div>
         </>
@@ -177,9 +180,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
           >
             Tennis program
           </Link>
-          <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
-            Schedule (coming soon!)
-          </span>
+          <Link
+            href={activeCamp ? `/camp/${activeCamp.id}/schedule` : '/camp/loading/schedule'}
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Schedule
+          </Link>
           <Link
             href={activeCamp ? `/camp/${activeCamp.id}/essentials` : '/camp/loading/essentials'}
             className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
@@ -309,9 +316,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                       >
                     Tennis program
                       </Link>
-                  <span className="px-4 py-3 text-gray-500 cursor-not-allowed">
-                    Schedule <span className="text-xs">(Coming soon!)</span>
-                  </span>
+                  <Link
+                    href={camps[0] ? `/camp/${camps[0].id}/schedule` : '/camp/loading/schedule'}
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/schedule') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Schedule
+                  </Link>
                       <Link
                     href={camps[0] ? `/camp/${camps[0].id}/essentials` : '/camp/loading/essentials'}
                     className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/essentials') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}

@@ -86,21 +86,25 @@ function HomePageContent() {
 
       // Handle camps data
       if (campsResponse.ok) {
-        const campsData = await campsResponse.json();
-        setCamps(campsData.camps || []);
-      } else {
-        console.error('Error loading player camps:', campsResponse.status);
+        try {
+          const campsData = await campsResponse.json();
+          setCamps(campsData.camps || []);
+        } catch (error) {
+          // Silently handle JSON parsing errors
+        }
       }
 
       // Handle assessment data
       if (assessmentResponse.ok) {
-        const assessmentData = await assessmentResponse.json();
-        setAssessmentData(assessmentData);
-      } else {
-        console.error('Error loading player assessment:', assessmentResponse.status);
+        try {
+          const assessmentData = await assessmentResponse.json();
+          setAssessmentData(assessmentData);
+        } catch (error) {
+          // Silently handle JSON parsing errors
+        }
       }
     } catch (error) {
-      console.error('Error loading player data:', error);
+      // Silently handle network errors
     } finally {
       setLoading(false);
     }
@@ -109,15 +113,21 @@ function HomePageContent() {
   const loadCoachData = async (coachId: string) => {
     try {
       const response = await fetch(`/api/coach/camps?coachId=${coachId}`);
-      const data = await response.json();
       
-      if (response.ok) {
+      if (!response.ok) {
+        // Silently handle errors - don't log to console
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const data = await response.json();
         setCoachData(data);
-      } else {
-        console.error('Error loading coach data:', data.error);
+      } catch (error) {
+        // Silently handle JSON parsing errors
       }
     } catch (error) {
-      console.error('Error loading coach data:', error);
+      // Silently handle network errors
     }
     setLoading(false);
   };
@@ -272,9 +282,11 @@ function HomePageContent() {
                           Essentials guide
                         </Button>
                       </Link>
-                      <Button variant="outline" fullWidth disabled className="opacity-50 cursor-not-allowed">
-                        Schedule <span className="text-xs">(Coming soon)</span>
-                      </Button>
+                      <Link href={`/camp/${camp.id}/schedule`}>
+                        <Button variant="outline" fullWidth>
+                          Schedule
+                        </Button>
+                      </Link>
                     </div>
                   </CardBody>
                 </Card>
