@@ -123,13 +123,19 @@ export default function SchedulePage({ params }: { params: Promise<{ id: string 
 function RecommendationsSection() {
   const [selectedFilter, setSelectedFilter] = useState<Recommendation['type'] | 'all'>('all');
 
-  const filterOptions: Array<{ value: Recommendation['type'] | 'all'; label: string; count: number }> = [
-    { value: 'all', label: 'All', count: recommendations.length },
-    { value: 'food', label: 'Food & Drinks', count: recommendations.filter(r => r.type === 'food').length },
-    { value: 'relax', label: 'Relax', count: recommendations.filter(r => r.type === 'relax').length },
-    { value: 'culture', label: 'Culture', count: recommendations.filter(r => r.type === 'culture').length },
-    { value: 'local', label: 'Local Vibes', count: recommendations.filter(r => r.type === 'local').length },
-  ];
+  const filterOptions: Array<{ value: 'food' | 'relax' | 'local' | 'all'; label: string; count: number }> = [
+    { value: 'all' as const, label: 'All', count: recommendations.length },
+    { value: 'food' as const, label: 'Food & Drinks', count: recommendations.filter(r => r.type === 'food').length },
+    { value: 'relax' as const, label: 'Relax', count: recommendations.filter(r => r.type === 'relax').length },
+    { value: 'local' as const, label: 'Local vibes', count: recommendations.filter(r => r.type === 'local').length },
+  ].filter(option => option.count > 0 || option.value === 'all');
+
+  // Reset filter to 'all' if somehow 'culture' is selected (shouldn't happen, but safeguard)
+  useEffect(() => {
+    if (selectedFilter === 'culture') {
+      setSelectedFilter('all');
+    }
+  }, [selectedFilter]);
 
   const filteredRecommendations = selectedFilter === 'all' 
     ? recommendations 
@@ -165,8 +171,6 @@ function RecommendationsSection() {
                     ? 'bg-[#FF4C4C] text-white shadow-md'
                     : option.value === 'relax'
                     ? 'bg-[#66B032] text-white shadow-md'
-                    : option.value === 'culture'
-                    ? 'bg-[#FF7F2A] text-white shadow-md'
                     : 'bg-[#9B59B6] text-white shadow-md'
                   : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300'
                 }

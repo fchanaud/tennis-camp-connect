@@ -37,13 +37,13 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   };
   
   return (
-    <Card hover className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <Card className="h-full flex flex-col overflow-hidden">
       {/* Photo */}
-      <div className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
+      <div className="relative w-full h-72 sm:h-64 md:h-64 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
         <img
           src={photo}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          className="w-full h-full object-cover"
           loading="lazy"
           onError={handleImageError}
         />
