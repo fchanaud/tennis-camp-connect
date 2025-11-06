@@ -84,7 +84,6 @@ export const recommendations: Recommendation[] = [
     name: 'Place Jamaa el-Fna',
     description: 'UNESCO-listed square with street performers, storytellers, and vibrant food stalls. Quite touristic but worth it!',
     location: 'https://maps.google.com/?q=Place+Jemaa+el-Fna,+Marrakech,+Morocco',
-    priceRange: ' ',
     photo: '/uploads/recommendations/place_jamaa.jpg',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Place+Jemaa+el-Fna,+Marrakech,+Morocco&output=embed'
   },

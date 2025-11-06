@@ -57,11 +57,13 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             {typeLabels[type]}
           </Badge>
         </div>
-        <div className="absolute top-3 right-3 z-10">
-          <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-gray-800 font-semibold text-xs sm:text-sm shadow-lg">
-            {priceRange}
-          </span>
-        </div>
+        {priceRange && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-gray-800 font-semibold text-xs sm:text-sm shadow-lg">
+              {priceRange}
+            </span>
+          </div>
+        )}
       </div>
 
       <CardBody className="flex-1 flex flex-col p-4 sm:p-5">

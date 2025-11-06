@@ -79,7 +79,7 @@ export interface Recommendation {
   name: string;
   description: string;
   location: string;
-  priceRange: '€' | '€€' | '€€€';
+  priceRange?: '€' | '€€' | '€€€';
   photo: string;
   mapEmbedUrl: string;
 }
