@@ -10,7 +10,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=Kabana+Rooftop,+Marrakech,+Morocco',
     priceRange: '€€€',
     photo: '/uploads/recommendations/kabana-rooftop.jpeg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=Kabana+Rooftop,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Kabana+Rooftop,+Marrakech,+Morocco&output=embed',
+    phone: '+212 664-464450'
   },
   {
     type: 'food',
@@ -19,7 +20,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=La+Cantine+des+Gazelles,+Marrakech,+Morocco',
     priceRange: '€',
     photo: '/uploads/recommendations/la_cantine_des_gazelles.jpg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=La+Cantine+des+Gazelles,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=La+Cantine+des+Gazelles,+Marrakech,+Morocco&output=embed',
+    phone: '+212 624-061452'
   },
   {
     type: 'food',
@@ -28,7 +30,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/maps?q=Chez+Zaza,+Marrakech,+Morocco',
     priceRange: '€€',
     photo: '/uploads/recommendations/chez_zaza.webp',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=Chez+Zaza,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Chez+Zaza,+Marrakech,+Morocco&output=embed',
+    phone: '+212 5244-28291'
   },
   {
     type: 'food',
@@ -37,7 +40,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=Patisserie+Corne+De+Gazelle+Chez+Brahim,+Marrakech,+Morocco',
     priceRange: '€',
     photo: '/uploads/recommendations/patisserie.webp',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=Patisserie+Corne+De+Gazelle+Chez+Brahim,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Patisserie+Corne+De+Gazelle+Chez+Brahim,+Marrakech,+Morocco&output=embed',
+    phone: '+212 524-442345'
   },
   
   // Relax
@@ -48,16 +52,19 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=ISIS+SPA+Marrakech,+Morocco',
     priceRange: '€€',
     photo: '/uploads/recommendations/isis_spa.jpg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=ISIS+SPA+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=ISIS+SPA+Marrakech,+Morocco&output=embed',
+    phone: '+212 637-276627',
+    whatsapp: true
   },
   {
     type: 'relax',
-    name: 'Spa Manzil La Tortue',
+    name: 'Hotel manzil la tortue',
     description: 'Amazing hotel outside of Marrakech where you can spend a few hours or the day (350dh/pers with lunch provided without transport). Ask the hotel, they should be able to arrange the transport.',
     location: 'https://maps.google.com/?q=SpaManzil+La+Tortue,+Marrakech,+Morocco',
     priceRange: '€€€',
     photo: '/uploads/recommendations/spa-manzil-la-tortue.jpg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=SpaManzil+La+Tortue,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=SpaManzil+La+Tortue,+Marrakech,+Morocco&output=embed',
+    phone: '+212 661-955517'
   },
   {
     type: 'relax',
@@ -66,7 +73,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=La+Mamounia,+Marrakech,+Morocco',
     priceRange: '€€',
     photo: '/uploads/recommendations/mamounia.jpeg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=La+Mamounia,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=La+Mamounia,+Marrakech,+Morocco&output=embed',
+    phone: '+212 5243-88600'
   },
   
   // Local Vibes
@@ -77,7 +85,8 @@ export const recommendations: Recommendation[] = [
     location: 'https://maps.google.com/?q=Jardin+Majorelle,+Marrakech,+Morocco',
     priceRange: '€€',
     photo: '/uploads/recommendations/majorelle.jpg',
-    mapEmbedUrl: 'https://maps.google.com/maps?q=Jardin+Majorelle,+Marrakech,+Morocco&output=embed'
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Jardin+Majorelle,+Marrakech,+Morocco&output=embed',
+    phone: '+212 5242-98686'
   },
   {
     type: 'local',

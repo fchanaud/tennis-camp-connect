@@ -82,5 +82,7 @@ export interface Recommendation {
   priceRange?: '€' | '€€' | '€€€';
   photo: string;
   mapEmbedUrl: string;
+  phone?: string;
+  whatsapp?: boolean;
 }
 

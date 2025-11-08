@@ -125,7 +125,7 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                       title="Tennis Academy Marrakech Location"
                     />
                   </div>
-                  <p className="mt-3 text-sm sm:text-base text-gray-600">
+                  <div className="mt-3 text-sm sm:text-base text-gray-600 flex flex-wrap items-center gap-2">
                     <a 
                       href="https://www.google.com/maps/place/Tennis+Academy+Marrakech/@31.6491204,-8.0539112,17z/data=!3m1!4b1!4m6!3m5!1s0xdafeeeb6677a635:0x2936795494e33117!8m2!3d31.6491204!4d-8.0539112!16s%2Fg%2F11ckr5vc9_?entry=ttu&g_ep=EgoyMDI1MTAxNC4wIKXMDSoASAFQAw%3D%3D" 
                       target="_blank" 
@@ -134,7 +134,18 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                     >
                       📍 Tennis Academy Marrakech
                     </a>
-                  </p>
+                    <span className="text-gray-600">•</span>
+                    <span className="text-gray-600">Coach: Patrick</span>
+                    <span className="text-gray-600">•</span>
+                    <a 
+                      href="https://wa.me/212653890162" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:underline cursor-pointer inline-flex items-center gap-1"
+                    >
+                      💬 WhatsApp
+                    </a>
+                  </div>
                 </div>
               </CardBody>
             </Card>

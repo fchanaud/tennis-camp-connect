@@ -80,6 +80,9 @@ export default function SchedulePage({ params }: { params: Promise<{ id: string 
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your Schedule</h1>
+        <p className="text-gray-600 text-sm sm:text-base mb-6 sm:mb-8">
+          Scroll to the bottom to view all recommendations with numbers and locations to help when looking at the schedule.
+        </p>
 
         {/* Daily Schedules */}
         {schedules.length > 0 ? (

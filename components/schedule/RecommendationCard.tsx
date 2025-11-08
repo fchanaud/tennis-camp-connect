@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Recommendation } from '@/types';
-import { MapPin, ExternalLink } from 'lucide-react';
+import { MapPin, ExternalLink, Phone, MessageCircle } from 'lucide-react';
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
@@ -25,7 +25,7 @@ const typeLabels = {
 };
 
 export function RecommendationCard({ recommendation }: RecommendationCardProps) {
-  const { type, name, description, location, priceRange, photo } = recommendation;
+  const { type, name, description, location, priceRange, photo, phone, whatsapp } = recommendation;
   const defaultImage = '/uploads/recommendations/default.svg';
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -73,6 +73,28 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
         <CardText className="mb-4 text-sm sm:text-base text-gray-600 flex-1 leading-relaxed">
           {description}
         </CardText>
+        
+        {/* Phone Number */}
+        {phone && (
+          <div className="mb-3 flex items-center gap-2 text-sm sm:text-base text-gray-700">
+            {whatsapp ? (
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600" />
+            ) : (
+              <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600" />
+            )}
+            <a 
+              href={whatsapp 
+                ? `https://wa.me/${phone.replace(/[\s+-]/g, '')}` 
+                : `tel:${phone.replace(/\s/g, '')}`
+              }
+              className="text-[#2563EB] hover:text-[#1e40af] hover:underline transition-colors"
+              target={whatsapp ? "_blank" : undefined}
+              rel={whatsapp ? "noopener noreferrer" : undefined}
+            >
+              {phone}
+            </a>
+          </div>
+        )}
         
         {/* Google Maps Link */}
         <a
