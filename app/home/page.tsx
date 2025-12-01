@@ -312,6 +312,19 @@ function HomePageContent() {
                 </Link>
               </CardBody>
             </Card>
+            <Card className="bg-white shadow-lg">
+              <CardBody className="p-6">
+                <CardTitle className="text-xl mb-4">Tennis Camps</CardTitle>
+                <CardText className="text-gray-600 mb-4">
+                  View all your camp schedules and details
+                </CardText>
+                <Link href="/coach/camps">
+                  <Button variant="primary" fullWidth>
+                    View Camps
+                  </Button>
+                </Link>
+              </CardBody>
+            </Card>
           </div>
         )}
 

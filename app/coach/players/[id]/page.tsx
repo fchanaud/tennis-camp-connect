@@ -33,8 +33,8 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
 
   const loadCurrentCoach = async () => {
     try {
-      // Get current user from localStorage (set during login)
-      const userStr = localStorage.getItem('currentUser');
+      // Get current user from sessionStorage (set during login)
+      const userStr = sessionStorage.getItem('user');
       if (userStr) {
         const user = JSON.parse(userStr);
         setCurrentCoach(user);

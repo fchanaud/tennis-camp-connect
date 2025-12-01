@@ -94,6 +94,12 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
       >
         Players
       </Link>
+      <Link
+        href="/coach/camps"
+        className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/coach/camps') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+      >
+        Camps
+      </Link>
     </>
   );
 
@@ -356,6 +362,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Players
+                  </Link>
+                  <Link
+                    href="/coach/camps"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/coach/camps') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Camps
                   </Link>
                 </>
               )}

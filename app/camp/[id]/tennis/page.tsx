@@ -205,9 +205,40 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                     <Alert variant="success" className="mb-4">
                       Your coach has completed your post-camp report!
                     </Alert>
-                    <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
-                      {report.report_content}
-                    </div>
+                    {(() => {
+                      try {
+                        const answers = JSON.parse(report.report_content);
+                        const questions = [
+                          { id: 'performance_summary', label: 'Performance Summary' },
+                          { id: 'technical_skills', label: 'Technical Skills Assessment' },
+                          { id: 'areas_improved', label: 'Areas Improved During Camp' },
+                          { id: 'strengths_showcased', label: 'Strengths Showcased' },
+                          { id: 'recommendations', label: 'Recommendations for Future Training' },
+                        ];
+                        
+                        return (
+                          <div className="space-y-4">
+                            {questions.map((q, idx) => (
+                              <div key={q.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-sm sm:text-base text-gray-900 mb-2">
+                                  {idx + 1}. {q.label}
+                                </h4>
+                                <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">
+                                  {answers[q.id] || 'No response provided'}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      } catch {
+                        // Fallback for old text-based reports
+                        return (
+                          <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                            {report.report_content}
+                          </div>
+                        );
+                      }
+                    })()}
                   </div>
                 ) : (
                   <CardText className="mt-4">

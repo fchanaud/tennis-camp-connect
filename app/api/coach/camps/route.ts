@@ -36,12 +36,28 @@ export async function GET(request: NextRequest) {
             first_name,
             last_name
           )
+        ),
+        camp_schedules (
+          id,
+          schedule_date,
+          schedule_content,
+          created_at,
+          updated_at
         )
       `)
       .eq('coach_id', coachId)
       .order('start_date', { ascending: true });
 
     const camps = campsData || [];
+    
+    // Sort schedules within each camp by date
+    camps.forEach((camp: any) => {
+      if (camp.camp_schedules) {
+        camp.camp_schedules.sort((a: any, b: any) => 
+          new Date(a.schedule_date).getTime() - new Date(b.schedule_date).getTime()
+        );
+      }
+    });
 
     // Find the next upcoming camp
     const now = new Date();
