@@ -30,6 +30,9 @@ interface Camp {
   package: string;
   total_tennis_hours: number | null;
   accommodation_details: string | null;
+  accommodation_name: string | null;
+  accommodation_phone?: string | null;
+  accommodation_map_link?: string | null;
   capacity: number;
   coach_id: string | null;
   created_at: string;
