@@ -10,7 +10,8 @@ import { Alert } from '@/components/ui/Alert';
 import { Collapsible } from '@/components/ui/Collapsible';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ReportForm } from '@/components/features/ReportForm';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
+import { generateAssessmentPDF } from '@/lib/utils/pdfGenerator';
 
 export default function SinglePlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const [player, setPlayer] = useState<any>(null);
@@ -288,9 +289,43 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
                   </div>
 
                   {/* Pre-Camp Assessment */}
-                  <Collapsible title="Pre-Camp Assessment" defaultOpen={false}>
-                    {assessment ? (
-                      <div className="space-y-4">
+                  <div>
+                    {/* Download PDF Button - Always visible when assessment exists */}
+                    {assessment && (
+                      <div className="flex justify-start mb-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              await generateAssessmentPDF(
+                                {
+                                  first_name: player.first_name,
+                                  last_name: player.last_name,
+                                  email: player.email
+                                },
+                                {
+                                  start_date: camp.start_date,
+                                  end_date: camp.end_date,
+                                  package: camp.package
+                                },
+                                assessment
+                              );
+                            } catch (error) {
+                              console.error('Error generating PDF:', error);
+                              alert('Failed to generate PDF. Please make sure jspdf is installed.');
+                            }
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download pre camp assessment
+                        </Button>
+                      </div>
+                    )}
+                    <Collapsible title="Pre-Camp Assessment" defaultOpen={false}>
+                      {assessment ? (
+                        <div className="space-y-4">
                         {/* Personal Information */}
                         <div className="border-b pb-4">
                           <h4 className="font-semibold text-gray-800 mb-3">Personal Information</h4>
@@ -414,7 +449,8 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
                     ) : (
                       <Badge variant="warning">Not completed yet</Badge>
                     )}
-                  </Collapsible>
+                    </Collapsible>
+                  </div>
 
                   {/* Post-Camp Report */}
                   <div className="mt-6 pt-6 border-t">

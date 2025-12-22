@@ -7,11 +7,15 @@ import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { Spinner } from '@/components/ui/Spinner';
+import { Download } from 'lucide-react';
+import { generateAssessmentPDF } from '@/lib/utils/pdfGenerator';
 
 export default function AssessmentForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [existingAssessment, setExistingAssessment] = useState<any>(null);
+  const [camp, setCamp] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     // Personal Information
     dateOfBirth: '',
@@ -56,8 +60,9 @@ export default function AssessmentForm() {
           return;
         }
         
-        const user = JSON.parse(userStr);
-        const response = await fetch(`/api/player/assessment?userId=${user.id}`);
+        const userData = JSON.parse(userStr);
+        setUser(userData);
+        const response = await fetch(`/api/player/assessment?userId=${userData.id}`);
         const data = await response.json();
         
         if (data.hasAssessment && data.assessment) {
@@ -80,6 +85,15 @@ export default function AssessmentForm() {
             mainGoal: answers.main_goal || '',
             additionalInfo: answers.additional_info || ''
           });
+
+          // Load camp information for PDF
+          if (data.assessment.camp_id) {
+            const campResponse = await fetch(`/api/camps/${data.assessment.camp_id}`);
+            if (campResponse.ok) {
+              const campData = await campResponse.json();
+              setCamp(campData);
+            }
+          }
         }
       } catch (error) {
         console.error('Error loading assessment:', error);
@@ -222,9 +236,40 @@ export default function AssessmentForm() {
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">
-            {existingAssessment ? 'Edit Technical Assessment' : 'Technical Assessment'}
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+            <h1 className="text-3xl font-bold">
+              {existingAssessment ? 'Edit Technical Assessment' : 'Technical Assessment'}
+            </h1>
+            {existingAssessment && camp && user && (
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await generateAssessmentPDF(
+                      {
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email
+                      },
+                      {
+                        start_date: camp.start_date,
+                        end_date: camp.end_date,
+                        package: camp.package
+                      },
+                      existingAssessment
+                    );
+                  } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    alert('Failed to generate PDF. Please make sure jspdf is installed.');
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download pre camp assessment
+              </Button>
+            )}
+          </div>
           
           {message && (
             <Alert 

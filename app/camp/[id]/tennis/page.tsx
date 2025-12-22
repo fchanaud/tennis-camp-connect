@@ -10,6 +10,8 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { capitalizeName } from '@/lib/utils/auth';
+import { Download } from 'lucide-react';
+import { generateAssessmentPDF } from '@/lib/utils/pdfGenerator';
 
 export default function TennisPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -187,11 +189,42 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
             {user && (
               <Card>
                 <CardBody>
-                  <Link href="/player/assessment/form">
-                    <Button variant={assessment ? "secondary" : "primary"} fullWidth>
-                      {assessment ? 'Edit technical assessment' : 'Complete technical assessment'}
-                    </Button>
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link href="/player/assessment/form" className="flex-1">
+                      <Button variant={assessment ? "secondary" : "primary"} fullWidth>
+                        {assessment ? 'Edit technical assessment' : 'Complete technical assessment'}
+                      </Button>
+                    </Link>
+                    {assessment && (
+                      <Button
+                        variant="outline"
+                        onClick={async () => {
+                          try {
+                            await generateAssessmentPDF(
+                              {
+                                first_name: user.first_name,
+                                last_name: user.last_name,
+                                email: user.email
+                              },
+                              {
+                                start_date: camp.start_date,
+                                end_date: camp.end_date,
+                                package: camp.package
+                              },
+                              assessment
+                            );
+                          } catch (error) {
+                            console.error('Error generating PDF:', error);
+                            alert('Failed to generate PDF. Please make sure jspdf is installed.');
+                          }
+                        }}
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download pre camp assessment
+                      </Button>
+                    )}
+                  </div>
                 </CardBody>
               </Card>
             )}
