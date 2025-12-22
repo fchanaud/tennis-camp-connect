@@ -303,14 +303,14 @@ The app will automatically use test credentials when `VERCEL_ENV=preview` (which
 
 1. Set `NEXT_PUBLIC_ENV=test` in your `.env.local` (for local testing)
 2. Start your development server: `npm run dev`
-3. Try logging in with test users (e.g., `admin` with password `Gardelapeche78&&`)
+3. Try logging in with test users (e.g., `admin` with password `Gardelapeche78`)
 4. Verify you can see test data from your test database
 
 ## Test Users Reference
 
 Based on the login route logic:
 
-- **Admin**: Username `admin`, Password `Gardelapeche78&&`
+- **Admin**: Username `admin`, Password `Gardelapeche78`
 - **Coach Patrick**: Username `patrickn`, Password `marrakech`
 - **Other users**: Any password with at least 3 characters works
 

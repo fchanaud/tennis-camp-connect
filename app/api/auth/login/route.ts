@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     
     // Handle specific passwords for known users
     if (userData.role === 'admin') {
-      if (password !== 'Gardelapeche78&&') {
+      if (password !== 'Gardelapeche78') {
         console.log('Admin login attempt failed - wrong password:', username);
         return NextResponse.json(
           { error: 'Invalid username or password' },
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         console.log('User agirault login attempt failed - wrong password');
         return NextResponse.json(
           { error: 'Invalid username or password' },
-          { status: 401 }
+          { status: 401 } 
         );
       }
     } else if (usernameLower === 'cbedikian') {

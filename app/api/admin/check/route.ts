@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       success: true,
       user: userData,
       message: 'Admin user created successfully',
-      password: 'Gardelapeche78&&'
+      password: 'Gardelapeche78'
     });
   } catch (error) {
     console.error('Error in POST /api/admin/check:', error);
