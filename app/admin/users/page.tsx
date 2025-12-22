@@ -98,10 +98,10 @@ export default function UserManagementPage() {
 
   return (
     <AppLayout>
-      <div className="p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         <div className="container mx-auto">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
-          <h1 className="text-3xl sm:text-4xl font-bold">User Management</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">User Management</h1>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button variant="primary" onClick={() => setShowPlayerModal(true)} className="w-full sm:w-auto">
               Create New Player

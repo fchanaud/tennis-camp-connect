@@ -48,13 +48,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7] px-4 py-8">
       <div className="w-full max-w-md">
         <div className="card">
-          <div className="card-body p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-[#FF4C4C] mb-2">Tennis Camp Connect</h1>
-              <p className="text-gray-600">Sign in to your account</p>
+          <div className="card-body p-6 sm:p-8">
+            <div className="text-center mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#FF4C4C] mb-2">Tennis Camp Connect</h1>
+              <p className="text-sm sm:text-base text-gray-600">Sign in to your account</p>
             </div>
 
             {error && (

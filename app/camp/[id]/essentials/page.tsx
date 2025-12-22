@@ -75,8 +75,8 @@ export default function EssentialsPage({ params }: { params: Promise<{ id: strin
           <span className="font-semibold">Essentials</span>
         </nav>
 
-        <h1 className="text-4xl font-bold mb-4">Travel essentials</h1>
-        <p className="text-gray-600 mb-8">Everything you need to know for your stay in Marrakech, Morocco</p>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Travel essentials</h1>
+        <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Everything you need to know for your stay in Marrakech, Morocco</p>
 
         <div className="max-w-4xl space-y-3">
           {/* Tennis Court Rental */}

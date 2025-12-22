@@ -203,7 +203,7 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
 
   return (
     <AppLayout>
-      <div className="p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <Link href="/coach/players" className="flex items-center gap-2 text-gray-600 hover:text-[#FF4C4C] mb-6">

@@ -236,8 +236,8 @@ export default function AssessmentForm() {
     <AppLayout>
       <div className="container mx-auto px-4 pt-8 pb-8">
         <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-            <h1 className="text-3xl font-bold">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
+            <h1 className="text-2xl sm:text-3xl font-bold">
               {existingAssessment ? 'Edit Technical Assessment' : 'Technical Assessment'}
             </h1>
             {existingAssessment && camp && user && (
@@ -263,10 +263,11 @@ export default function AssessmentForm() {
                     alert('Failed to generate PDF. Please make sure jspdf is installed.');
                   }
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2 text-xs sm:text-sm w-full sm:w-auto"
               >
-                <Download className="w-4 h-4" />
-                Download pre camp assessment
+                <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Download pre camp assessment</span>
+                <span className="sm:hidden">Download PDF</span>
               </Button>
             )}
           </div>

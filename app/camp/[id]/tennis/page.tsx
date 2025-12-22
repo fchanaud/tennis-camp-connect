@@ -218,10 +218,12 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                             alert('Failed to generate PDF. Please make sure jspdf is installed.');
                           }
                         }}
-                        className="flex items-center justify-center gap-2"
+                        className="flex items-center justify-center gap-2 text-xs sm:text-sm"
+                        fullWidth
                       >
-                        <Download className="w-4 h-4" />
-                        Download pre camp assessment
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Download pre camp assessment</span>
+                        <span className="sm:hidden">Download PDF</span>
                       </Button>
                     )}
                   </div>
