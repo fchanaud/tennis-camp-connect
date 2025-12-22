@@ -45,6 +45,7 @@ interface Camp {
 
 export default function CampsListPage() {
   const [camps, setCamps] = useState<Camp[]>([]);
+  const [upcomingCampsCount, setUpcomingCampsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -67,6 +68,7 @@ export default function CampsListPage() {
 
       if (response.ok) {
         setCamps(data.camps || []);
+        setUpcomingCampsCount(data.upcomingCampsCount || 0);
       } else {
         setError(data.error || 'Failed to load camps');
       }
@@ -138,6 +140,49 @@ export default function CampsListPage() {
             <Alert variant="danger" className="mb-4 sm:mb-6">
               {error}
             </Alert>
+          )}
+
+          {/* Upcoming Camps Count */}
+          {!loading && camps.length > 0 && (
+            <div className="mb-4 sm:mb-6">
+              {upcomingCampsCount > 0 ? (
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardBody className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-xl font-semibold text-blue-900 mb-1">
+                          {upcomingCampsCount} {upcomingCampsCount === 1 ? 'Upcoming Camp' : 'Upcoming Camps'}
+                        </h2>
+                        <p className="text-sm sm:text-base text-blue-700">
+                          You have {upcomingCampsCount} {upcomingCampsCount === 1 ? 'camp' : 'camps'} scheduled to start in the future.
+                        </p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Card className="bg-amber-50 border-amber-200">
+                  <CardBody className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-amber-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-xl font-semibold text-amber-900 mb-1">
+                          No Upcoming Camps
+                        </h2>
+                        <p className="text-sm sm:text-base text-amber-700">
+                          You don't have any camps scheduled to start in the future. All your camps are either in progress or completed.
+                        </p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
+            </div>
           )}
 
           {camps.length === 0 ? (

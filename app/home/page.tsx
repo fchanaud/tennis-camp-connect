@@ -144,30 +144,46 @@ function HomePageContent() {
           </h1>
           {user.role === 'coach' && coachData ? (
             <div className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {coachData.nextUpcomingCamp ? (
-                <div>
-                  <p className="mb-2">
-                    Your next camp starts on
-                  </p>
-                  <p className="mb-2 font-semibold text-[#FF4C4C] text-lg md:text-xl">
-                    {(() => {
-                      const date = new Date(coachData.nextUpcomingCamp.start_date);
-                      const options: Intl.DateTimeFormatOptions = { 
-                        weekday: 'long', 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      };
-                      return date.toLocaleDateString('en-US', options);
-                    })()}
-                  </p>
-                  <p className="text-lg">
-                    You have <span className="font-semibold text-[#2563EB]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
-                  </p>
-                </div>
+              <p className="mb-2">
+                You have <span className="font-semibold text-[#2563EB]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+              </p>
+              {coachData.upcomingCampsCount > 0 ? (
+                <p className="text-lg">
+                  {coachData.upcomingCampsCount === 1 ? (
+                    <>You have <span className="font-semibold text-[#FF4C4C]">1 upcoming camp</span> starting on{' '}
+                      <span className="font-semibold text-[#FF4C4C]">
+                        {(() => {
+                          const date = new Date(coachData.nextUpcomingCamp.start_date);
+                          const options: Intl.DateTimeFormatOptions = { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          };
+                          return date.toLocaleDateString('en-US', options);
+                        })()}
+                      </span>
+                    </>
+                  ) : (
+                    <>You have <span className="font-semibold text-[#FF4C4C]">{coachData.upcomingCampsCount} upcoming camps</span>. Your next camp starts on{' '}
+                      <span className="font-semibold text-[#FF4C4C]">
+                        {(() => {
+                          const date = new Date(coachData.nextUpcomingCamp.start_date);
+                          const options: Intl.DateTimeFormatOptions = { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          };
+                          return date.toLocaleDateString('en-US', options);
+                        })()}
+                      </span>
+                    </>
+                  )}
+                </p>
               ) : (
-                <p>
-                  You have <span className="font-semibold text-[#2563EB]">{coachData.totalCamps}</span> camp{coachData.totalCamps !== 1 ? 's' : ''} assigned
+                <p className="text-lg text-gray-500">
+                  No upcoming camps scheduled at this time.
                 </p>
               )}
             </div>

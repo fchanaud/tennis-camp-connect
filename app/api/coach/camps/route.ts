@@ -62,18 +62,20 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Find the next upcoming camp
+    // Find the next upcoming camp and count upcoming camps
     const now = new Date();
-    const upcomingCamps = camps.filter(camp => new Date(camp.start_date) >= now);
+    const upcomingCamps = camps.filter(camp => new Date(camp.start_date) > now);
     const nextUpcomingCamp = upcomingCamps.length > 0 ? upcomingCamps[0] : null;
 
-    // Count total camps
+    // Count total camps and upcoming camps
     const totalCamps = camps.length;
+    const upcomingCampsCount = upcomingCamps.length;
 
     return NextResponse.json({ 
       camps,
       nextUpcomingCamp,
-      totalCamps
+      totalCamps,
+      upcomingCampsCount
     });
   } catch (error) {
     console.error('Error in GET /api/coach/camps:', error);

@@ -65,7 +65,7 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
     setLoading(false);
   };
 
-  const handleCreateReport = async (campId: string, answers: Record<string, string>) => {
+  const handleCreateReport = async (campId: string, answer: string) => {
     setError('');
     setSuccess('');
 
@@ -83,7 +83,7 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
         body: JSON.stringify({
           playerId,
           campId,
-          reportContent: JSON.stringify(answers),
+          reportContent: answer,
           coachId: currentCoach.id,
         }),
       });
@@ -103,7 +103,7 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handleUpdateReport = async (reportId: string, answers: Record<string, string>) => {
+  const handleUpdateReport = async (reportId: string, answer: string) => {
     setError('');
     setSuccess('');
 
@@ -115,7 +115,7 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
         },
         body: JSON.stringify({
           reportId,
-          reportContent: JSON.stringify(answers),
+          reportContent: answer,
         }),
       });
 
@@ -422,41 +422,15 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
                     
                     {report && !isEditing ? (
                       <div>
-                        {/* Display Report Answers */}
-                        {(() => {
-                          try {
-                            const answers = JSON.parse(report.report_content);
-                            const questions = [
-                              { id: 'performance_summary', label: 'Performance Summary' },
-                              { id: 'technical_skills', label: 'Technical Skills Assessment' },
-                              { id: 'areas_improved', label: 'Areas Improved During Camp' },
-                              { id: 'strengths_showcased', label: 'Strengths Showcased' },
-                              { id: 'recommendations', label: 'Recommendations for Future Training' },
-                            ];
-                            
-                            return (
-                              <div className="space-y-4 mb-4">
-                                {questions.map((q, idx) => (
-                                  <div key={q.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 mb-2">
-                                      {idx + 1}. {q.label}
-                                    </h4>
-                                    <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">
-                                      {answers[q.id] || 'No response provided'}
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
-                            );
-                          } catch {
-                            // Fallback for old text-based reports
-                            return (
-                              <div className="bg-gray-50 p-4 rounded-lg mb-3 whitespace-pre-wrap text-sm sm:text-base">
-                                {report.report_content}
-                              </div>
-                            );
-                          }
-                        })()}
+                        {/* Display Report Answer */}
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 mb-4">
+                          <h4 className="font-semibold text-sm sm:text-base text-gray-900 mb-3">
+                            Coach Feedback
+                          </h4>
+                          <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">
+                            {report.report_content || 'No feedback provided'}
+                          </p>
+                        </div>
                         
                         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                           <Button
@@ -474,14 +448,8 @@ export default function SinglePlayerPage({ params }: { params: Promise<{ id: str
                       </div>
                     ) : isEditing ? (
                       <ReportForm
-                        existingAnswers={report ? (() => {
-                          try {
-                            return JSON.parse(report.report_content);
-                          } catch {
-                            return undefined;
-                          }
-                        })() : undefined}
-                        onSubmit={(answers) => report ? handleUpdateReport(report.id, answers) : handleCreateReport(camp.id, answers)}
+                        existingAnswer={report ? report.report_content : undefined}
+                        onSubmit={(answer) => report ? handleUpdateReport(report.id, answer) : handleCreateReport(camp.id, answer)}
                         onCancel={cancelEditing}
                         isEditing={!!report}
                       />
