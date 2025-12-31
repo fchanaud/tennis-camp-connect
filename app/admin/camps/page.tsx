@@ -119,7 +119,8 @@ export default function CampManagementPage() {
           const uploadData = await uploadResponse.json();
           photoUrl = uploadData.url;
         } else {
-          setError('Failed to upload accommodation photo');
+          const errorData = await uploadResponse.json().catch(() => ({ error: 'Unknown error' }));
+          setError(`Failed to upload accommodation photo: ${errorData.error || 'Unknown error'}`);
           return;
         }
       }
@@ -208,7 +209,8 @@ export default function CampManagementPage() {
           const uploadData = await uploadResponse.json();
           photoUrl = uploadData.url;
         } else {
-          setError('Failed to upload accommodation photo');
+          const errorData = await uploadResponse.json().catch(() => ({ error: 'Unknown error' }));
+          setError(`Failed to upload accommodation photo: ${errorData.error || 'Unknown error'}`);
           return;
         }
       }

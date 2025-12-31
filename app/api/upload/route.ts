@@ -32,15 +32,25 @@ export async function POST(request: NextRequest) {
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = join(process.cwd(), 'public', 'uploads', type);
-    await mkdir(uploadsDir, { recursive: true });
+    try {
+      await mkdir(uploadsDir, { recursive: true });
+    } catch (mkdirError) {
+      console.error('Failed to create uploads directory:', mkdirError);
+      throw new Error(`Failed to create upload directory: ${mkdirError instanceof Error ? mkdirError.message : 'Unknown error'}`);
+    }
 
     // Generate unique filename
-    const fileExtension = file.name.split('.').pop();
+    const fileExtension = file.name.split('.').pop() || 'jpg';
     const filename = `${randomUUID()}.${fileExtension}`;
     const filepath = join(uploadsDir, filename);
 
     // Write file
-    await writeFile(filepath, buffer);
+    try {
+      await writeFile(filepath, buffer);
+    } catch (writeError) {
+      console.error('Failed to write file:', writeError);
+      throw new Error(`Failed to write file: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`);
+    }
 
     // Return public URL
     const publicUrl = `/uploads/${type}/${filename}`;
@@ -53,8 +63,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Upload error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to upload file';
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
