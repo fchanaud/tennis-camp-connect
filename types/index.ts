@@ -75,9 +75,11 @@ export interface CampSchedule {
 }
 
 export interface Recommendation {
-  type: 'food' | 'relax' | 'culture' | 'local';
+  type: 'food' | 'relax' | 'culture' | 'local' | 'museum';
   name: string;
+  nameFr?: string;
   description: string;
+  descriptionFr?: string;
   location: string;
   priceRange?: '€' | '€€' | '€€€';
   photo: string;

@@ -125,12 +125,32 @@ export default function SchedulePage({ params }: { params: Promise<{ id: string 
 // Recommendations Section with Filtering
 function RecommendationsSection() {
   const [selectedFilter, setSelectedFilter] = useState<Recommendation['type'] | 'all'>('all');
+  const [language, setLanguage] = useState<'en' | 'fr'>('en');
 
-  const filterOptions: Array<{ value: 'food' | 'relax' | 'local' | 'all'; label: string; count: number }> = [
-    { value: 'all' as const, label: 'All', count: recommendations.length },
-    { value: 'food' as const, label: 'Food & Drinks', count: recommendations.filter(r => r.type === 'food').length },
-    { value: 'relax' as const, label: 'Relax', count: recommendations.filter(r => r.type === 'relax').length },
-    { value: 'local' as const, label: 'Local vibes', count: recommendations.filter(r => r.type === 'local').length },
+  // Detect browser language on mount
+  useEffect(() => {
+    const browserLang = navigator.language.split('-')[0];
+    if (browserLang === 'fr') {
+      setLanguage('fr');
+    }
+    // Check localStorage for saved preference
+    const savedLang = localStorage.getItem('recommendations-language');
+    if (savedLang === 'fr' || savedLang === 'en') {
+      setLanguage(savedLang);
+    }
+  }, []);
+
+  // Save language preference
+  useEffect(() => {
+    localStorage.setItem('recommendations-language', language);
+  }, [language]);
+
+  const filterOptions: Array<{ value: 'food' | 'relax' | 'local' | 'museum' | 'all'; label: string; labelFr: string; count: number }> = [
+    { value: 'all' as const, label: 'All', labelFr: 'Tout', count: recommendations.length },
+    { value: 'food' as const, label: 'Food & Drinks', labelFr: 'Nourriture & Boissons', count: recommendations.filter(r => r.type === 'food').length },
+    { value: 'relax' as const, label: 'Relax', labelFr: 'Détente', count: recommendations.filter(r => r.type === 'relax').length },
+    { value: 'museum' as const, label: 'Museum', labelFr: 'Musée', count: recommendations.filter(r => r.type === 'museum').length },
+    { value: 'local' as const, label: 'Local vibes', labelFr: 'Ambiance Locale', count: recommendations.filter(r => r.type === 'local').length },
   ].filter(option => option.count > 0 || option.value === 'all');
 
   // Reset filter to 'all' if somehow 'culture' is selected (shouldn't happen, but safeguard)
@@ -148,55 +168,91 @@ function RecommendationsSection() {
     <div className="mt-8 sm:mt-12">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
-          Recommendations
-        </h2>
-        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-          Discover the best places to eat, relax, and explore during your stay in Marrakech.
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3 sm:mb-4">
+          <div className="flex-1">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
+              {language === 'fr' ? 'Recommandations' : 'Recommendations'}
+            </h2>
+            <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+              {language === 'fr' 
+                ? 'Découvrez les meilleurs endroits pour manger, vous détendre et explorer pendant votre séjour à Marrakech.'
+                : 'Discover the best places to eat, relax, and explore during your stay in Marrakech.'}
+            </p>
+          </div>
+          {/* Language Toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                language === 'en'
+                  ? 'bg-[#2563EB] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLanguage('fr')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                language === 'fr'
+                  ? 'bg-[#2563EB] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              FR
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Filter Buttons - Mobile Optimized */}
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          {filterOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setSelectedFilter(option.value)}
-              className={`
-                px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-sm sm:text-base
-                transition-all duration-200 shadow-sm hover:shadow-md
-                min-h-[44px] sm:min-h-[48px] flex items-center justify-center
-                ${selectedFilter === option.value
-                  ? option.value === 'all'
-                    ? 'bg-[#2563EB] text-white shadow-md'
-                    : option.value === 'food'
-                    ? 'bg-[#FF4C4C] text-white shadow-md'
-                    : option.value === 'relax'
-                    ? 'bg-[#66B032] text-white shadow-md'
-                    : 'bg-[#9B59B6] text-white shadow-md'
-                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300'
-                }
-              `}
-              aria-label={`Filter by ${option.label}`}
-            >
-              <span className="whitespace-nowrap">{option.label}</span>
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                selectedFilter === option.value
-                  ? 'bg-white/20 text-white'
-                  : 'bg-gray-100 text-gray-600'
-              }`}>
-                {option.count}
-              </span>
-            </button>
-          ))}
+          {filterOptions.map((option) => {
+            const optionLabel = language === 'fr' ? option.labelFr : option.label;
+            const getButtonColor = () => {
+              if (selectedFilter !== option.value) return 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300';
+              switch (option.value) {
+                case 'all': return 'bg-[#2563EB] text-white shadow-md';
+                case 'food': return 'bg-[#FF4C4C] text-white shadow-md';
+                case 'relax': return 'bg-[#66B032] text-white shadow-md';
+                case 'museum': return 'bg-[#8B4513] text-white shadow-md';
+                case 'local': return 'bg-[#9B59B6] text-white shadow-md';
+                default: return 'bg-[#2563EB] text-white shadow-md';
+              }
+            };
+            return (
+              <button
+                key={option.value}
+                onClick={() => setSelectedFilter(option.value)}
+                className={`
+                  px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-sm sm:text-base
+                  transition-all duration-200 shadow-sm hover:shadow-md
+                  min-h-[44px] sm:min-h-[48px] flex items-center justify-center
+                  ${getButtonColor()}
+                `}
+                aria-label={`Filter by ${optionLabel}`}
+              >
+                <span className="whitespace-nowrap">{optionLabel}</span>
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  selectedFilter === option.value
+                    ? 'bg-white/20 text-white'
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {option.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Results Count */}
       {filteredRecommendations.length > 0 && (
         <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">
-          Showing {filteredRecommendations.length} {filteredRecommendations.length === 1 ? 'recommendation' : 'recommendations'}
+          {language === 'fr' 
+            ? `Affichage de ${filteredRecommendations.length} ${filteredRecommendations.length === 1 ? 'recommandation' : 'recommandations'}`
+            : `Showing ${filteredRecommendations.length} ${filteredRecommendations.length === 1 ? 'recommendation' : 'recommendations'}`}
         </p>
       )}
 
@@ -204,14 +260,16 @@ function RecommendationsSection() {
       {filteredRecommendations.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
           {filteredRecommendations.map((rec, index) => (
-            <RecommendationCard key={`${rec.type}-${index}`} recommendation={rec} />
+            <RecommendationCard key={`${rec.type}-${index}`} recommendation={rec} language={language} />
           ))}
         </div>
       ) : (
         <Card>
           <CardBody className="py-8 sm:py-12 text-center">
             <p className="text-gray-500 text-base sm:text-lg">
-              No recommendations found for this category.
+              {language === 'fr' 
+                ? 'Aucune recommandation trouvée pour cette catégorie.'
+                : 'No recommendations found for this category.'}
             </p>
           </CardBody>
         </Card>

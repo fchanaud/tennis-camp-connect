@@ -14,6 +14,23 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
   const [loading, setLoading] = useState(true);
   const [camp, setCamp] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
+  const [language, setLanguage] = useState<'en' | 'fr'>('en');
+
+  // Detect browser language on mount
+  useEffect(() => {
+    const browserLang = navigator.language.split('-')[0];
+    const savedLang = localStorage.getItem('stay-page-language');
+    if (savedLang === 'fr' || savedLang === 'en') {
+      setLanguage(savedLang);
+    } else if (browserLang === 'fr') {
+      setLanguage('fr');
+    }
+  }, []);
+
+  // Save language preference
+  useEffect(() => {
+    localStorage.setItem('stay-page-language', language);
+  }, [language]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -236,15 +253,37 @@ export default function StayPage({ params }: { params: Promise<{ id: string }> }
                   <div className="space-y-2 sm:space-y-3">
                     <h4 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">Standard Amenities</h4>
                     {[
-                      { icon: Wifi, name: 'Free WiFi', description: 'High-speed internet access' },
-                      { icon: Utensils, name: 'Restaurant', description: 'On-site full meal for 20€ per person' },
-                      { icon: Waves, name: 'Swimming Pool', description: 'Outdoor pool area' },
+                      { 
+                        icon: Wifi, 
+                        name: 'Free WiFi', 
+                        nameFr: 'WiFi Gratuit',
+                        description: 'High-speed internet access',
+                        descriptionFr: 'Accès Internet haut débit'
+                      },
+                      { 
+                        icon: Utensils, 
+                        name: 'Restaurant', 
+                        nameFr: 'Restaurant',
+                        description: 'On-site full meal for less than 20€ per person',
+                        descriptionFr: 'Repas complet sur place pour moins de 20€ par personne'
+                      },
+                      ...(camp.accommodation_name === 'Riad Ushuaia la Villa' ? [{
+                        icon: Waves, 
+                        name: 'Swimming Pool', 
+                        nameFr: 'Piscine',
+                        description: 'Outdoor pool area',
+                        descriptionFr: 'Zone de piscine extérieure'
+                      }] : []),
                     ].map((amenity) => (
                       <div key={amenity.name} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                         <amenity.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#66B032] mt-0.5 flex-shrink-0" />
                         <div>
-                          <div className="font-medium text-gray-800 text-sm sm:text-base">{amenity.name}</div>
-                          <div className="text-xs sm:text-sm text-gray-600">{amenity.description}</div>
+                          <div className="font-medium text-gray-800 text-sm sm:text-base">
+                            {language === 'fr' && amenity.nameFr ? amenity.nameFr : amenity.name}
+                          </div>
+                          <div className="text-xs sm:text-sm text-gray-600">
+                            {language === 'fr' && amenity.descriptionFr ? amenity.descriptionFr : amenity.description}
+                          </div>
                         </div>
                       </div>
                     ))}

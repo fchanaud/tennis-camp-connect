@@ -8,6 +8,7 @@ import { MapPin, ExternalLink, Phone, MessageCircle } from 'lucide-react';
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
+  language?: 'en' | 'fr';
 }
 
 const typeColors = {
@@ -15,6 +16,7 @@ const typeColors = {
   relax: '#66B032',
   culture: '#FF7F2A',
   local: '#9B59B6',
+  museum: '#8B4513',
 };
 
 const typeLabels = {
@@ -22,11 +24,25 @@ const typeLabels = {
   relax: 'Relax',
   culture: 'Culture',
   local: 'Local Vibes',
+  museum: 'Museum',
 };
 
-export function RecommendationCard({ recommendation }: RecommendationCardProps) {
-  const { type, name, description, location, priceRange, photo, phone, whatsapp } = recommendation;
+const typeLabelsFr = {
+  food: 'Nourriture & Boissons',
+  relax: 'Détente',
+  culture: 'Culture',
+  local: 'Ambiance Locale',
+  museum: 'Musée',
+};
+
+export function RecommendationCard({ recommendation, language = 'en' }: RecommendationCardProps) {
+  const { type, name, nameFr, description, descriptionFr, location, priceRange, photo, phone, whatsapp } = recommendation;
   const defaultImage = '/uploads/recommendations/default.svg';
+  
+  // Use French if available and language is French, otherwise use English
+  const displayName = (language === 'fr' && nameFr) ? nameFr : name;
+  const displayDescription = (language === 'fr' && descriptionFr) ? descriptionFr : description;
+  const displayTypeLabel = (language === 'fr' && typeLabelsFr[type]) ? typeLabelsFr[type] : typeLabels[type];
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
@@ -54,7 +70,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             style={{ backgroundColor: typeColors[type] }}
             className="capitalize text-white shadow-lg text-xs sm:text-sm px-2.5 py-1"
           >
-            {typeLabels[type]}
+            {displayTypeLabel}
           </Badge>
         </div>
         {priceRange && (
@@ -68,10 +84,10 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
 
       <CardBody className="flex-1 flex flex-col p-4 sm:p-5">
         <CardTitle className="mb-2 text-lg sm:text-xl font-bold text-gray-900 leading-tight">
-          {name}
+          {displayName}
         </CardTitle>
         <CardText className="mb-4 text-sm sm:text-base text-gray-600 flex-1 leading-relaxed">
-          {description}
+          {displayDescription}
         </CardText>
         
         {/* Phone Number */}
@@ -104,7 +120,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
           className="mt-auto flex items-center justify-center gap-2 w-full bg-[#2563EB] hover:bg-[#1e40af] text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
         >
           <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-          <span>View on Google Maps</span>
+          <span>{language === 'fr' ? 'Voir sur Google Maps' : 'View on Google Maps'}</span>
           <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
         </a>
       </CardBody>
