@@ -50,11 +50,29 @@ export async function POST(request: NextRequest) {
       }
     });
     
-    // Upload file to storage bucket (bucket name: 'uploads')
-    // Using service role key should bypass RLS, but if bucket has RLS enabled,
-    // we may need to disable it or add policies in Supabase dashboard
+    // Check if bucket exists, create if it doesn't
+    const bucketName = 'uploads';
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    
+    if (!listError) {
+      const bucketExists = buckets?.some(b => b.name === bucketName);
+      if (!bucketExists) {
+        // Try to create the bucket (this might fail if we don't have permissions)
+        const { error: createError } = await supabase.storage.createBucket(bucketName, {
+          public: true,
+          fileSizeLimit: 5242880, // 5MB
+          allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+        });
+        
+        if (createError) {
+          console.warn('Could not create bucket (may already exist or need manual creation):', createError.message);
+        }
+      }
+    }
+    
+    // Upload file to storage bucket
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('uploads')
+      .from(bucketName)
       .upload(filePath, buffer, {
         contentType: file.type,
         upsert: false,
@@ -65,9 +83,17 @@ export async function POST(request: NextRequest) {
       console.error('Supabase storage upload error:', uploadError);
       console.error('Error details:', JSON.stringify(uploadError, null, 2));
       
-      // If RLS error, provide helpful message
+      // If RLS error, provide detailed instructions
       if (uploadError.message?.includes('row-level security') || uploadError.message?.includes('RLS')) {
-        throw new Error(`Storage bucket RLS policy violation. Please ensure the 'uploads' bucket exists and RLS is disabled, or add a policy allowing service role access. Error: ${uploadError.message}`);
+        throw new Error(
+          `Storage bucket RLS is blocking uploads. To fix this:\n` +
+          `1. Go to Supabase Dashboard → Storage\n` +
+          `2. Find the '${bucketName}' bucket\n` +
+          `3. Click on the bucket → Settings (gear icon)\n` +
+          `4. Toggle OFF "Enable RLS" or add a policy:\n` +
+          `   CREATE POLICY "Allow all uploads" ON storage.objects FOR ALL USING (bucket_id = '${bucketName}');\n` +
+          `Error: ${uploadError.message}`
+        );
       }
       
       throw new Error(`Failed to upload to storage: ${uploadError.message}`);
