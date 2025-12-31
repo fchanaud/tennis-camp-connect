@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { createServiceRoleClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+import { getSupabaseConfig } from '@/lib/supabase/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,19 +36,40 @@ export async function POST(request: NextRequest) {
     const filename = `${randomUUID()}.${fileExtension}`;
     const filePath = `${type}/${filename}`;
 
-    // Upload to Supabase Storage
-    const supabase = createServiceRoleClient();
+    // Upload to Supabase Storage using service role client (bypasses RLS)
+    // Create client directly with service role key to ensure RLS bypass
+    const config = getSupabaseConfig();
+    if (!config.serviceRoleKey) {
+      throw new Error('Service role key is required for file uploads');
+    }
+    
+    const supabase = createClient(config.url, config.serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
     
     // Upload file to storage bucket (bucket name: 'uploads')
+    // Using service role key should bypass RLS, but if bucket has RLS enabled,
+    // we may need to disable it or add policies in Supabase dashboard
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('uploads')
       .upload(filePath, buffer, {
         contentType: file.type,
         upsert: false,
+        cacheControl: '3600',
       });
 
     if (uploadError) {
       console.error('Supabase storage upload error:', uploadError);
+      console.error('Error details:', JSON.stringify(uploadError, null, 2));
+      
+      // If RLS error, provide helpful message
+      if (uploadError.message?.includes('row-level security') || uploadError.message?.includes('RLS')) {
+        throw new Error(`Storage bucket RLS policy violation. Please ensure the 'uploads' bucket exists and RLS is disabled, or add a policy allowing service role access. Error: ${uploadError.message}`);
+      }
+      
       throw new Error(`Failed to upload to storage: ${uploadError.message}`);
     }
 
