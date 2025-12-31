@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { randomUUID } from 'crypto';
+import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,33 +26,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
     }
 
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', type);
-    try {
-      await mkdir(uploadsDir, { recursive: true });
-    } catch (mkdirError) {
-      console.error('Failed to create uploads directory:', mkdirError);
-      throw new Error(`Failed to create upload directory: ${mkdirError instanceof Error ? mkdirError.message : 'Unknown error'}`);
-    }
 
     // Generate unique filename
     const fileExtension = file.name.split('.').pop() || 'jpg';
     const filename = `${randomUUID()}.${fileExtension}`;
-    const filepath = join(uploadsDir, filename);
+    const filePath = `${type}/${filename}`;
 
-    // Write file
-    try {
-      await writeFile(filepath, buffer);
-    } catch (writeError) {
-      console.error('Failed to write file:', writeError);
-      throw new Error(`Failed to write file: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`);
+    // Upload to Supabase Storage
+    const supabase = createServiceRoleClient();
+    
+    // Upload file to storage bucket (bucket name: 'uploads')
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('uploads')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Supabase storage upload error:', uploadError);
+      throw new Error(`Failed to upload to storage: ${uploadError.message}`);
     }
 
-    // Return public URL
-    const publicUrl = `/uploads/${type}/${filename}`;
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('uploads')
+      .getPublicUrl(filePath);
+
+    const publicUrl = urlData.publicUrl;
 
     return NextResponse.json({ 
       success: true, 
