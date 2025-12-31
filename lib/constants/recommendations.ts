@@ -63,6 +63,18 @@ export const recommendations: Recommendation[] = [
     mapEmbedUrl: 'https://maps.google.com/maps?q=La+Terrasse+des+Epices,+Marrakech,+Morocco&output=embed',
     phone: '+212 5243-75904'
   },
+  {
+    type: 'food',
+    name: 'MonQuotidien, Targa Marrakesh',
+    nameFr: 'MonQuotidien, Targa Marrakech',
+    description: 'Cozy restaurant offering delicious daily meals and local cuisine in a welcoming atmosphere.',
+    descriptionFr: 'Restaurant cosy offrant de délicieux repas quotidiens et une cuisine locale dans une atmosphère accueillante.',
+    location: 'https://maps.google.com/?q=MonQuotidien+Targa+Marrakesh,+Marrakech,+Morocco',
+    priceRange: '€',
+    photo: '/uploads/recommendations/mon-quotidien-targa.webp',
+    mapEmbedUrl: 'https://maps.google.com/maps?q=MonQuotidien+Targa+Marrakesh,+Marrakech,+Morocco&output=embed',
+    phone: '+212 5243-46561'
+  },
   
   // Relax
   {
