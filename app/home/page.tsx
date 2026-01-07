@@ -375,6 +375,20 @@ function HomePageContent() {
               </CardBody>
             </Card>
 
+            <Card className="bg-white shadow-lg">
+              <CardBody className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl mb-3 sm:mb-4">Player Feedback</CardTitle>
+                <CardText className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                  View and manage all player feedback submissions
+                </CardText>
+                <Link href="/admin/feedback">
+                  <Button variant="primary" fullWidth className="text-sm sm:text-base">
+                    View Feedback
+                  </Button>
+                </Link>
+              </CardBody>
+            </Card>
+
           </div>
         )}
       </div>

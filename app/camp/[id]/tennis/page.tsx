@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardBody, CardTitle, CardText } from '@/components/ui/Card';
@@ -20,6 +20,7 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
   const [camp, setCamp] = useState<any>(null);
   const [assessment, setAssessment] = useState<any>(null);
   const [report, setReport] = useState<any>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const loadData = async () => {
@@ -92,13 +93,29 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
   const userStr = sessionStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
+  // Only allow feedback after the camp has ended
+  const now = new Date();
+  const campEnd = new Date(camp.end_date);
+  const isCampFinished = now > campEnd;
+
   return (
     <AppLayout>
       <div className="container mx-auto px-4 py-8">
-        <nav className="mb-6 text-sm">
+        <nav className="mb-4 sm:mb-6 text-sm">
           <span className="text-gray-500">Camp / </span>
           <span className="font-semibold">Tennis</span>
         </nav>
+        
+        {/* Feedback success message */}
+        {searchParams.get('feedback') && (
+          <div className="mb-4 sm:mb-6">
+            <Alert variant="success">
+              {searchParams.get('feedback') === 'updated'
+                ? 'Thank you! Your feedback has been updated successfully.'
+                : 'Thank you! Your feedback has been submitted successfully.'}
+            </Alert>
+          </div>
+        )}
 
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Your tennis program</h1>
 
@@ -236,8 +253,8 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
               <CardBody>
                 <CardTitle>Post-Camp Report</CardTitle>
                 {report ? (
-                  <div className="mt-4">
-                    <Alert variant="success" className="mb-4">
+                  <div className="mt-4 space-y-4">
+                    <Alert variant="success">
                       Your coach has completed your post-camp report!
                     </Alert>
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6">
@@ -256,6 +273,30 @@ export default function TennisPage({ params }: { params: Promise<{ id: string }>
                 )}
               </CardBody>
             </Card>
+
+            {/* Player Feedback CTA (after post-camp report, only after camp end date) */}
+            {user && user.role === 'player' && isCampFinished && (
+              <Card>
+                <CardBody>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-lg sm:text-xl mb-1">
+                        Share your feedback
+                      </CardTitle>
+                      <CardText className="text-sm sm:text-base text-gray-600">
+                        Tell us about your overall experience during this tennis camp to help us
+                        improve future editions.
+                      </CardText>
+                    </div>
+                    <Link href={`/camp/${campId}/feedback`} className="w-full sm:w-auto">
+                      <Button variant="primary" fullWidth>
+                        Give feedback on this camp
+                      </Button>
+                    </Link>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
           </div>
         )}
       </div>

@@ -123,6 +123,12 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
       >
         Camp Management
       </Link>
+      <Link
+        href="/admin/feedback"
+        className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/admin/feedback') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+      >
+        Feedback
+      </Link>
     </>
   );
 
@@ -394,6 +400,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Camp Management
+                  </Link>
+                  <Link
+                    href="/admin/feedback"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/feedback') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Feedback
                   </Link>
                 </>
               )}

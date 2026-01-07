@@ -88,3 +88,25 @@ export interface Recommendation {
   whatsapp?: boolean;
 }
 
+export interface Feedback {
+  id: string;
+  player_id: string;
+  camp_id: string;
+  accommodation_rating?: number | null;
+  accommodation_text?: string | null;
+  tennis_rating: number;
+  tennis_text?: string | null;
+  excursions_rating?: number | null;
+  excursions_text?: string | null;
+  overall_text?: string | null;
+  photo_urls: string[];
+  consent_given: boolean;
+  created_at: string;
+  updated_at: string;
+  player?: User;
+  camp?: Camp;
+  // Legacy fields for backward compatibility
+  overall_trip_text?: string;
+  app_experience_text?: string;
+}
+

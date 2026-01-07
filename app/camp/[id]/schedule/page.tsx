@@ -170,14 +170,14 @@ function RecommendationsSection() {
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3 sm:mb-4">
           <div className="flex-1">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
               {language === 'fr' ? 'Recommandations' : 'Recommendations'}
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+        </h2>
+        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
               {language === 'fr' 
                 ? 'Découvrez les meilleurs endroits pour manger, vous détendre et explorer pendant votre séjour à Marrakech.'
                 : 'Discover the best places to eat, relax, and explore during your stay in Marrakech.'}
-            </p>
+        </p>
           </div>
           {/* Language Toggle */}
           <div className="flex items-center gap-2">
@@ -222,26 +222,26 @@ function RecommendationsSection() {
               }
             };
             return (
-              <button
-                key={option.value}
-                onClick={() => setSelectedFilter(option.value)}
-                className={`
-                  px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-sm sm:text-base
-                  transition-all duration-200 shadow-sm hover:shadow-md
-                  min-h-[44px] sm:min-h-[48px] flex items-center justify-center
+            <button
+              key={option.value}
+              onClick={() => setSelectedFilter(option.value)}
+              className={`
+                px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-sm sm:text-base
+                transition-all duration-200 shadow-sm hover:shadow-md
+                min-h-[44px] sm:min-h-[48px] flex items-center justify-center
                   ${getButtonColor()}
-                `}
+              `}
                 aria-label={`Filter by ${optionLabel}`}
-              >
+            >
                 <span className="whitespace-nowrap">{optionLabel}</span>
-                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                  selectedFilter === option.value
-                    ? 'bg-white/20 text-white'
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
-                  {option.count}
-                </span>
-              </button>
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                selectedFilter === option.value
+                  ? 'bg-white/20 text-white'
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {option.count}
+              </span>
+            </button>
             );
           })}
         </div>
