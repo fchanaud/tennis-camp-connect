@@ -129,6 +129,12 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
       >
         Feedback
       </Link>
+      <Link
+        href="/cancellation-policy"
+        className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/cancellation-policy') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+      >
+        Cancellation Policy
+      </Link>
     </>
   );
 
@@ -264,6 +270,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
             onClick={() => setMobileMenuOpen(false)}
           >
             Camp Management
+          </Link>
+          <Link
+            href="/cancellation-policy"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/cancellation-policy') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Cancellation Policy
           </Link>
         </>
       );
@@ -407,6 +420,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Feedback
+                  </Link>
+                  <Link
+                    href="/cancellation-policy"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/cancellation-policy') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Cancellation Policy
                   </Link>
                 </>
               )}

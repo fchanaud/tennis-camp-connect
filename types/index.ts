@@ -109,4 +109,3 @@ export interface Feedback {
   overall_trip_text?: string;
   app_experience_text?: string;
 }
-
