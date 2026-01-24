@@ -19,9 +19,9 @@ export default function LevelCheckPage({ params }: { params: Promise<{ campId: s
   }, [params]);
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
+    <div className="min-h-screen bg-[#F7F7F7] flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shrink-0">
         <div className="container mx-auto px-3 py-2.5 sm:px-4 sm:py-3 md:py-2.5 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <Link href="/login" className="text-base md:text-lg font-bold text-[#FF4C4C] cursor-pointer">
             Tennis Camp Connect
@@ -35,7 +35,7 @@ export default function LevelCheckPage({ params }: { params: Promise<{ campId: s
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 py-6 md:py-8 max-w-4xl">
         <Card>
           <CardBody className="text-center py-12">
             <div className="mb-6">
@@ -67,32 +67,9 @@ export default function LevelCheckPage({ params }: { params: Promise<{ campId: s
                 </p>
                 <p className="text-gray-700 mb-4">
                   We'd love to review your profile. Please contact{' '}
-                  <a
-                    href="mailto:hello@aceawaytravel.com"
-                    className="text-[#2563EB] hover:underline font-medium"
-                  >
-                    Ace Away Travel
-                  </a>{' '}
+                  <strong>Ace Away Travel</strong>{' '}
                   before proceeding with registration.
                 </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
-                  <a
-                    href="https://www.tennis-camp-marrakech.com/testimonials"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#2563EB] hover:underline text-sm font-medium"
-                  >
-                    View testimonials
-                  </a>
-                  <a
-                    href="https://www.instagram.com/aceaway.travel/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#2563EB] hover:underline text-sm font-medium"
-                  >
-                    Instagram
-                  </a>
-                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
@@ -101,9 +78,6 @@ export default function LevelCheckPage({ params }: { params: Promise<{ campId: s
                     Back to registration
                   </Button>
                 )}
-                <Button variant="secondary" onClick={() => router.push('/')}>
-                  Return to Home
-                </Button>
               </div>
             </div>
           </CardBody>
@@ -111,7 +85,7 @@ export default function LevelCheckPage({ params }: { params: Promise<{ campId: s
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12 md:mt-16">
+      <footer className="bg-white border-t border-gray-200 mt-12 md:mt-16 shrink-0">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-sm text-gray-600">
             © {new Date().getFullYear()} Tennis Camp Connect. All rights reserved.

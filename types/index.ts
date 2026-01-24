@@ -135,6 +135,8 @@ export interface Registration {
   updated_at: string;
   camp?: Camp;
   options?: RegistrationOption[];
+  /** API/DB may return snake_case; both supported for compatibility */
+  registration_options?: RegistrationOption[];
   payments?: Payment[];
 }
 

@@ -13,10 +13,19 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const signature = request.headers.get('stripe-signature');
 
-    if (!signature || !webhookSecret) {
+    if (!signature) {
+      console.error('Webhook: Missing stripe-signature header');
       return NextResponse.json(
-        { error: 'Missing signature or webhook secret' },
+        { error: 'Missing signature' },
         { status: 400 }
+      );
+    }
+
+    if (!webhookSecret) {
+      console.error('Webhook: STRIPE_WEBHOOK_SECRET is not set in environment variables');
+      return NextResponse.json(
+        { error: 'Webhook secret not configured' },
+        { status: 500 }
       );
     }
 
@@ -25,11 +34,14 @@ export async function POST(request: NextRequest) {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
+      console.error('Make sure STRIPE_WEBHOOK_SECRET matches the secret from "stripe listen" (local) or Dashboard (production)');
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
       );
     }
+
+    console.log(`Webhook received: ${event.type} (${event.id})`);
 
     const supabase = createServiceRoleClient();
 
@@ -38,8 +50,10 @@ export async function POST(request: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       const registrationId = session.metadata?.registration_id;
 
+      console.log(`Processing checkout.session.completed for registration: ${registrationId}`);
+
       if (!registrationId) {
-        console.error('No registration_id in session metadata');
+        console.error('No registration_id in session metadata. Session ID:', session.id);
         return NextResponse.json({ received: true });
       }
 
@@ -51,7 +65,7 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (paymentError || !payment) {
-        console.error('Payment not found:', paymentError);
+        console.error('Payment not found for session:', session.id, paymentError);
         return NextResponse.json({ received: true });
       }
 
@@ -66,6 +80,11 @@ export async function POST(request: NextRequest) {
         .from('registrations')
         .update({ status: 'confirmed' })
         .eq('id', registrationId);
+
+      console.log(`Successfully updated payment ${payment.id} and registration ${registrationId} to confirmed`);
+    } else {
+      // Log unhandled event types for debugging (but return 200 to acknowledge receipt)
+      console.log(`Webhook event type "${event.type}" received but not handled. This is normal for events we don't need to process.`);
     }
 
     return NextResponse.json({ received: true });

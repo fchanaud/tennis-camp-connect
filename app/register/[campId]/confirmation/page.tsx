@@ -135,7 +135,7 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
 
             <div className="max-w-2xl mx-auto space-y-4 text-left">
               <p className="text-gray-700 text-base md:text-lg">
-                We'll contact you with more details in the upcoming days.
+                We'll contact you with more details in the upcoming hours.
               </p>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mt-4 md:mt-6">

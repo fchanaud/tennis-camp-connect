@@ -48,6 +48,30 @@ export async function POST(
       );
     }
 
+    // Get camp details for date formatting
+    const { data: camp, error: campError } = await supabase
+      .from('camps')
+      .select('start_date, end_date')
+      .eq('id', campId)
+      .single();
+
+    if (campError || !camp) {
+      return NextResponse.json(
+        { error: 'Camp not found' },
+        { status: 404 }
+      );
+    }
+
+    // Format camp dates for description
+    const formatDateRange = (start: string, end: string): string => {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      const startStr = startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const endStr = endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      return `${startStr} - ${endStr}`;
+    };
+    const campDates = formatDateRange(camp.start_date, camp.end_date);
+
     // Get registration with options
     const { data: registration, error: regError } = await supabase
       .from('registrations')
@@ -91,7 +115,7 @@ export async function POST(
               currency: 'gbp',
               product_data: {
                 name: `Tennis Camp Marrakech - ${payment_type === 'deposit' ? 'Deposit' : 'Full Payment'}`,
-                description: `Registration for camp ${campId}`,
+                description: `Registration for tennis camp in Marrakech from ${campDates}`,
               },
               unit_amount: Math.round(amount * 100), // Convert to pence
             },

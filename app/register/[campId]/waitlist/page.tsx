@@ -76,14 +76,6 @@ export default function WaitlistPage({ params }: { params: Promise<{ campId: str
                 </p>
               </div>
 
-              <div className="mt-6">
-                <Button
-                  variant="primary"
-                  onClick={() => window.location.href = '/'}
-                >
-                  Return to Home
-                </Button>
-              </div>
             </div>
           </CardBody>
         </Card>

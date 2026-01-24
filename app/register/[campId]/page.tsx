@@ -124,6 +124,23 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
           } catch {
             setEditingRegistrationId(null);
           }
+        } else {
+          // If coming back from level-check: restore form from draft saved before redirect
+          try {
+            const raw = sessionStorage.getItem(`level_check_draft_${campId}`);
+            if (raw) {
+              const d = JSON.parse(raw);
+              setName(d.name ?? '');
+              setEmail(d.email ?? '');
+              setWhatsappNumber(d.whatsapp_number ?? '');
+              setTennisExperienceYears(d.tennis_experience_years ?? '');
+              setPlayFrequency(d.play_frequency_per_month ?? '');
+              setBedroomType(d.bedroom_type ?? '');
+              setOptionalActivities(Array.isArray(d.optional_activities) ? d.optional_activities : []);
+              setAcceptedCancellationPolicy(!!d.accepted_cancellation_policy);
+              sessionStorage.removeItem(`level_check_draft_${campId}`);
+            }
+          } catch (_) {}
         }
       } catch (err) {
         setError('Failed to load camp information');
@@ -177,7 +194,20 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
       }
 
       // 1–2 years experience → redirect to level-check page (no registration created)
+      // Save form to sessionStorage so "Back to registration" can restore it
       if (tennisExperienceYears === '1-2 years') {
+        try {
+          sessionStorage.setItem(`level_check_draft_${campId}`, JSON.stringify({
+            name,
+            email,
+            whatsapp_number: whatsappNumber,
+            tennis_experience_years: tennisExperienceYears,
+            play_frequency_per_month: playFrequency,
+            bedroom_type: bedroomType,
+            optional_activities: optionalActivities,
+            accepted_cancellation_policy: acceptedCancellationPolicy,
+          }));
+        } catch (_) {}
         router.push(`/register/${campId}/level-check`);
         setSubmitting(false);
         return;
@@ -306,7 +336,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl overflow-visible md:overflow-visible">
         <Card className="mb-6 border-2 border-[#2563EB]/30">
           <CardBody>
             <CardTitle className="text-2xl mb-4 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
@@ -376,8 +406,8 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
         </Card>
 
         {/* Registration Form */}
-        <Card className="border-2 border-[#66B032]/30">
-          <CardBody>
+        <Card className="border-2 border-[#66B032]/30 overflow-visible md:overflow-visible">
+          <CardBody className="overflow-visible md:overflow-visible">
             <CardTitle className="text-xl mb-4 text-[#1E40AF]">Registration Form</CardTitle>
 
             {error && (
@@ -388,7 +418,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6 md:space-y-4 overflow-visible md:overflow-visible">
               <Input
                 label="Name *"
                 type="text"
@@ -461,16 +491,16 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 <label className="form-label text-sm font-medium text-[#1E1E1E] mb-2 block">
                   Optional Activities <span className="text-gray-500 font-normal">(can also be booked and paid later)</span>
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-3 md:space-y-2">
                   {(Object.keys(OPTION_LABELS) as RegistrationOptionType[]).map((optionType) => (
-                    <label key={optionType} className="flex items-start gap-2 cursor-pointer">
+                    <label key={optionType} className="flex items-center gap-3 cursor-pointer min-h-[44px] py-1">
                       <input
                         type="checkbox"
                         checked={optionalActivities.includes(optionType)}
                         onChange={() => handleOptionalActivityChange(optionType)}
-                        className="mt-1"
+                        className="w-5 h-5 flex-shrink-0 cursor-pointer"
                       />
-                      <span className="text-sm text-gray-700">{OPTION_LABELS[optionType]}</span>
+                      <span className="text-sm text-gray-700 break-words">{OPTION_LABELS[optionType]}</span>
                     </label>
                   ))}
                 </div>
@@ -478,15 +508,15 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
 
               {/* Cancellation Policy */}
               <div>
-                <label className="flex items-start gap-2 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer min-h-[44px] py-1">
                   <input
                     type="checkbox"
                     checked={acceptedCancellationPolicy}
                     onChange={(e) => setAcceptedCancellationPolicy(e.target.checked)}
-                    className="mt-1"
+                    className="w-5 h-5 flex-shrink-0 cursor-pointer"
                     required
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-700 break-words">
                     I have read and agree to the{' '}
                     <Link
                       href="/cancellation-policy"
