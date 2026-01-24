@@ -11,7 +11,7 @@ try {
 }
 
 const stripe = Stripe ? new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 }) : null;
 
 const BASE_CAMP_PRICE = 600; // shared bedroom; 600 + 90 = £690 for private double
