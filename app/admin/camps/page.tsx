@@ -37,6 +37,7 @@ export default function CampManagementPage() {
   const [schedules, setSchedules] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [copiedCampId, setCopiedCampId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -396,6 +397,36 @@ export default function CampManagementPage() {
                         Coach: {camp.coach.first_name}
                       </CardText>
                     )}
+                    <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-xs font-medium text-gray-500 mb-1">Camp ID &amp; registration link</p>
+                      <p className="text-xs text-gray-700 truncate" title={camp.id}>ID: {camp.id}</p>
+                      <p className="text-xs text-gray-700 truncate" title={typeof window !== 'undefined' ? `${window.location.origin}/register/${camp.id}` : `/register/${camp.id}`}>
+                        /register/{camp.id}
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <a
+                          href={`/register/${camp.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#2563EB] hover:underline"
+                        >
+                          Open link
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const url = typeof window !== 'undefined' ? `${window.location.origin}/register/${camp.id}` : `/register/${camp.id}`;
+                            navigator.clipboard?.writeText(url).then(
+                              () => { setCopiedCampId(camp.id); setTimeout(() => setCopiedCampId(null), 2000); },
+                              () => {}
+                            );
+                          }}
+                          className="text-xs text-[#2563EB] hover:underline"
+                        >
+                          {copiedCampId === camp.id ? 'Copied!' : 'Copy link'}
+                        </button>
+                      </div>
+                    </div>
                     <div className="mt-3">
                       <Button 
                         variant="outline" 
@@ -541,10 +572,10 @@ export default function CampManagementPage() {
 
                 {/* Capacity */}
                 <Input
-                  label="Capacity (1-4 players)"
+                  label="Capacity (1-8 players)"
                   type="number"
                   min="1"
-                  max="4"
+                  max="8"
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                 />
@@ -746,10 +777,10 @@ export default function CampManagementPage() {
 
                 {/* Capacity */}
                 <Input
-                  label="Capacity (1-4 players)"
+                  label="Capacity (1-8 players)"
                   type="number"
                   min="1"
-                  max="4"
+                  max="8"
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                 />

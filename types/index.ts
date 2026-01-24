@@ -23,6 +23,7 @@ export interface Camp {
   accommodation_map_link: string | null;
   accommodation_photo_url: string | null;
   capacity: number;
+  max_players?: number;
   coach_id: string | null;
   created_at: string;
   coach?: User;
@@ -108,4 +109,57 @@ export interface Feedback {
   // Legacy fields for backward compatibility
   overall_trip_text?: string;
   app_experience_text?: string;
+}
+
+export type TennisExperienceYears = '1-2 years' | '3-5 years' | '6-8 years' | '>8 years';
+export type PlayFrequency = '1 time' | '2-3 times' | '3-4 times' | '>4 times';
+export type BedroomType = 'shared' | 'private_double';
+export type RegistrationStatus = 'pending' | 'awaiting_manual_verification' | 'confirmed' | 'cancelled';
+export type PaymentMethod = 'stripe' | 'revolut';
+export type PaymentType = 'deposit' | 'full' | 'balance';
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+export type RegistrationOptionType = 'hammam_massage' | 'massage' | 'hammam' | 'medina_tour' | 'friday_dinner';
+
+export interface Registration {
+  id: string;
+  camp_id: string;
+  name: string;
+  email: string;
+  whatsapp_number: string;
+  tennis_experience_years: TennisExperienceYears;
+  play_frequency_per_month: PlayFrequency;
+  bedroom_type: BedroomType;
+  accepted_cancellation_policy: boolean;
+  status: RegistrationStatus;
+  created_at: string;
+  updated_at: string;
+  camp?: Camp;
+  options?: RegistrationOption[];
+  payments?: Payment[];
+}
+
+export interface RegistrationOption {
+  id: string;
+  registration_id: string;
+  option_type: RegistrationOptionType;
+  price_pounds: number;
+  created_at: string;
+}
+
+export interface Payment {
+  id: string;
+  registration_id: string;
+  payment_method: PaymentMethod;
+  payment_type: PaymentType;
+  amount_pounds: number;
+  stripe_payment_intent_id?: string | null;
+  stripe_session_id?: string | null;
+  revolut_reference?: string | null;
+  status: PaymentStatus;
+  base_camp_price: number;
+  bedroom_upgrade_price: number;
+  options_total_price: number;
+  created_at: string;
+  updated_at: string;
+  registration?: Registration;
 }

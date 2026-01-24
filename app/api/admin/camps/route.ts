@@ -95,7 +95,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (selectedPlayers.length > parseInt(capacity)) {
+    const cap = parseInt(capacity);
+    if (isNaN(cap) || cap < 1 || cap > 8) {
+      return NextResponse.json(
+        { error: 'Capacity must be between 1 and 8 players' },
+        { status: 400 }
+      );
+    }
+
+    if (selectedPlayers.length > cap) {
       return NextResponse.json(
         { error: `Cannot assign more than ${capacity} players` },
         { status: 400 }
@@ -230,7 +238,15 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (selectedPlayers.length > parseInt(capacity)) {
+    const cap = parseInt(capacity);
+    if (isNaN(cap) || cap < 1 || cap > 8) {
+      return NextResponse.json(
+        { error: 'Capacity must be between 1 and 8 players' },
+        { status: 400 }
+      );
+    }
+
+    if (selectedPlayers.length > cap) {
       return NextResponse.json(
         { error: `Cannot assign more than ${capacity} players` },
         { status: 400 }

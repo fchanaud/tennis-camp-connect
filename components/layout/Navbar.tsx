@@ -124,6 +124,12 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
         Camp Management
       </Link>
       <Link
+        href="/admin/registrations"
+        className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/admin/registrations') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
+      >
+        Registrations
+      </Link>
+      <Link
         href="/admin/feedback"
         className={`px-4 py-2 transition-colors cursor-pointer ${isActive('/admin/feedback') ? 'text-[#2563EB] font-semibold' : 'text-gray-700 hover:text-[#2563EB]'}`}
       >
@@ -272,6 +278,20 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
             Camp Management
           </Link>
           <Link
+            href="/admin/registrations"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/registrations') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Registrations
+          </Link>
+          <Link
+            href="/admin/feedback"
+            className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/feedback') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Feedback
+          </Link>
+          <Link
             href="/cancellation-policy"
             className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/cancellation-policy') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
             onClick={() => setMobileMenuOpen(false)}
@@ -413,6 +433,13 @@ export function Navbar({ user, camps = [] }: NavbarProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Camp Management
+                  </Link>
+                  <Link
+                    href="/admin/registrations"
+                    className={`px-4 py-3 hover:bg-gray-50 rounded transition-colors cursor-pointer ${isActive('/admin/registrations') ? 'text-[#2563EB] font-semibold bg-blue-50' : 'text-gray-700'}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Registrations
                   </Link>
                   <Link
                     href="/admin/feedback"

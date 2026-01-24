@@ -8,9 +8,13 @@
     "start": "next start",
     "clear-cache": "rm -rf .next .turbo",
     "sync-users": "tsx scripts/sync-users-to-test.ts",
-    "sync-all-data": "tsx scripts/sync-all-data-to-test.ts"
+    "sync-all-data": "tsx scripts/sync-all-data-to-test.ts",
+    "stripe:install": "./scripts/install-stripe-cli.sh",
+    "stripe:login": "./bin/stripe login",
+    "stripe:listen": "./bin/stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^8.6.4",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.75.0",
     "bootstrap": "^5.3.8",
@@ -21,6 +25,7 @@
     "react": "19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "19.1.0",
+    "stripe": "^20.2.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

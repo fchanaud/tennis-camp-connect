@@ -38,10 +38,13 @@ export async function POST(request: NextRequest) {
     
     // Handle specific passwords for known users
     // Check franklind FIRST (even if admin) in test environment
+    // In test, accept both gardelapeche and Gardelapeche78 for consistency with admin
     if (usernameLower === 'franklind' && isTestEnv) {
-      const testPassword = process.env.TEST_PASSWORD_FRANKLIND || 'gardelapeche';
-      console.log('Franklind login attempt - test env:', isTestEnv, 'expected password:', testPassword);
-      if (password !== testPassword) {
+      const accepted = ['gardelapeche', 'Gardelapeche78'];
+      if (process.env.TEST_PASSWORD_FRANKLIND) {
+        accepted.push(process.env.TEST_PASSWORD_FRANKLIND);
+      }
+      if (!accepted.includes(password)) {
         console.log('User franklind login attempt failed - wrong password (test env). Received:', password);
         return NextResponse.json(
           { error: 'Invalid username or password' },

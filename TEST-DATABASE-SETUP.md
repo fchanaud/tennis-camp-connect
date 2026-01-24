@@ -66,7 +66,7 @@ CREATE TABLE camps (
   accommodation_phone VARCHAR(50),
   accommodation_map_link TEXT,
   accommodation_photo_url TEXT,
-  capacity INTEGER NOT NULL CHECK (capacity >= 1 AND capacity <= 4),
+  capacity INTEGER NOT NULL CHECK (capacity >= 1 AND capacity <= 8),
   coach_id UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -377,6 +377,20 @@ function HomePageContent() {
 
             <Card className="bg-white shadow-lg">
               <CardBody className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl mb-3 sm:mb-4">Registrations</CardTitle>
+                <CardText className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                  Confirm Revolut payments once received
+                </CardText>
+                <Link href="/admin/registrations">
+                  <Button variant="outline" fullWidth className="text-sm sm:text-base">
+                    View registrations
+                  </Button>
+                </Link>
+              </CardBody>
+            </Card>
+
+            <Card className="bg-white shadow-lg">
+              <CardBody className="p-4 sm:p-6">
                 <CardTitle className="text-lg sm:text-xl mb-3 sm:mb-4">Player Feedback</CardTitle>
                 <CardText className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                   View and manage all player feedback submissions

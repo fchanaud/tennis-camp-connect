@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Stripe CLI (installed via scripts/install-stripe-cli.sh)
+/bin/stripe
