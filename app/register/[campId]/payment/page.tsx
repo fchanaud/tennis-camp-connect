@@ -111,6 +111,18 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       const resolvedParams = await params;
       const { campId } = resolvedParams;
 
+      // For Revolut, open the link immediately (before async call) to avoid popup blocker
+      let revolutWindow: Window | null = null;
+      if (paymentMethod === 'revolut') {
+        revolutWindow = window.open('https://revolut.me/frankydch', '_blank');
+        // If popup was blocked, show error
+        if (!revolutWindow || revolutWindow.closed || typeof revolutWindow.closed === 'undefined') {
+          setError('Please allow popups for this site to open Revolut, or click the Revolut link manually.');
+          setProcessing(false);
+          return;
+        }
+      }
+
       const response = await fetch(`/api/register/${campId}/payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,6 +136,10 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       const data = await response.json();
 
       if (!response.ok) {
+        // Close the window if API call failed
+        if (revolutWindow && !revolutWindow.closed) {
+          revolutWindow.close();
+        }
         throw new Error(data.error || 'Payment processing failed');
       }
 
@@ -137,7 +153,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       } else if (paymentMethod === 'revolut') {
         setRevolutPaymentId(data.payment_id);
         setProcessing(false);
-        window.open('https://revolut.me/frankydch', '_blank');
+        // Window is already open from above
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
