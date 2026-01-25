@@ -10,7 +10,8 @@ import { Spinner } from '@/components/ui/Spinner';
 import type { Registration, RegistrationOption } from '@/types';
 
 const BASE_CAMP_PRICE = 600; // shared bedroom
-const DEPOSIT_AMOUNT = 250;
+const DEPOSIT_AMOUNT = 250; // For Revolut
+const STRIPE_DEPOSIT_AMOUNT = 1; // For Stripe
 const PRIVATE_BEDROOM_UPGRADE = 90; // 600 + 90 = £690 for private double
 
 const OPTION_PRICES: Record<string, number> = {
@@ -94,7 +95,8 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
     0
   );
   const basePrice = BASE_CAMP_PRICE + bedroomUpgrade + optionsTotal;
-  const depositAmount = DEPOSIT_AMOUNT;
+  // Use £1 deposit for Stripe, £250 for Revolut (or when no method selected yet)
+  const depositAmount = paymentMethod === 'stripe' ? STRIPE_DEPOSIT_AMOUNT : DEPOSIT_AMOUNT;
   const fullAmount = basePrice;
   const balanceAmount = fullAmount - depositAmount;
 

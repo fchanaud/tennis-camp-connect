@@ -15,7 +15,8 @@ const stripe = Stripe ? new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 }) : null;
 
 const BASE_CAMP_PRICE = 600; // shared bedroom; 600 + 90 = £690 for private double
-const DEPOSIT_AMOUNT = 250;
+const DEPOSIT_AMOUNT = 250; // For Revolut
+const STRIPE_DEPOSIT_AMOUNT = 1; // For Stripe
 const PRIVATE_BEDROOM_UPGRADE = 90;
 
 const OPTION_PRICES: Record<string, number> = {
@@ -96,7 +97,9 @@ export async function POST(
       0
     );
     const basePrice = BASE_CAMP_PRICE + bedroomUpgrade + optionsTotal;
-    const amount = payment_type === 'deposit' ? DEPOSIT_AMOUNT : basePrice;
+    // Use £1 deposit for Stripe, £250 for Revolut
+    const depositAmount = payment_method === 'stripe' ? STRIPE_DEPOSIT_AMOUNT : DEPOSIT_AMOUNT;
+    const amount = payment_type === 'deposit' ? depositAmount : basePrice;
 
     if (payment_method === 'stripe') {
       if (!stripe) {
