@@ -9,22 +9,22 @@ export default function CancellationPolicyPage() {
 
   const content = {
     en: {
-      title: 'Cancellation & refund policy - Tennis Camp Marrakech',
+      title: 'Cancellation & refund policy / 25-29 March',
       sections: [
         {
           title: '1. Payment & registration',
           content: [
-            'The total camp price is £690 per participant.',
-            'A £300 deposit is required at the time of booking to reserve a place.',
-            'The remaining balance of £390 is due 30 days before the camp start date.',
+            'The total camp base price is £600 per participant.',
+            'A £250 deposit is required at the time of booking to reserve a place.',
+            'The remaining balance of £350 is due 30 days before the camp start date.',
             '',
             'A participant is considered fully registered only once:',
-            '1. Full payment has been received, and',
+            '1. The organiser confirms his registration back, and',
             '2. Flight details have been provided within 7 days of booking.',
             '',
             'Failure to submit flight details within 7 days will result in a reminder. if flight details are still not provided, the participant will be considered as no longer joining, and the deposit will be refunded.',
             '',
-            'All payments are processed securely via Stripe.',
+            'All payments are processed securely via Revolut or Stripe.',
           ],
         },
         {
@@ -34,10 +34,10 @@ export default function CancellationPolicyPage() {
             '',
             'Refund policy (applies to all payments made up to the cancellation date):',
             '',
-            '• More than 60 days before the start date: refund of all payments made minus the £300 deposit.',
-            '• 30–60 days before the start date: 50% refund of the total camp price (£345).',
+            '• More than 60 days before the start date: refund of all payments made minus £150 charge.',
+            '• 30–60 days before the start date: 50% refund of the total camp price (£300).',
             '• Less than 30 days before the start date: no refund.',
-            '• No-shows, late arrivals, or early departures: no refunds or credits.',
+            '• No-shows, late arrivals or early departures: no refunds or credits.',
             '',
             'Booking transfers are allowed if the replacement participant matches the camp requirements and is not a beginner. all other rules and deadlines still apply.',
             '',
@@ -49,7 +49,7 @@ export default function CancellationPolicyPage() {
           content: [
             'Participants are responsible for booking and paying for their own flights.',
             '',
-            'Two flights will be recommended for Wednesday arrival to coordinate group transfers. arrival on Wednesday is mandatory. dinner on Wednesday is not included; participants are responsible for this meal.',
+            'Two flights will be recommended for Wednesday arrival to coordinate group transfers. arrival on Wednesday is mandatory. Dinner on Wednesday is not included; participants are responsible for this meal.',
             '',
             'Airport transfers for flights other than the recommended options cannot be guaranteed, and any additional transport costs are the participant\'s responsibility. no refunds are provided for missed or delayed transport.',
           ],
@@ -59,11 +59,11 @@ export default function CancellationPolicyPage() {
           content: [
             'In the unlikely event that a coach is unavailable due to injury or illness:',
             '',
-            '• Tennis sessions will still take place on the clay courts.',
-            '• Participants will retain full access to courts and tennis activities.',
-            '• Any refund of the tennis coaching portion will be calculated based on the participant\'s paid coaching fee and processed immediately.',
+            '• Tennis sessions will still take place on the clay courts',
+            '• Participants will retain full access to courts and tennis activities',
+            '• Any refund of the tennis coaching portion will be calculated based on the participant\'s paid coaching fee and processed immediately',
             '',
-            'Refunds do not apply to accommodation, meals, excursions, or other included services.',
+            'Refunds do not apply to accommodation, meals, excursions or other included services.',
           ],
         },
         {
@@ -71,8 +71,8 @@ export default function CancellationPolicyPage() {
           content: [
             'The camp programme includes approximately 9 hours of tennis per day, subject to weather conditions.',
             '',
-            '• Tennis may proceed in light rain if courts are playable.',
-            '• Sessions may be adjusted, shortened, rescheduled, or replaced with alternative tennis activities as necessary.',
+            '• Tennis may proceed in light rain if courts are playable',
+            '• Sessions may be adjusted, shortened, rescheduled or replaced with alternative tennis activities as necessary.',
             '',
             'Weather-related interruptions do not entitle participants to refunds, provided a reasonable overall programme is delivered.',
           ],
@@ -80,9 +80,9 @@ export default function CancellationPolicyPage() {
         {
           title: '6. Cancellation or changes by organiser',
           content: [
-            'if the camp must be cancelled due to unforeseen circumstances beyond reasonable control, participants will receive a full refund of all camp fees paid.',
+            'If the camp must be cancelled due to unforeseen circumstances beyond reasonable control, participants will receive a full refund of all camp fees paid.',
             '',
-            'Flights, travel costs, and personal expenses remain the participant\'s responsibility.',
+            'Flights, travel costs and personal expenses remain the participant\'s responsibility.',
           ],
         },
         {
@@ -98,7 +98,7 @@ export default function CancellationPolicyPage() {
         {
           title: '8. Media consent',
           content: [
-            'By participating in the camp, participants consent to photographs and videos being taken for use in promotions, marketing, and social media.',
+            'By participating in the camp, participants consent to photographs and videos being taken for use in promotions, marketing and social media. If you don\'t want to give your consent. If you don\'t want to give your consent, just give a heads up to the organiser to ensure your image won\'t be on any media.',
           ],
         },
       ],
@@ -112,9 +112,9 @@ export default function CancellationPolicyPage() {
         {
           title: '1. Paiement et inscription',
           content: [
-            'Le prix total du camp est de 690 £ par participant.',
-            'Un acompte de 300 £ est requis au moment de la réservation pour garantir une place.',
-            'Le solde restant de 390 £ est dû 30 jours avant la date de début du camp.',
+            'Le prix total du camp est de 600 £ par participant.',
+            'Un acompte de 250 £ est requis au moment de la réservation pour garantir une place.',
+            'Le solde restant de 350 £ est dû 30 jours avant la date de début du camp.',
             '',
             'Un participant est considéré comme entièrement inscrit uniquement lorsque:',
             '1. Le paiement complet a été reçu, et',
@@ -132,8 +132,8 @@ export default function CancellationPolicyPage() {
             '',
             'Politique de remboursement (s\'applique à tous les paiements effectués jusqu\'à la date d\'annulation):',
             '',
-            '• Plus de 60 jours avant la date de début: remboursement de tous les paiements effectués moins l\'acompte de 300 £.',
-            '• 30–60 jours avant la date de début: remboursement de 50% du prix total du camp (345 £).',
+            '• Plus de 60 jours avant la date de début: remboursement de tous les paiements effectués moins 150 £.',
+            '• 30–60 jours avant la date de début: remboursement de 50% du prix total du camp (300 £).',
             '• Moins de 30 jours avant la date de début: aucun remboursement.',
             '• Absences, arrivées tardives ou départs anticipés: aucun remboursement ni crédit.',
             '',
@@ -178,7 +178,7 @@ export default function CancellationPolicyPage() {
         {
           title: '6. Annulation ou modifications par l\'organisateur',
           content: [
-            'si le camp doit être annulé en raison de circonstances imprévues au-delà d\'un contrôle raisonnable, les participants recevront un remboursement complet de tous les frais de camp payés.',
+            'Si le camp doit être annulé en raison de circonstances imprévues au-delà d\'un contrôle raisonnable, les participants recevront un remboursement complet de tous les frais de camp payés.',
             '',
             'Les vols, les coûts de voyage et les dépenses personnelles restent à la charge du participant.',
           ],

@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { Spinner } from '@/components/ui/Spinner';
 import type { Registration, RegistrationOption } from '@/types';
-// Stripe will be loaded via Checkout Session redirect
-// Note: Install Stripe SDK: npm install stripe @stripe/stripe-js
 
 const BASE_CAMP_PRICE = 600; // shared bedroom
 const DEPOSIT_AMOUNT = 250;
@@ -45,6 +43,19 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'revolut' | ''>('');
   const [paymentType, setPaymentType] = useState<'deposit' | 'full'>('deposit');
   const [revolutPaymentId, setRevolutPaymentId] = useState<string | null>(null);
+
+  // Scroll to payment box when payment method is selected
+  useEffect(() => {
+    if (paymentMethod) {
+      // Small delay to ensure the payment box is rendered
+      setTimeout(() => {
+        const paymentBox = document.getElementById('payment-box');
+        if (paymentBox) {
+          paymentBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [paymentMethod]);
 
   useEffect(() => {
     async function loadRegistration() {
@@ -176,9 +187,9 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
+    <div className="min-h-screen bg-[#F7F7F7] flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shrink-0">
         <div className="container mx-auto px-3 py-2.5 sm:px-4 sm:py-3 md:py-2.5 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <Link href="/login" className="text-base md:text-lg font-bold text-[#FF4C4C] cursor-pointer">
             Tennis Camp Connect
@@ -192,7 +203,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 py-6 md:py-8 max-w-4xl">
         <Card>
           <CardBody>
             <CardTitle className="text-2xl mb-4">Payment</CardTitle>
@@ -311,7 +322,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
 
             {/* Revolut Payment */}
             {paymentMethod === 'revolut' && (
-              <div className="mb-6 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/80 p-5 md:p-6 border border-slate-200/80">
+              <div id="payment-box" className="mb-6 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/80 p-4 md:p-6 border border-slate-200/80">
                 {!revolutPaymentId ? (
                   <>
                     <p className="text-slate-700 text-sm md:text-base mb-4">
@@ -336,10 +347,10 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
                       Pay <strong>£{paymentType === 'deposit' ? depositAmount : fullAmount}</strong> in Revolut with <strong className="text-slate-900">Marrakech Trip</strong> as the reference.
                     </p>
                     <p className="text-slate-500 text-xs mb-4">
-                      <a href="https://revolut.me/frankydch" target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline">Open Revolut link</a> again if needed. When you’re done, click below.
+                      <a href="https://revolut.me/frankydch" target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline">Open Revolut link</a> again if needed. When you're done, click below.
                     </p>
                     <p className="text-slate-600 text-sm mb-4 text-center">
-                    Your registration will be confirmed once payment is received. Ace Away Travel will contact you with next steps shortly after.
+                      Once payment is received, we will confirm your registration and share the next steps. This will include the flight details you'll need to book.
                     </p>
                     <Button
                       variant="primary"
@@ -357,14 +368,16 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
 
             {/* Stripe Payment Button */}
             {paymentMethod === 'stripe' && (
-              <Button
-                variant="primary"
-                fullWidth
-                onClick={handlePayment}
-                disabled={processing}
-              >
-                {processing ? 'Processing...' : `Pay ${paymentType === 'deposit' ? `£${depositAmount}` : `£${fullAmount}`}`}
-              </Button>
+              <div id="payment-box">
+                <Button
+                  variant="primary"
+                  fullWidth
+                  onClick={handlePayment}
+                  disabled={processing}
+                >
+                  {processing ? 'Processing...' : `Pay ${paymentType === 'deposit' ? `£${depositAmount}` : `£${fullAmount}`}`}
+                </Button>
+              </div>
             )}
 
             {!paymentMethod && (
@@ -377,7 +390,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12 md:mt-16">
+      <footer className="bg-white border-t border-gray-200 mt-auto shrink-0">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-sm text-gray-600">
             © {new Date().getFullYear()} Tennis Camp Connect. All rights reserved.

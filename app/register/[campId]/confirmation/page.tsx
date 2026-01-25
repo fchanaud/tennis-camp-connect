@@ -79,7 +79,7 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
                       />
                     </svg>
                   </div>
-                  <h1 className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-2">Your Registration is Confirmed</h1>
+                  <h1 className="text-xs md:text-lg lg:text-xl font-bold text-gray-900 mb-2">Your Registration is Confirmed</h1>
                   <Badge variant="secondary" className="mt-2">Payment Successful</Badge>
                 </div>
               </>
@@ -103,7 +103,7 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
                       />
                     </svg>
                   </div>
-                  <h1 className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-2">Your Registration is Pending Confirmation</h1>
+                  <h1 className="text-xs md:text-lg lg:text-xl font-bold text-gray-900 mb-2">Your Registration is Pending Confirmation</h1>
                   <Badge variant="warning" className="mt-2">Awaiting Manual Verification</Badge>
                 </div>
               </>
@@ -127,7 +127,7 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
                       />
                     </svg>
                   </div>
-                  <h1 className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-2">Your Registration is Confirmed</h1>
+                  <h1 className="text-xs md:text-lg lg:text-xl font-bold text-gray-900 mb-2">Your Registration is Confirmed</h1>
                   <Badge variant="secondary" className="mt-2">Payment Verified</Badge>
                 </div>
               </>
@@ -135,31 +135,28 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
 
             <div className="max-w-2xl mx-auto space-y-4 text-left">
               <p className="text-gray-700 text-base md:text-lg">
-                We'll contact you with more details in the upcoming hours.
+                {isStripe ? (
+                  <>
+                    Thanks a lot! I'll reach out with the next steps, which include the recommended flight details below you'll need to book.
+                  </>
+                ) : (
+                  <>
+                    Thanks a lot! Once payment is received, we will confirm your registration and share the next steps. This will include the recommended flight details below you’ll need to book. 
+                  </>
+                )}
               </p>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mt-4 md:mt-6">
-                <h2 className="text-xs md:text-sm font-semibold text-gray-900 mb-2">Next Step</h2>
-                <p className="text-sm text-gray-700 mb-3">
-                  Now book your flight. Here is the recommended flight you must book:
-                </p>
-                <div className="overflow-x-auto flex justify-start md:justify-center mb-3 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-gray-300">
-                  <img
-                    src="/flight-recommendation.png"
-                    alt="Recommended Flight"
-                    className="min-w-[480px] md:min-w-0 max-w-full w-full border border-gray-300 rounded object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<p class="text-sm text-gray-600">Flight recommendation image will be displayed here</p>';
-                      }
-                    }}
-                  />
+                <div className="bg-white border border-blue-300 rounded-lg p-3 md:p-4 mb-3">
+                  <div className="space-y-2 text-sm text-gray-800">
+                    <div>
+                      <strong>Departure:</strong> EasyJet, Luton Airport to International Airport Marrakech, Wednesday 25 March, 2.20 pm
+                    </div>
+                    <div>
+                      <strong>Return:</strong> EasyJet, International Airport Marrakech to Luton, Sunday 29 March, 11.30 am
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700">
-                  <strong>Important:</strong> Please send us a message with the confirmation once your flight is booked so we can take your registration fully into account.
-                </p>
               </div>
 
             </div>

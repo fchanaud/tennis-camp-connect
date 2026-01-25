@@ -99,7 +99,7 @@ Place the following file in the `public/` folder:
 ### 2. Payment Page (`/register/[campId]/payment`)
 
 - Shows price breakdown:
-  - Base camp (shared bedroom): £600
+  - Base camp (shared double room): £600
   - Private double bedroom: £690 (£600 + £90 upgrade, if selected)
   - Optional activities: £25–45 each (itemized)
   - Total (camp + options)

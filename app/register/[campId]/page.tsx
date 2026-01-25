@@ -40,8 +40,8 @@ const OPTION_LABELS: Record<RegistrationOptionType, string> = {
 function formatDateRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const endStr = end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const startStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const endStr = end.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   return `${startStr} - ${endStr}`;
 }
 
@@ -339,15 +339,15 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
       <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl overflow-visible md:overflow-visible">
         <Card className="mb-6 border-2 border-[#2563EB]/30">
           <CardBody>
-            <CardTitle className="text-2xl mb-4 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
+            <CardTitle className="text-lg md:text-2xl mb-4 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
 
             {/* Introduction */}
             <div className="mb-6">
-              <p className="text-gray-700 mb-2">
+              <p className="text-base md:text-gray-700 mb-2 text-gray-700">
                 This camp is an extension of several individual tennis stays organised in Marrakech over recent months.
               </p>
-              <p className="text-gray-700 mb-4">
-                Based on consistent positive feedback, it's now offered as a small group experience for a limited number of players.
+              <p className="text-base md:text-gray-700 mb-4 text-gray-700">
+                Based on consistent positive feedback, I decided to open it up to a small group, combining tennis coaching with an immersive Moroccan stay.
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <a
@@ -372,30 +372,30 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
 
             {/* Camp Dates */}
             <div className="mb-10 rounded-xl">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#FF4C4C] mb-2">Camp Dates</h2>
-              <p className="text-xl md:text-2xl font-bold text-[#1E1E1E]">
+              <h2 className="text-xs md:text-sm font-semibold uppercase tracking-wide text-[#FF4C4C] mb-2">Camp Dates</h2>
+              <p className="text-base md:text-2xl font-bold text-[#1E1E1E]">
                 {formatDateRange(camp.start_date, camp.end_date)}
               </p>
-              <p className="text-sm text-gray-700 mt-2">
+              <p className="text-sm md:text-sm text-gray-700 mt-2">
                 Open for intermediate and advanced levels — Coaching provided in English
               </p>
             </div>
 
             {/* Camp Package */}
             <div className="mb-6 pl-4 border-l-4 border-[#66B032]">
-              <h2 className="text-lg font-semibold mb-2 text-[#1E40AF]">Camp Package</h2>
-              <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm md:text-base">
+              <h2 className="text-base md:text-lg font-semibold mb-2 text-[#1E40AF]">Camp Package</h2>
+              <ul className="list-disc list-inside space-y-1 text-gray-700 text-base md:text-base">
                 <li>3 days of tennis coaching (9 hours) - maximum group size of 4 players</li>
                 <li>Personal video analysis and post-camp feedback report</li>
                 <li>Access to the Tennis Camp Connect app</li>
-                <li>4 nights in a shared bedroom* at the riad with daily breakfast</li>
+                <li>4 nights in a double shared room at the riad with daily breakfast (upgrade to private double room available)</li>
                 <li>Every day lunch on the tennis camp site</li>
                 <li>Thursday and Saturday Moroccan dinners at the riad</li>
                 <li>All transfers (airport, tennis courts and activities)</li>
               </ul>
 
-              <h3 className="text-md font-semibold mt-4 mb-2 text-gray-500">Not included:</h3>
-              <ul className="list-disc list-inside space-y-1 text-gray-600 text-xs md:text-sm">
+              <h3 className="text-sm md:text-md font-semibold mt-4 mb-2 text-gray-500">Not included:</h3>
+              <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm md:text-sm">
                 <li>Flights to and from Marrakech</li>
                 <li>Travel insurance</li>
                 <li>Optional: Spa treatments, proposed excursions and Friday dinner</li>
@@ -408,7 +408,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
         {/* Registration Form */}
         <Card className="border-2 border-[#66B032]/30 overflow-visible md:overflow-visible">
           <CardBody className="overflow-visible md:overflow-visible">
-            <CardTitle className="text-xl mb-4 text-[#1E40AF]">Registration Form</CardTitle>
+            <CardTitle className="text-lg md:text-xl mb-4 text-[#1E40AF]">Registration Form</CardTitle>
 
             {error && (
               <div id="registration-error">
@@ -480,7 +480,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 onChange={(e) => setBedroomType(e.target.value)}
                 options={[
                   { value: '', label: 'Select...' },
-                  { value: 'shared', label: 'Shared bedroom' },
+                  { value: 'shared', label: 'Shared double room' },
                   { value: 'private_double', label: 'Private double bedroom (+£90)' },
                 ]}
                 required
@@ -491,16 +491,16 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 <label className="form-label text-sm font-medium text-[#1E1E1E] mb-2 block">
                   Optional Activities <span className="text-gray-500 font-normal">(can also be booked and paid later)</span>
                 </label>
-                <div className="space-y-3 md:space-y-2">
+                <div className="space-y-1.5 md:space-y-2">
                   {(Object.keys(OPTION_LABELS) as RegistrationOptionType[]).map((optionType) => (
-                    <label key={optionType} className="flex items-center gap-3 cursor-pointer min-h-[44px] py-1">
+                    <label key={optionType} className="flex items-start gap-3 cursor-pointer min-h-[44px] py-0.5">
                       <input
                         type="checkbox"
                         checked={optionalActivities.includes(optionType)}
                         onChange={() => handleOptionalActivityChange(optionType)}
-                        className="w-5 h-5 flex-shrink-0 cursor-pointer"
+                        className="w-5 h-5 flex-shrink-0 cursor-pointer mt-0.5"
                       />
-                      <span className="text-sm text-gray-700 break-words">{OPTION_LABELS[optionType]}</span>
+                      <span className="text-base md:text-sm text-gray-700 break-words leading-relaxed">{OPTION_LABELS[optionType]}</span>
                     </label>
                   ))}
                 </div>
@@ -508,15 +508,15 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
 
               {/* Cancellation Policy */}
               <div>
-                <label className="flex items-center gap-3 cursor-pointer min-h-[44px] py-1">
+                <label className="flex items-start gap-3 cursor-pointer min-h-[44px] py-1">
                   <input
                     type="checkbox"
                     checked={acceptedCancellationPolicy}
                     onChange={(e) => setAcceptedCancellationPolicy(e.target.checked)}
-                    className="w-5 h-5 flex-shrink-0 cursor-pointer"
+                    className="w-5 h-5 flex-shrink-0 cursor-pointer mt-0.5"
                     required
                   />
-                  <span className="text-sm text-gray-700 break-words">
+                  <span className="text-sm text-gray-700 break-words leading-relaxed">
                     I have read and agree to the{' '}
                     <Link
                       href="/cancellation-policy"
