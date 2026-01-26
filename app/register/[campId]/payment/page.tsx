@@ -135,6 +135,18 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
         }),
       });
 
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        // Close the window if API call failed
+        if (revolutWindow && !revolutWindow.closed) {
+          revolutWindow.close();
+        }
+        throw new Error('Server returned an error. Please check the console for details.');
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -274,7 +286,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
                   </>
                 )}
                 <div className="border-t pt-2 mt-2 flex justify-between font-bold">
-                  <span>Total (camp + options):</span>
+                  <span>Total:</span>
                   <span>£{basePrice}</span>
                 </div>
               </div>

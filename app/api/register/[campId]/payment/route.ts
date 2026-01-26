@@ -33,7 +33,23 @@ export async function POST(
 ) {
   try {
     const { campId } = await params;
-    const body = await request.json();
+    
+    if (!campId) {
+      return NextResponse.json(
+        { error: 'Camp ID is required' },
+        { status: 400 }
+      );
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
     const supabase = createServiceRoleClient();
 
     const {
@@ -209,8 +225,13 @@ export async function POST(
     }
   } catch (error) {
     console.error('Error processing payment:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error details:', errorMessage);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }

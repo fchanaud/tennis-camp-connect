@@ -41,8 +41,8 @@ const OPTION_LABELS: Record<RegistrationOptionType, string> = {
 function formatDateRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const startStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  const endStr = end.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const startStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const endStr = end.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   return `${startStr} - ${endStr}`;
 }
 
@@ -340,7 +340,17 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
       <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl overflow-visible md:overflow-visible">
         <Card className="mb-6 border-2 border-[#2563EB]/30">
           <CardBody>
-            <CardTitle className="text-lg md:text-2xl mb-4 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
+            <CardTitle className="text-xl md:text-2xl mb-2 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
+            
+            {/* Camp Dates - moved below main title */}
+            <div className="mb-4">
+              <p className="text-xs md:text-lg font-bold text-[#66B032] bg-[#66B032]/10 px-2 py-1 rounded inline-block max-w-full overflow-hidden">
+                <span className="whitespace-nowrap">{formatDateRange(camp.start_date, camp.end_date)}</span>
+              </p>
+              <p className="text-sm md:text-sm text-gray-700 mt-1">
+                Open for intermediate and advanced levels — Coaching provided in English
+              </p>
+            </div>
 
             {/* Introduction */}
             <div className="mb-6">
@@ -371,21 +381,10 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
               </div>
             </div>
 
-            {/* Camp Dates */}
-            <div className="mb-10 rounded-xl">
-              <h2 className="text-xs md:text-sm font-semibold uppercase tracking-wide text-[#FF4C4C] mb-2">Camp Dates</h2>
-              <p className="text-base md:text-2xl font-bold text-[#1E1E1E]">
-                {formatDateRange(camp.start_date, camp.end_date)}
-              </p>
-              <p className="text-sm md:text-sm text-gray-700 mt-2">
-                Open for intermediate and advanced levels — Coaching provided in English
-              </p>
-            </div>
-
             {/* Camp Package */}
             <div className="mb-6 pl-4 border-l-4 border-[#66B032]">
-              <h2 className="text-base md:text-lg font-semibold mb-2 text-[#1E40AF]">Camp Package</h2>
-              <ul className="list-disc list-inside space-y-1 text-gray-700 text-base md:text-base">
+              <h2 className="text-xs md:text-lg font-semibold mb-3 text-[#1E40AF]">Camp Package</h2>
+              <ul className="list-disc list-inside space-y-2.5 text-[#1E1E1E] text-sm md:text-base leading-relaxed">
                 <li>3 days of tennis coaching (9 hours) - maximum group size of 4 players</li>
                 <li>Personal video analysis and post-camp feedback report</li>
                 <li>Access to the Tennis Camp Connect app</li>
@@ -395,8 +394,8 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 <li>All transfers (airport, tennis courts and activities)</li>
               </ul>
 
-              <h3 className="text-sm md:text-md font-semibold mt-4 mb-2 text-gray-500">Not included:</h3>
-              <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm md:text-sm">
+              <h3 className="text-sm md:text-md font-semibold mt-5 mb-2.5 text-gray-700">Not included:</h3>
+              <ul className="list-disc list-inside space-y-2 text-[#1E1E1E] text-sm md:text-base leading-relaxed">
                 <li>Flights to and from Marrakech</li>
                 <li>Travel insurance</li>
                 <li>Optional: Spa treatments, proposed excursions and Friday dinner</li>
@@ -489,8 +488,8 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
 
               {/* Optional Activities */}
               <div className="p-3 rounded-lg bg-[#FFD633]/10 border border-[#FFD633]/30">
-                <label className="form-label text-sm font-medium text-[#1E1E1E] mb-2 block">
-                  Optional Activities <span className="text-gray-500 font-normal">(can also be booked and paid later)</span>
+                <label className="form-label text-base md:text-base font-semibold text-[#1E1E1E] mb-4 block">
+                  Optional Activities <span className="text-gray-500 font-normal text-sm md:text-sm">(can also be booked and paid later)</span>
                 </label>
                 <div className="space-y-1.5 md:space-y-2">
                   {(Object.keys(OPTION_LABELS) as RegistrationOptionType[]).map((optionType) => (
@@ -524,7 +523,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                       target="_blank"
                       className="text-[#2563EB] hover:underline font-medium"
                     >
-                      Marrakech Tennis Camp Payment & Cancellation Policy
+                      Cancellation & refund policy
                     </Link>
                     . *
                   </span>
