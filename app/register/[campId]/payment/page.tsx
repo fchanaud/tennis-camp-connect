@@ -77,6 +77,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
           throw new Error('Failed to load registration');
         }
         const registrationData = await res.json();
+        console.log('Loaded registration options:', registrationData?.registration_options || registrationData?.options);
         setRegistration(registrationData);
       } catch (err) {
         setError('Failed to load registration');

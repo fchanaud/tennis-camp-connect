@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS registrations (
 CREATE TABLE IF NOT EXISTS registration_options (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   registration_id UUID NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,
-  option_type VARCHAR(50) NOT NULL CHECK (option_type IN ('hammam_massage', 'massage', 'hammam', 'medina_tour', 'friday_dinner')),
+  option_type VARCHAR(50) NOT NULL CHECK (option_type IN ('hammam_massage', 'massage', 'hammam', 'medina_tour', 'friday_dinner', 'racket_rental')),
   price_pounds DECIMAL(10, 2) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
