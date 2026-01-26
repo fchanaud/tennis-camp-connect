@@ -118,7 +118,7 @@ export type RegistrationStatus = 'pending' | 'awaiting_manual_verification' | 'c
 export type PaymentMethod = 'stripe' | 'revolut';
 export type PaymentType = 'deposit' | 'full' | 'balance';
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
-export type RegistrationOptionType = 'hammam_massage' | 'massage' | 'hammam' | 'medina_tour' | 'friday_dinner';
+export type RegistrationOptionType = 'hammam_massage' | 'massage' | 'hammam' | 'medina_tour' | 'friday_dinner' | 'racket_rental';
 
 export interface Registration {
   id: string;

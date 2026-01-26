@@ -19,14 +19,16 @@ const OPTION_PRICES: Record<string, number> = {
   hammam: 25,
   medina_tour: 30,
   friday_dinner: 30,
+  racket_rental: 30,
 };
 
 const OPTION_LABELS: Record<string, string> = {
   hammam_massage: 'Hammam / Massage (1 hour)',
   massage: 'Massage (1 hour)',
   hammam: 'Hammam (1 hour)',
-  medina_tour: 'Medina private tour excursion (2 hours)',
+  medina_tour: 'Guided Medina walking tour (2 hours)',
   friday_dinner: 'Moroccan traditional dinner on Friday',
+  racket_rental: 'Racket rental (provided on site)',
 };
 
 export default function PaymentPage({ params }: { params: Promise<{ campId: string }> }) {

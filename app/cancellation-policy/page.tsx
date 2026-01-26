@@ -49,9 +49,9 @@ export default function CancellationPolicyPage() {
           content: [
             'Participants are responsible for booking and paying for their own flights.',
             '',
-            'Two flights will be recommended for Wednesday arrival to coordinate group transfers. arrival on Wednesday is mandatory. Dinner on Wednesday is not included; participants are responsible for this meal.',
+            'One flight will be recommended for Wednesday arrival to coordinate group transfers. Arrival on Wednesday is mandatory. Dinner on Wednesday is not included; participants are responsible for this meal.',
             '',
-            'Airport transfers for flights other than the recommended options cannot be guaranteed, and any additional transport costs are the participant\'s responsibility. no refunds are provided for missed or delayed transport.',
+            'Airport transfers for flights other than the recommended option cannot be guaranteed, and any additional transport costs are the participant\'s responsibility. no refunds are provided for missed or delayed transport.',
           ],
         },
         {
@@ -147,9 +147,9 @@ export default function CancellationPolicyPage() {
           content: [
             'Les participants sont responsables de la réservation et du paiement de leurs propres vols.',
             '',
-            'Deux vols seront recommandés pour une arrivée le mercredi afin de coordonner les transferts de groupe. l\'arrivée le mercredi est obligatoire. le dîner du mercredi n\'est pas inclus; les participants sont responsables de ce repas.',
+            'Un vol sera recommandé pour une arrivée le mercredi afin de coordonner les transferts de groupe. L\'arrivée le mercredi est obligatoire. le dîner du mercredi n\'est pas inclus; les participants sont responsables de ce repas.',
             '',
-            'Les transferts aéroport pour les vols autres que les options recommandées ne peuvent pas être garantis, et tous les coûts de transport supplémentaires sont à la charge du participant. aucun remboursement n\'est fourni pour les transports manqués ou retardés.',
+            'Les transferts aéroport pour les vols autres que les options recommandées ne peuvent pas être garantis, et tous les coûts de transport supplémentaires sont à la charge du participant. Aucun remboursement n\'est fourni pour les transports manqués ou retardés.',
           ],
         },
         {

@@ -33,8 +33,9 @@ const OPTION_LABELS: Record<RegistrationOptionType, string> = {
   hammam_massage: 'Hammam / Massage (1 hour) - £45',
   massage: 'Massage (1 hour) - £40',
   hammam: 'Hammam (1 hour) - £25',
-  medina_tour: 'Medina private tour excursion (2 hours) - £30',
+  medina_tour: 'Guided Medina walking tour (2 hours) - £30',
   friday_dinner: 'Moroccan traditional dinner on Friday - £30 (alcohol excluded)',
+  racket_rental: 'Racket rental (provided on site) - £30',
 };
 
 function formatDateRange(startDate: string, endDate: string): string {

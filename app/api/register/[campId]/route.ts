@@ -8,6 +8,7 @@ const OPTION_PRICES: Record<RegistrationOptionType, number> = {
   hammam: 25,
   medina_tour: 30,
   friday_dinner: 30,
+  racket_rental: 30,
 };
 
 export async function POST(
