@@ -340,11 +340,11 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
       <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl overflow-visible md:overflow-visible">
         <Card className="mb-6 border-2 border-[#2563EB]/30">
           <CardBody>
-            <CardTitle className="text-xl md:text-2xl mb-2 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
+            <CardTitle className="text-2xl md:text-2xl mb-2 text-[#1E1E1E]">Marrakech Tennis Camp Registration</CardTitle>
             
             {/* Camp Dates - moved below main title */}
             <div className="mb-4">
-              <p className="text-xs md:text-lg font-bold text-[#66B032] bg-[#66B032]/10 px-2 py-1 rounded inline-block max-w-full overflow-hidden">
+              <p className="text-base md:text-lg font-bold text-[#66B032] bg-[#66B032]/10 px-2 py-1 rounded inline-block max-w-full overflow-hidden">
                 <span className="whitespace-nowrap">{formatDateRange(camp.start_date, camp.end_date)}</span>
               </p>
               <p className="text-sm md:text-sm text-gray-700 mt-1">
@@ -383,7 +383,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
 
             {/* Camp Package */}
             <div className="mb-6 pl-4 border-l-4 border-[#66B032]">
-              <h2 className="text-xs md:text-lg font-semibold mb-3 text-[#1E40AF]">Camp Package</h2>
+              <h2 className="text-[10px] md:text-lg font-semibold mb-3 text-[#1E40AF]">Camp Package</h2>
               <ul className="list-disc list-inside space-y-2.5 text-[#1E1E1E] text-sm md:text-base leading-relaxed">
                 <li>3 days of tennis coaching (9 hours) - maximum group size of 4 players</li>
                 <li>Personal video analysis and post-camp feedback report</li>
@@ -481,14 +481,14 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 options={[
                   { value: '', label: 'Select...' },
                   { value: 'shared', label: 'Shared double room' },
-                  { value: 'private_double', label: 'Private double bedroom (+£90)' },
+                  { value: 'private_double', label: 'Private double bedroom (+£90 in total)' },
                 ]}
                 required
               />
 
               {/* Optional Activities */}
-              <div className="p-3 rounded-lg bg-[#FFD633]/10 border border-[#FFD633]/30">
-                <label className="form-label text-base md:text-base font-semibold text-[#1E1E1E] mb-4 block">
+              <div className="p-3 rounded-lg bg-[#FFD633]/10 border border-[#FFD633]/30 mb-8">
+                <label className="form-label text-base md:text-base font-semibold text-[#1E1E1E] block !mb-5">
                   Optional Activities <span className="text-gray-500 font-normal text-sm md:text-sm">(can also be booked and paid later)</span>
                 </label>
                 <div className="space-y-1.5 md:space-y-2">
@@ -535,7 +535,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 variant="primary"
                 fullWidth
                 disabled={submitting}
-                className="mt-6"
+                className="mt-3 md:mt-6"
               >
                 {submitting
                   ? 'Submitting...'
