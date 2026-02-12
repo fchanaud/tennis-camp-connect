@@ -369,7 +369,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
                       {processing ? 'Opening...' : `Pay £${paymentType === 'deposit' ? depositAmount : fullAmount} with Revolut`}
                     </Button>
                     <p className="text-slate-700 text-sm md:text-base mt-3 text-center font-medium">
-                      Revolut will open in a new tab. Pay there, then come back and confirm below.
+                      Revolut will open in a new tab. Pay there and I'll be in touch to confirm your subscription!
                     </p>
                   </>
                 ) : (

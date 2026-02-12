@@ -35,7 +35,7 @@ export function Button({
   fullWidth = false,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'mb-2 font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
   const widthClass = fullWidth ? 'w-full' : '';
   
   return (
