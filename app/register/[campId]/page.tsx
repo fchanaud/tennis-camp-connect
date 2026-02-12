@@ -398,8 +398,8 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
               <ul className="list-disc list-inside space-y-2 text-[#1E1E1E] text-sm md:text-base leading-relaxed">
                 <li>Flights to and from Marrakech</li>
                 <li>Travel insurance</li>
-                <li>Optional: Spa treatments, proposed excursions and Friday dinner</li>
                 <li>Snacks and drinks</li>
+                <li>Optional: Spa treatments, proposed excursions and Friday dinner</li>
               </ul>
             </div>
           </CardBody>

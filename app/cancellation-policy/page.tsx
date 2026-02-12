@@ -9,7 +9,7 @@ export default function CancellationPolicyPage() {
 
   const content = {
     en: {
-      title: 'Cancellation & refund policy / 25-29 March',
+      title: 'Cancellation & refund policy / Tennis Camp',
       sections: [
         {
           title: '1. Payment & registration',
@@ -107,7 +107,7 @@ export default function CancellationPolicyPage() {
       emailText: 'hello@aceawaytravel.com',
     },
     fr: {
-      title: 'Annulation et remboursement - Camp de Tennis Marrakech',
+      title: 'Annulation et remboursement',
       sections: [
         {
           title: '1. Paiement et inscription',
@@ -209,46 +209,51 @@ export default function CancellationPolicyPage() {
   const currentContent = content[language];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
-      {/* Simple Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/login" className="text-xl md:text-2xl font-bold text-[#FF4C4C] cursor-pointer">
-              Tennis Camp Connect
-            </Link>
-            <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-[#F7F7F7] flex flex-col">
+      {/* Header – aligned with registration page */}
+      <header className="bg-white border-b-2 border-[#FF4C4C]/30 sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto px-3 py-2.5 sm:px-4 sm:py-3 md:py-2.5 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+          <Link href="/login" className="text-base md:text-lg font-bold text-[#FF4C4C] cursor-pointer">
+            Tennis Camp Connect
+          </Link>
+          <img
+            src="/logo.png"
+            alt="Tennis Camp Connect"
+            className="h-6 w-auto sm:h-7 md:h-8 flex-shrink-0 object-contain"
+          />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl flex-1">
+        <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+            <div className="flex items-center gap-1 self-start md:self-auto bg-gray-50 rounded-full px-1 py-0.5 border border-gray-200">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
+                className={`px-1.5 py-0.5 text-[10px] md:text-xs lg:text-sm font-medium rounded-full transition-colors ${
                   language === 'en'
                     ? 'bg-[#2563EB] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLanguage('fr')}
-                className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
+                className={`px-1.5 py-0.5 text-[10px] md:text-xs lg:text-sm font-medium rounded-full transition-colors ${
                   language === 'fr'
                     ? 'bg-[#2563EB] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 FR
               </button>
             </div>
+            <h1 className="text-xs md:text-base lg:text-lg font-bold text-gray-900 leading-tight">
+              {currentContent.title}
+            </h1>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
-          <h1 className="text-xs md:text-lg font-bold text-gray-900 mb-3 md:mb-4 leading-tight">
-            {currentContent.title}
-          </h1>
 
           <div className="space-y-3">
             {currentContent.sections.map((section, index) => (
