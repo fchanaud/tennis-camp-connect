@@ -481,7 +481,7 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
                 options={[
                   { value: '', label: 'Select...' },
                   { value: 'shared', label: 'Shared double room' },
-                  { value: 'private_double', label: 'Private double bedroom (+£90 in total)' },
+                  { value: 'private_double', label: 'Private double bedroom (+£90)' },
                 ]}
                 required
               />
@@ -489,12 +489,9 @@ export default function RegistrationPage({ params }: { params: Promise<{ campId:
               {/* Optional Activities */}
               <div className="p-3 rounded-lg bg-[#FFD633]/10 border border-[#FFD633]/30">
                 <label className="form-label text-base md:text-base font-semibold text-[#1E1E1E] mb-4 block">
-                  Optional Activities{' '}
-                  <span className="text-gray-500 font-normal text-sm md:text-sm">
-                    (can also be booked and paid later)
-                  </span>
+                  Optional Activities <span className="text-gray-500 font-normal text-sm md:text-sm">(can also be booked and paid later)</span>
                 </label>
-                <div className="space-y-1.5 md:space-y-2 mt-3 md:mt-4">
+                <div className="space-y-1.5 md:space-y-2">
                   {(Object.keys(OPTION_LABELS) as RegistrationOptionType[]).map((optionType) => (
                     <label key={optionType} className="flex items-start gap-3 cursor-pointer min-h-[44px] py-0.5">
                       <input

@@ -137,28 +137,14 @@ export default function ConfirmationPage({ params }: { params: Promise<{ campId:
               <p className="text-gray-700 text-base md:text-lg">
                 {isStripe ? (
                   <>
-                    Thanks a lot! I'll reach out with the next steps, which include the recommended flight details below you'll need to book.
+                    Thanks a lot! I'll reach out with the next steps, which include the recommended flight details.
                   </>
                 ) : (
                   <>
-                    Thanks a lot! Once payment is received, we will confirm your registration and share the next steps. This will include the recommended flight details below you’ll need to book. 
+                    Thanks a lot! Once payment is received, we will confirm your registration and share the next steps. This will include the recommended flight details. 
                   </>
                 )}
               </p>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mt-4 md:mt-6">
-                <div className="bg-white border border-blue-300 rounded-lg p-3 md:p-4 mb-3">
-                  <div className="space-y-2 text-sm text-gray-800">
-                    <div>
-                      <strong>Departure:</strong> EasyJet, Luton Airport to International Airport Marrakech, Wednesday 25 March, 2.20 pm
-                    </div>
-                    <div>
-                      <strong>Return:</strong> EasyJet, International Airport Marrakech to Luton, Sunday 29 March, 11.30 am
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </CardBody>
         </Card>

@@ -168,38 +168,8 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
       } else if (paymentMethod === 'revolut') {
         setRevolutPaymentId(data.payment_id);
         setProcessing(false);
-        // Window is already open from above
+        // Window is already open; user stays on this page
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      setProcessing(false);
-    }
-  };
-
-  const handleRevolutConfirmation = async () => {
-    if (!registrationId || !revolutPaymentId) {
-      setError('Please create a payment first by selecting Revolut payment method');
-      return;
-    }
-
-    setProcessing(true);
-    try {
-      const resolvedParams = await params;
-      const { campId } = resolvedParams;
-
-      const response = await fetch(`/api/register/${campId}/verify-revolut`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment_id: revolutPaymentId }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Verification failed');
-      }
-
-      router.push(`/register/${campId}/confirmation?payment_method=revolut&status=pending&registration_id=${registrationId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       setProcessing(false);
@@ -369,7 +339,7 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
                       {processing ? 'Opening...' : `Pay £${paymentType === 'deposit' ? depositAmount : fullAmount} with Revolut`}
                     </Button>
                     <p className="text-slate-700 text-sm md:text-base mt-3 text-center font-medium">
-                      Revolut will open in a new tab. Pay there and I'll be in touch to confirm your subscription!
+                      Revolut will open in a new tab. Pay there and we'll be in touch to confirm your registration.
                     </p>
                   </>
                 ) : (
@@ -377,21 +347,12 @@ export default function PaymentPage({ params }: { params: Promise<{ campId: stri
                     <p className="text-slate-700 text-sm md:text-base mb-1">
                       Pay <strong>£{paymentType === 'deposit' ? depositAmount : fullAmount}</strong> in Revolut with <strong className="text-slate-900">Marrakech Trip</strong> as the reference.
                     </p>
-                    <p className="text-slate-500 text-xs mb-4">
-                      <a href="https://revolut.me/frankydch" target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline">Open Revolut link</a> again if needed. When you're done, click below.
+                    <p className="text-slate-500 text-xs mb-3">
+                      <a href="https://revolut.me/frankydch" target="_blank" rel="noopener noreferrer" className="text-[#2563EB] hover:underline">Open Revolut link</a> again if needed.
                     </p>
-                    <p className="text-slate-600 text-sm mb-4 text-center">
-                      Once payment is received, we will confirm your registration and share the next steps. This will include the flight details you'll need to book.
+                    <p className="text-slate-600 text-sm text-center">
+                      Thanks a lot! Once payment is received, we will confirm your registration and share the next steps.
                     </p>
-                    <Button
-                      variant="primary"
-                      fullWidth
-                      onClick={handleRevolutConfirmation}
-                      disabled={processing}
-                      className="!py-3"
-                    >
-                      {processing ? 'Processing...' : "I've paid — confirm"}
-                    </Button>
                   </>
                 )}
               </div>
